@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --color-primary: #000000;
+  --color-primary-light: #333333;
+  --color-primary-dark: #000000;
+  --color-secondary: #111827;
+  --color-accent: #2563EB;
+  --color-background: #FFFFFF;
+  --color-background-light: #F9FAFB;
+  --color-text: #111827;
+  --color-text-light: #6B7280;
+  --color-border: #E5E7EB;
+  
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Inter', sans-serif;
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  overflow-x: hidden;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-[var(--color-primary)] hover:bg-[var(--color-background)] text-[var(--color-background)] hover:text-[var(--color-primary)] border border-[var(--color-primary)] font-bold uppercase tracking-widest py-4 px-10 transition-all duration-300;
+  }
+  
+  .btn-secondary {
+    @apply bg-[var(--color-background)] hover:bg-[var(--color-primary)] text-[var(--color-primary)] hover:text-[var(--color-background)] border border-[var(--color-primary)] font-bold uppercase tracking-widest py-4 px-10 transition-all duration-300;
+  }
+  
+  .card-elegant {
+    @apply bg-[var(--color-background)] border border-[var(--color-border)] transition-all duration-300;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-background-light);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-light);
+}
+
+::selection {
+  background-color: var(--color-primary);
+  color: var(--color-background);
+}

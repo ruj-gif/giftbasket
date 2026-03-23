@@ -1,0 +1,409 @@
+{
+  "databaseSchema": {
+    "tables": {
+      "products": {
+        "fields": {
+          "id": {
+            "type": "UUID",
+            "primaryKey": true,
+            "autoGenerate": true
+          },
+          "name": {
+            "type": "VARCHAR(255)",
+            "required": true
+          },
+          "slug": {
+            "type": "VARCHAR(255)",
+            "required": true,
+            "unique": true
+          },
+          "category": {
+            "type": "VARCHAR(100)"
+          },
+          "price": {
+            "type": "DECIMAL(10,2)",
+            "required": true
+          },
+          "discount_price": {
+            "type": "DECIMAL(10,2)"
+          },
+          "image_url": {
+            "type": "TEXT"
+          },
+          "description": {
+            "type": "TEXT"
+          },
+          "sizes": {
+            "type": "TEXT"
+          },
+          "featured": {
+            "type": "BOOLEAN",
+            "default": false
+          },
+          "published": {
+            "type": "BOOLEAN",
+            "default": true
+          },
+          "created_at": {
+            "type": "TIMESTAMP",
+            "default": "CURRENT_TIMESTAMP"
+          },
+          "updated_at": {
+            "type": "TIMESTAMP",
+            "default": "CURRENT_TIMESTAMP"
+          }
+        },
+        "indexes": [
+          "slug",
+          "category",
+          "featured",
+          "published"
+        ]
+      },
+      "categories": {
+        "fields": {
+          "id": {
+            "type": "UUID",
+            "primaryKey": true,
+            "autoGenerate": true
+          },
+          "name": {
+            "type": "VARCHAR(100)",
+            "required": true
+          },
+          "slug": {
+            "type": "VARCHAR(100)",
+            "required": true,
+            "unique": true
+          },
+          "created_at": {
+            "type": "TIMESTAMP",
+            "default": "CURRENT_TIMESTAMP"
+          }
+        },
+        "indexes": [
+          "slug"
+        ]
+      },
+      "orders": {
+        "fields": {
+          "id": {
+            "type": "UUID",
+            "primaryKey": true,
+            "autoGenerate": true
+          },
+          "customer_name": {
+            "type": "VARCHAR(255)",
+            "required": true
+          },
+          "customer_email": {
+            "type": "VARCHAR(255)",
+            "required": true
+          },
+          "customer_phone": {
+            "type": "VARCHAR(20)",
+            "required": true
+          },
+          "shipping_address": {
+            "type": "TEXT",
+            "required": true
+          },
+          "city": {
+            "type": "VARCHAR(100)",
+            "required": true
+          },
+          "zipcode": {
+            "type": "VARCHAR(20)",
+            "required": true
+          },
+          "payment_method": {
+            "type": "VARCHAR(50)",
+            "default": "cod"
+          },
+          "subtotal": {
+            "type": "DECIMAL(10,2)",
+            "required": true
+          },
+          "shipping_charge": {
+            "type": "DECIMAL(10,2)",
+            "default": "0.00"
+          },
+          "tax_amount": {
+            "type": "DECIMAL(10,2)",
+            "default": "0.00"
+          },
+          "total_amount": {
+            "type": "DECIMAL(10,2)",
+            "required": true
+          },
+          "order_items": {
+            "type": "TEXT"
+          },
+          "status": {
+            "type": "VARCHAR(50)",
+            "default": "pending",
+            "enum": [
+              "pending",
+              "processing",
+              "completed",
+              "cancelled"
+            ]
+          },
+          "created_at": {
+            "type": "TIMESTAMP",
+            "default": "CURRENT_TIMESTAMP"
+          },
+          "updated_at": {
+            "type": "TIMESTAMP",
+            "default": "CURRENT_TIMESTAMP"
+          }
+        },
+        "indexes": [
+          "status",
+          "customer_email",
+          "created_at"
+        ]
+      },
+      "contact_messages": {
+        "fields": {
+          "id": {
+            "type": "UUID",
+            "primaryKey": true,
+            "autoGenerate": true
+          },
+          "name": {
+            "type": "VARCHAR(255)",
+            "required": true
+          },
+          "email": {
+            "type": "VARCHAR(255)",
+            "required": true
+          },
+          "subject": {
+            "type": "VARCHAR(255)",
+            "required": true
+          },
+          "message": {
+            "type": "TEXT",
+            "required": true
+          },
+          "created_at": {
+            "type": "TIMESTAMP",
+            "default": "CURRENT_TIMESTAMP"
+          }
+        },
+        "indexes": [
+          "created_at"
+        ]
+      },
+      "hero_sections": {
+        "fields": {
+          "id": {
+            "type": "UUID",
+            "primaryKey": true,
+            "autoGenerate": true
+          },
+          "title": {
+            "type": "VARCHAR(255)",
+            "required": true
+          },
+          "subtitle": {
+            "type": "TEXT"
+          },
+          "cta_text": {
+            "type": "VARCHAR(100)"
+          },
+          "cta_link": {
+            "type": "VARCHAR(255)"
+          },
+          "background_image_url": {
+            "type": "TEXT"
+          },
+          "published": {
+            "type": "BOOLEAN",
+            "default": true
+          },
+          "created_at": {
+            "type": "TIMESTAMP",
+            "default": "CURRENT_TIMESTAMP"
+          },
+          "updated_at": {
+            "type": "TIMESTAMP",
+            "default": "CURRENT_TIMESTAMP"
+          }
+        },
+        "indexes": [
+          "published"
+        ]
+      },
+      "feature_blocks": {
+        "fields": {
+          "id": {
+            "type": "UUID",
+            "primaryKey": true,
+            "autoGenerate": true
+          },
+          "title": {
+            "type": "VARCHAR(255)",
+            "required": true
+          },
+          "description": {
+            "type": "TEXT"
+          },
+          "icon": {
+            "type": "VARCHAR(50)",
+            "default": "Heart"
+          },
+          "display_order": {
+            "type": "INTEGER",
+            "default": 0
+          },
+          "published": {
+            "type": "BOOLEAN",
+            "default": true
+          },
+          "created_at": {
+            "type": "TIMESTAMP",
+            "default": "CURRENT_TIMESTAMP"
+          },
+          "updated_at": {
+            "type": "TIMESTAMP",
+            "default": "CURRENT_TIMESTAMP"
+          }
+        },
+        "indexes": [
+          "published",
+          "display_order"
+        ]
+      },
+      "settings": {
+        "fields": {
+          "id": {
+            "type": "UUID",
+            "primaryKey": true,
+            "autoGenerate": true
+          },
+          "site_name": {
+            "type": "VARCHAR(255)"
+          },
+          "site_logo": {
+            "type": "TEXT"
+          },
+          "contact_phone": {
+            "type": "VARCHAR(50)"
+          },
+          "contact_email": {
+            "type": "VARCHAR(255)"
+          },
+          "social_facebook": {
+            "type": "TEXT"
+          },
+          "social_x": {
+            "type": "TEXT"
+          },
+          "social_instagram": {
+            "type": "TEXT"
+          },
+          "social_linkedin": {
+            "type": "TEXT"
+          },
+          "social_youtube": {
+            "type": "TEXT"
+          },
+          "address": {
+            "type": "TEXT"
+          },
+          "shipping_charge": {
+            "type": "DECIMAL(10,2)",
+            "default": "0.00"
+          },
+          "tax_rate": {
+            "type": "DECIMAL(5,2)",
+            "default": "0.00"
+          },
+          "tax_name": {
+            "type": "VARCHAR(50)"
+          },
+          "free_shipping_threshold": {
+            "type": "DECIMAL(10,2)"
+          },
+          "updated_at": {
+            "type": "TIMESTAMP",
+            "default": "CURRENT_TIMESTAMP"
+          }
+        },
+        "indexes": []
+      },
+      "payment_settings": {
+        "fields": {
+          "id": {
+            "type": "UUID",
+            "primaryKey": true,
+            "autoGenerate": true
+          },
+          "upi_qr_code_url": {
+            "type": "TEXT"
+          },
+          "upi_number": {
+            "type": "VARCHAR(100)"
+          },
+          "instructions": {
+            "type": "TEXT"
+          },
+          "is_active": {
+            "type": "BOOLEAN",
+            "default": false
+          },
+          "updated_at": {
+            "type": "TIMESTAMP",
+            "default": "CURRENT_TIMESTAMP"
+          }
+        },
+        "indexes": []
+      },
+      "customers": {
+        "fields": {
+          "id": {
+            "type": "UUID",
+            "primaryKey": true,
+            "autoGenerate": true
+          },
+          "email": {
+            "type": "VARCHAR(255)",
+            "required": true,
+            "unique": true
+          },
+          "name": {
+            "type": "VARCHAR(255)",
+            "required": true
+          },
+          "password_hash": {
+            "type": "TEXT",
+            "required": true
+          },
+          "phone": {
+            "type": "VARCHAR(20)"
+          },
+          "created_at": {
+            "type": "TIMESTAMP",
+            "default": "CURRENT_TIMESTAMP"
+          }
+        },
+        "indexes": ["email"]
+      }
+    },
+    "apiResources": [
+      "products",
+      "categories",
+      "orders",
+      "customers",
+      "contact_messages",
+      "hero_sections",
+      "feature_blocks",
+      "settings",
+      "payment_settings"
+    ]
+  },
+  "projectId": "430580ff-0f53-4585-9392-d30f0b80ee35",
+  "savedAt": "2026-02-28T13:29:33.525Z"
+}
