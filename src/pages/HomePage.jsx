@@ -1,320 +1,195 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ArrowRight, Sparkles, Truck, Shield, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
-import { api } from '../lib/api';
-import ProductCard from '../components/ProductCard';
-import LoadingSpinner from '../components/LoadingSpinner';
-import { siteConfig } from '../config/siteConfig';
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { ArrowRight, Sparkles, Gift, Heart, Truck } from "lucide-react";
+import { api } from "../lib/api";
+import ProductCard from "../components/ProductCard";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function HomePage() {
   const [products, setProducts] = useState([]);
-  const [heroSections, setHeroSections] = useState([]);
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [featureBlocks, setFeatureBlocks] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const homeContent = siteConfig.content?.home || {};
-
   useEffect(() => {
-    loadData();
+    loadProducts();
   }, []);
 
-  const slideCount = heroSections.length > 0 ? heroSections.length : 1;
-  useEffect(() => {
-    setCurrentSlide(0);
-  }, [heroSections.length]);
-  useEffect(() => {
-    if (slideCount > 1) {
-      const interval = setInterval(() => {
-        setCurrentSlide((prev) => (prev + 1) % slideCount);
-      }, 5000);
-      return () => clearInterval(interval);
-    }
-  }, [slideCount]);
-
-  const loadData = async () => {
+  const loadProducts = async () => {
     try {
-      setLoading(true);
-      const [productsRes, heroRes, featuresRes] = await Promise.all([
-        api.products.getAll({ featured: true, published: true }),
-        api.hero_sections.getAll({ published: true }),
-        api.feature_blocks.getAll({ published: true }),
-      ]);
-
-      if (productsRes.success) {
-        setProducts(productsRes.data || []);
-      }
-      if (heroRes.success && heroRes.data && heroRes.data.length > 0) {
-        setHeroSections(heroRes.data);
-      }
-      if (featuresRes.success) {
-        setFeatureBlocks((featuresRes.data || []).sort((a, b) => (a.display_order || 0) - (b.display_order || 0)));
-      }
-    } catch (error) {
-      console.error('Failed to load homepage data:', error);
+      const res = await api.products.getAll({ featured: true });
+      if (res.success) setProducts(res.data);
     } finally {
       setLoading(false);
     }
   };
 
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % slides.length);
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
-  };
-
-  if (loading) {
-    return <LoadingSpinner />;
-  }
-
-  const slides = heroSections.length > 0
-    ? heroSections
-    : [{
-        title: 'Shop Quality Products',
-        subtitle: 'Browse our curated collection. Fast delivery, trusted service, and hassle-free shopping.',
-        cta_text: 'Shop Now',
-        cta_link: '/shop',
-        background_image_url: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1600&q=80',
-      }];
-
-  const iconMapping = {
-    'Truck': Truck,
-    'Shield': Shield,
-    'Heart': Heart,
-    'Sparkles': Sparkles,
-  };
+  if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="min-h-screen">
-      {/* Hero - Sliding Carousel */}
-      <section className="relative overflow-hidden min-h-[70vh] md:min-h-[80vh]">
-        <div className="flex h-full transition-transform duration-500 ease-out" style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
-          {slides.map((slide, index) => {
-            const title = slide.title || homeContent.heroTitle || 'Shop Quality Products';
-            const subtitle = slide.subtitle || homeContent.heroSubtitle || 'Browse our curated collection. Fast delivery, trusted service, and hassle-free shopping.';
-            const ctaText = slide.cta_text || homeContent.heroCtaText || 'Shop Now';
-            const ctaLink = slide.cta_link || homeContent.heroCtaLink || '/shop';
-            const bgImage = slide.background_image_url || 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1600&q=80';
+    <div className="bg-[#fafafa] text-gray-900">
 
-            return (
-              <div
-                key={slide.id || index}
-                className="relative min-w-full shrink-0 h-[70vh] md:h-[80vh] flex items-center"
-              >
-                <div
-                  className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                  style={{ backgroundImage: `url(${bgImage})` }}
-                  role="img"
-                  aria-label={title}
-                />
-                <div className="absolute inset-0 bg-secondary/40" />
-                <div className="absolute inset-0 flex items-center">
-                  <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-                    <div className="max-w-2xl text-center md:text-left mx-auto md:mx-0">
-                      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
-                        <Sparkles className="w-4 h-4 text-primary" />
-                        <span className="text-sm font-medium text-primary tracking-widest uppercase">{homeContent.newCollectionTag || 'New Collection'}</span>
-                      </div>
-                      <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight text-white mb-6">
-                        {title}
-                      </h1>
-                      <p className="text-lg md:text-xl text-white/80 max-w-lg leading-relaxed mb-8 mx-auto md:mx-0">
-                        {subtitle}
-                      </p>
-                      <Link
-                        to={ctaLink}
-                        className="bg-white text-black hover:bg-black hover:text-white border border-white transition-all duration-300 inline-flex items-center justify-center gap-2 text-base md:text-lg px-10 py-4 font-bold uppercase tracking-wider"
-                      >
-                        {ctaText}
-                        <ArrowRight className="w-5 h-5" />
-                      </Link>
-                    </div>
-                  </div>
-                </div>
+      {/* ================= HERO ================= */}
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage:
+              "url('https://images.unsplash.com/photo-1607083206968-13611e3d76db?q=80&w=1600')",
+          }}
+        />
+
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
+
+        <div className="relative z-10 text-center text-white px-6">
+          <motion.h1
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-6xl md:text-8xl font-black mb-6 italic"
+          >
+            Gift Basket
+          </motion.h1>
+
+          <p className="text-lg md:text-xl text-gray-200 mb-10 max-w-xl mx-auto">
+            The magic touch with emotions. Luxury hampers crafted for every
+            occasion.
+          </p>
+
+          <Link
+            to="/shop"
+            className="bg-red-600 px-10 py-4 rounded-full font-bold flex items-center gap-2 mx-auto w-fit hover:bg-red-700 transition"
+          >
+            Shop Now <ArrowRight size={18} />
+          </Link>
+        </div>
+      </section>
+
+      {/* ================= CATEGORIES ================= */}
+      <section className="py-24 container mx-auto px-6">
+        <div className="text-center mb-16">
+          <Sparkles className="mx-auto text-red-600 mb-4" />
+          <h2 className="text-4xl font-black">Shop by Occasion</h2>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-10">
+          {["Birthday", "Anniversary", "Festive"].map((cat, i) => (
+            <div
+              key={i}
+              className="relative h-64 rounded-2xl overflow-hidden group"
+            >
+              <img
+                src={`https://source.unsplash.com/600x400/?gift,${cat}`}
+                className="w-full h-full object-cover group-hover:scale-110 transition"
+                alt={cat}
+              />
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                <h3 className="text-white text-2xl font-bold">{cat}</h3>
               </div>
-            );
-          })}
-        </div>
-
-        {/* Carousel controls */}
-        {slides.length > 1 && (
-          <>
-            <button
-              onClick={prevSlide}
-              className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-lg hover:bg-white active:scale-95 transition-all touch-manipulation"
-              aria-label="Previous slide"
-            >
-              <ChevronLeft className="w-6 h-6 text-secondary" />
-            </button>
-            <button
-              onClick={nextSlide}
-              className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-lg hover:bg-white active:scale-95 transition-all touch-manipulation"
-              aria-label="Next slide"
-            >
-              <ChevronRight className="w-6 h-6 text-secondary" />
-            </button>
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
-              {slides.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentSlide(index)}
-                  className={`h-2 rounded-full transition-all duration-300 ${
-                    index === currentSlide ? 'w-8 bg-primary' : 'w-2 bg-white/50 hover:bg-white/80'
-                  }`}
-                  aria-label={`Go to slide ${index + 1}`}
-                />
-              ))}
             </div>
-          </>
-        )}
+          ))}
+        </div>
       </section>
 
-      <section className="py-20 md:py-28 bg-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <span className="text-primary font-semibold text-sm uppercase tracking-wider">{homeContent.featuredTag || 'Featured'}</span>
-            <h2 className="font-display text-4xl md:text-5xl font-bold text-secondary mt-4">
-              {homeContent.featuredTitle || 'Popular Products'}
-            </h2>
-            <p className="text-text-light text-lg max-w-2xl mx-auto mt-4">
-              {homeContent.featuredSubtitle || 'Handpicked products for you. Quality you can trust.'}
+      {/* ================= PRODUCTS ================= */}
+      <section className="py-24 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-black mb-2">Featured Hampers</h2>
+            <p className="text-gray-500 text-sm uppercase tracking-widest">
+              curated with love
             </p>
-          </motion.div>
+          </div>
 
-          <motion.div
-            className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6"
-            variants={{
-              hidden: { opacity: 0 },
-              visible: {
-                opacity: 1,
-                transition: { staggerChildren: 0.1, delayChildren: 0.2 }
-              }
-            }}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.1 }}
-          >
-            {products.map((product) => (
-              <motion.div
-                key={product.id}
-                variants={{
-                  hidden: { opacity: 0, y: 20 },
-                  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
-                }}
-              >
-                <ProductCard product={product} />
-              </motion.div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
+            {products.map((p) => (
+              <ProductCard key={p.id} product={p} />
             ))}
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-center mt-16"
-          >
-            <Link to="/shop" className="btn-primary inline-flex items-center gap-2">
-              View All Products
-              <ArrowRight className="w-5 h-5" />
-            </Link>
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      <section className="py-20 md:py-28 bg-background-light">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <span className="text-text-light font-bold text-xs uppercase tracking-[0.2em]">{homeContent.valuesTag || 'Our Values'}</span>
-            <h2 className="font-display text-3xl md:text-4xl font-extrabold text-secondary mt-4 uppercase tracking-tight">
-              {homeContent.valuesTitle || 'The Shopping Experience'}
-            </h2>
-          </motion.div>
+      {/* ================= ABOUT ================= */}
+      <section className="py-24 bg-gray-900 text-white">
+        <div className="container mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
+          
+          <img
+            src="https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=800"
+            className="rounded-2xl shadow-2xl"
+            alt="about"
+          />
 
-          <motion.div
-            className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8"
-            variants={{
-              hidden: { opacity: 0 },
-              visible: {
-                opacity: 1,
-                transition: { staggerChildren: 0.1, delayChildren: 0.2 }
-              }
-            }}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-          >
-            {featureBlocks.map((feature) => {
-              const IconComponent = iconMapping[feature.icon] || Heart;
-              return (
-                <motion.div
-                  key={feature.id}
-                  variants={{
-                    hidden: { opacity: 0, y: 20 },
-                    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
-                  }}
-                  className="p-8 bg-white border border-border/50 group text-center"
-                >
-                  <div className="w-12 h-12 flex items-center justify-center mb-6 mx-auto bg-black text-white">
-                    <IconComponent className="w-6 h-6" />
-                  </div>
-                  <h3 className="font-display text-lg font-bold text-secondary mb-3 uppercase tracking-wide">{feature.title}</h3>
-                  <p className="text-text-light text-sm leading-relaxed">{feature.description}</p>
-                </motion.div>
-              );
-            })}
-          </motion.div>
-        </div>
-      </section>
-
-      <motion.section className="relative overflow-hidden py-24 md:py-32 bg-secondary text-white">
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center"
-          >
-            <h2 className="font-display text-4xl md:text-6xl font-extrabold mb-8 uppercase tracking-tighter">
-              {homeContent.ctaTitle || 'Elevate Your Style'}
+          <div>
+            <h2 className="text-5xl font-black mb-6">
+              About Gift Basket
             </h2>
-            <p className="text-xl text-white/70 max-w-2xl mx-auto mb-12 font-medium">
-              {homeContent.ctaSubtitle || 'Curated essentials for the modern lifestyle. Discover quality that lasts.'}
+
+            <p className="text-gray-400 mb-6">
+              Since 2017, we’ve been creating premium gifting experiences that
+              capture emotions beautifully. Each hamper is handcrafted with care
+              and luxury.
             </p>
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="flex flex-col sm:flex-row gap-6 justify-center"
+
+            <Link
+              to="/about"
+              className="text-red-500 flex items-center gap-2"
             >
-              <Link to="/shop" className="bg-white text-black hover:bg-black hover:text-white border border-white transition-all duration-300 inline-flex items-center justify-center gap-2 text-lg px-12 py-4 font-bold uppercase tracking-widest">
-                {homeContent.ctaButtonText || 'Shop Collection'}
-                <ArrowRight className="w-5 h-5" />
-              </Link>
-              <Link to="/contact" className="border-2 border-white text-white hover:bg-white hover:text-black transition-all duration-300 inline-flex items-center justify-center gap-2 text-lg px-12 py-4 font-bold uppercase tracking-widest">
-                {homeContent.ctaContactText || 'Get In Touch'}
-              </Link>
-            </motion.div>
-          </motion.div>
+              Learn More <ArrowRight size={16} />
+            </Link>
+          </div>
         </div>
-      </motion.section>
+      </section>
+
+      {/* ================= WHY CHOOSE US ================= */}
+      <section className="py-24 container mx-auto px-6 text-center">
+        <h2 className="text-4xl font-black mb-16">Why Choose Us</h2>
+
+        <div className="grid md:grid-cols-3 gap-10">
+          <div>
+            <Gift className="mx-auto text-red-600 mb-4" size={40} />
+            <h3 className="font-bold text-lg mb-2">Premium Quality</h3>
+            <p className="text-gray-500">
+              Carefully curated luxury products.
+            </p>
+          </div>
+
+          <div>
+            <Heart className="mx-auto text-red-600 mb-4" size={40} />
+            <h3 className="font-bold text-lg mb-2">Made with Love</h3>
+            <p className="text-gray-500">
+              Every hamper crafted emotionally.
+            </p>
+          </div>
+
+          <div>
+            <Truck className="mx-auto text-red-600 mb-4" size={40} />
+            <h3 className="font-bold text-lg mb-2">Fast Delivery</h3>
+            <p className="text-gray-500">
+              Reliable & quick shipping.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= CTA ================= */}
+      <section className="py-24 bg-red-600 text-white text-center">
+        <h2 className="text-5xl font-black mb-6">
+          Make Every Occasion Special
+        </h2>
+
+        <a
+          href="https://linktr.ee/giftbasketkolkata"
+          target="_blank"
+          rel="noreferrer"
+          className="bg-white text-red-600 px-10 py-4 rounded-full font-bold hover:bg-gray-100 transition"
+        >
+          Order Now
+        </a>
+      </section>
+
+      {/* ================= FOOTER ================= */}
+      <footer className="py-10 bg-black text-gray-400 text-center text-sm">
+        © 2026 Gift Basket. All rights reserved.
+      </footer>
     </div>
   );
 }
