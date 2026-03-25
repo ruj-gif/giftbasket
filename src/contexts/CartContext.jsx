@@ -1,99 +1,67 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
-export const CartContext = createContext();
+const CartContext = createContext();
 
-export function CartProvider({ children }) {
-  const [cart, setCart] = useState([]);
-
-  useEffect(() => {
-    const saved = localStorage.getItem('ecommerce-store-cart');
-    if (saved) {
-      try {
-        setCart(JSON.parse(saved));
-      } catch (e) {
-        console.error('Failed to parse cart:', e);
-      }
-    }
-  }, []);
+export const CartProvider = ({ children }) => {
+  const [cartItems, setCartItems] = useState(() => {
+    const savedCart = localStorage.getItem('user_cart');
+    return savedCart ? JSON.parse(savedCart) : [];
+  });
 
   useEffect(() => {
-    localStorage.setItem('ecommerce-store-cart', JSON.stringify(cart));
-  }, [cart]);
+    localStorage.setItem('user_cart', JSON.stringify(cartItems));
+  }, [cartItems]);
 
-  const addToCart = (product, quantity = 1, selectedSize = null) => {
-    setCart((prev) => {
-      const existing = prev.find(
-        (item) => item.id === product.id && item.selectedSize === selectedSize
-      );
+  const addToCart = (product) => {
+    setCartItems((prev) => {
+      const existing = prev.find(item => item.id === product.id);
       if (existing) {
-        return prev.map((item) =>
-          item.id === product.id && item.selectedSize === selectedSize
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
+        return prev.map(item => 
+          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
         );
       }
-      return [...prev, { ...product, quantity, selectedSize }];
+      return [...prev, { ...product, quantity: 1 }];
     });
   };
 
-  const updateQuantity = (productId, quantity, selectedSize = null) => {
-    if (quantity <= 0) {
-      removeFromCart(productId, selectedSize);
+  const updateQuantity = (id, newQuantity) => {
+    if (newQuantity < 1) {
+      removeFromCart(id);
       return;
     }
-    setCart((prev) =>
-      prev.map((item) =>
-        item.id === productId && item.selectedSize === selectedSize
-          ? { ...item, quantity }
-          : item
-      )
-    );
+    setCartItems(prev => prev.map(item => 
+      item.id === id ? { ...item, quantity: newQuantity } : item
+    ));
   };
 
-  const removeFromCart = (productId, selectedSize = null) => {
-    setCart((prev) =>
-      prev.filter(
-        (item) => !(item.id === productId && item.selectedSize === selectedSize)
-      )
-    );
-  };
-
-  const clearCart = () => {
-    setCart([]);
+  const removeFromCart = (id) => {
+    setCartItems(prev => prev.filter(item => item.id !== id));
   };
 
   const getCartTotal = () => {
-    return cart.reduce((sum, item) => {
-      const price = Number(item.discount_price || item.price || 0);
-      return sum + price * item.quantity;
-    }, 0);
+    return cartItems.reduce((sum, item) => sum + (Number(item.price) * item.quantity), 0);
   };
 
   const getCartCount = () => {
-    return cart.reduce((sum, item) => sum + item.quantity, 0);
+    return cartItems.reduce((sum, item) => sum + item.quantity, 0);
   };
 
+  const clearCart = () => setCartItems([]);
+
   return (
-    <CartContext.Provider
-      value={{
-        cart,
-        addToCart,
-        updateQuantity,
-        removeFromCart,
-        clearCart,
-        getCartTotal,
-        getCartCount,
-      }}
-    >
+    <CartContext.Provider value={{ 
+      cart: cartItems, // CartPage uses 'cart'
+      cartItems, 
+      addToCart, 
+      removeFromCart, 
+      updateQuantity, 
+      getCartTotal, 
+      getCartCount,
+      clearCart 
+    }}>
       {children}
     </CartContext.Provider>
   );
-}
-
-export const useCart = () => {
-  const context = useContext(CartContext);
-  if (!context) {
-    throw new Error('useCart must be used within CartProvider');
-  }
-  return context;
 };
+
+export const useCart = () => useContext(CartContext);

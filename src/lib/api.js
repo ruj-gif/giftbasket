@@ -1,75 +1,54 @@
-const BASE_URL = "http://localhost:5000/api"; 
-// 👉 change this if your backend runs on different port
+// src/lib/api.js
+
+// Helper: Get data from Local Storage
+const getLocal = (key) => {
+  const data = localStorage.getItem(key);
+  return data ? JSON.parse(data) : [];
+};
+
+// Helper: Save data to Local Storage
+const setLocal = (key, data) => {
+  localStorage.setItem(key, JSON.stringify(data));
+};
 
 export const api = {
-  // ================= AUTH =================
-  auth: {
-    register: async (userData) => {
-      try {
-        const res = await fetch(`${BASE_URL}/register`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(userData),
-        });
-
-        const data = await res.json();
-        return data;
-      } catch (error) {
-        console.error("Register error:", error);
-        return { success: false, message: "Register failed" };
-      }
-    },
-
-    login: async (userData) => {
-      try {
-        const res = await fetch(`${BASE_URL}/login`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(userData),
-        });
-
-        const data = await res.json();
-        return data;
-      } catch (error) {
-        console.error("Login error:", error);
-        return { success: false, message: "Login failed" };
-      }
-    },
-  },
-
-  // ================= PRODUCTS =================
   products: {
-    getAll: async (params = {}) => {
-      try {
-        const query = new URLSearchParams(params).toString();
-
-        const res = await fetch(`${BASE_URL}/products?${query}`);
-        const data = await res.json();
-
-        return data;
-      } catch (error) {
-        console.error("Products fetch error:", error);
-        return { success: false, data: [] };
-      }
-    },
-  },
-
-  // ================= HERO =================
-  hero_sections: {
+    // Get all 20 mugs
     getAll: async () => {
+      return { success: true, data: getLocal('my_products') };
+    },
+    // Add a new mug
+    create: async (productData) => {
       try {
-        const res = await fetch(`${BASE_URL}/hero`);
-        const data = await res.json();
-
-        return data;
-      } catch (error) {
-        console.error("Hero fetch error:", error);
-        return { success: false, data: [] };
+        const products = getLocal('my_products');
+        const newProduct = { 
+          ...productData, 
+          id: Date.now(), // Unique ID for each mug
+          price: Number(productData.price) || 0,
+          image: productData.image_url || productData.image // Matches ProductCard logic
+        };
+        products.push(newProduct);
+        setLocal('my_products', products);
+        return { success: true };
+      } catch (err) {
+        return { success: false, message: err.message };
       }
     },
+    delete: async (id) => {
+      const products = getLocal('my_products').filter(p => p.id !== id);
+      setLocal('my_products', products);
+      return { success: true };
+    }
   },
+  categories: {
+    getAll: async () => {
+      return { success: true, data: getLocal('my_categories') };
+    },
+    create: async (categoryData) => {
+      const categories = getLocal('my_categories');
+      categories.push({ ...categoryData, id: Date.now() });
+      setLocal('my_categories', categories);
+      return { success: true };
+    }
+  }
 };

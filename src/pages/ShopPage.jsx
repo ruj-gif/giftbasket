@@ -1,180 +1,108 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { SlidersHorizontal } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '../lib/api';
 import ProductCard from '../components/ProductCard';
-import LoadingSpinner from '../components/LoadingSpinner';
-import { categories as categoryConfig } from '../config/categories';
+import { Filter, ChevronRight, LayoutGrid, ShoppingBag } from 'lucide-react';
 
 export default function ShopPage() {
   const [products, setProducts] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedSubcategory, setSelectedSubcategory] = useState('');
-  const [priceRange, setPriceRange] = useState([0, 30000]);
-  const [sortBy, setSortBy] = useState('newest');
-  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState([]);
+  const [activeCategory, setActiveCategory] = useState('all');
 
   useEffect(() => {
-    loadProducts();
+    const fetchData = async () => {
+      const pRes = await api.products.getAll();
+      const cRes = await api.categories.getAll();
+      if (pRes.success) setProducts(pRes.data);
+      if (cRes.success) setCategories(cRes.data);
+    };
+    fetchData();
   }, []);
 
-  const loadProducts = async () => {
-    try {
-      const res = await api.products.getAll({ published: true });
-      if (res.success) setProducts(res.data || []);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // 🔥 FILTER
-  const filteredProducts = products.filter((p) => {
-    const categoryMatch =
-      (!selectedCategory || p.category === selectedCategory) &&
-      (!selectedSubcategory || p.subcategory === selectedSubcategory);
-
-    const price = Number(p.discount_price || p.price || 0);
-    const priceMatch = price >= priceRange[0] && price <= priceRange[1];
-
-    return categoryMatch && priceMatch;
-  });
-
-  // 🔥 SORT
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    const priceA = Number(a.discount_price || a.price || 0);
-    const priceB = Number(b.discount_price || b.price || 0);
-
-    if (sortBy === 'price_low') return priceA - priceB;
-    if (sortBy === 'price_high') return priceB - priceA;
-    return 0;
-  });
-
-  if (loading) return <LoadingSpinner />;
+  const filteredProducts = activeCategory === 'all' 
+    ? products 
+    : products.filter(p => p.category === activeCategory || p.categoryId === activeCategory);
 
   return (
-    <div className="min-h-screen bg-[#fafafa] py-10">
-      <div className="container mx-auto px-4">
-
-        {/* HEADER */}
-        <motion.h1
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-4xl font-black mb-8"
-        >
-          Shop
-        </motion.h1>
-
-        <div className="flex gap-8">
-
-          {/* 🔥 PREMIUM SIDEBAR */}
-          <div className="hidden lg:block w-72 bg-white/80 backdrop-blur-xl p-6 rounded-2xl shadow-xl border">
-
-            <h3 className="font-bold text-lg mb-6 flex items-center gap-2">
-              <SlidersHorizontal size={18} /> Filters
-            </h3>
-
-            {/* CATEGORIES */}
-            {categoryConfig.map((cat) => (
-              <div key={cat.name} className="mb-5">
-
-                <h4
-                  className={`font-semibold cursor-pointer transition ${
-                    selectedCategory === cat.name
-                      ? 'text-red-600'
-                      : 'text-gray-800'
-                  }`}
-                  onClick={() => {
-                    setSelectedCategory(cat.name);
-                    setSelectedSubcategory('');
-                  }}
-                >
-                  {cat.name}
-                </h4>
-
-                {cat.subcategories?.map((sub) => (
-                  <p
-                    key={sub}
-                    className={`ml-4 text-sm cursor-pointer mt-1 ${
-                      selectedSubcategory === sub
-                        ? 'text-red-500 font-medium'
-                        : 'text-gray-500 hover:text-black'
-                    }`}
-                    onClick={() => {
-                      setSelectedCategory(cat.name);
-                      setSelectedSubcategory(sub);
-                    }}
-                  >
-                    {sub}
-                  </p>
-                ))}
-              </div>
-            ))}
-
-            {/* PRICE */}
-            <div className="mt-6">
-              <h4 className="font-semibold mb-2">Price</h4>
-              <input
-                type="range"
-                min="0"
-                max="30000"
-                value={priceRange[1]}
-                onChange={(e) =>
-                  setPriceRange([0, Number(e.target.value)])
-                }
-                className="w-full accent-red-600"
-              />
-              <p className="text-sm text-gray-500 mt-1">
-                Up to ₹{priceRange[1]}
-              </p>
-            </div>
-
+    <div className="flex flex-col md:flex-row min-h-screen bg-[#fcfcfc]">
+      {/* SIDEBAR */}
+      <aside className="w-full md:w-80 bg-white border-r border-gray-100 p-6 md:sticky md:top-0 md:h-screen overflow-y-auto scrollbar-hide">
+        <div className="flex items-center gap-3 mb-10 px-2">
+          <div className="bg-black p-2 rounded-lg text-white">
+            <Filter size={18} />
           </div>
-
-          {/* 🔥 PRODUCTS */}
-          <div className="flex-1">
-
-            {/* TOP BAR */}
-            <div className="flex justify-between items-center mb-8 bg-white p-4 rounded-xl shadow-sm border">
-
-              <p className="text-gray-600">
-                <span className="font-bold text-black">
-                  {sortedProducts.length}
-                </span>{' '}
-                products
-              </p>
-
-              <select
-                onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-2 border rounded-lg text-sm"
-              >
-                <option value="newest">Newest</option>
-                <option value="price_low">Price: Low → High</option>
-                <option value="price_high">Price: High → Low</option>
-              </select>
-
-            </div>
-
-            {/* GRID */}
-            {sortedProducts.length === 0 ? (
-              <div className="text-center py-20">
-                <p className="text-gray-500 text-lg">No products found</p>
-              </div>
-            ) : (
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                {sortedProducts.map((product) => (
-                  <motion.div
-                    key={product.id}
-                    whileHover={{ scale: 1.03 }}
-                  >
-                    <ProductCard product={product} />
-                  </motion.div>
-                ))}
-              </div>
-            )}
-
-          </div>
+          <h2 className="font-display font-black text-xl uppercase tracking-tighter">Collections</h2>
         </div>
-      </div>
+
+        <nav className="space-y-1">
+          {/* MAIN BUTTON: This acts as "Show All" but is labeled Personalised Gifts */}
+          <button 
+            onClick={() => setActiveCategory('all')}
+            className={`w-full flex items-center justify-between px-4 py-4 rounded-xl transition-all duration-300 font-bold text-[11px] uppercase tracking-widest ${activeCategory === 'all' ? 'bg-black text-white shadow-xl translate-x-2' : 'hover:bg-gray-50 text-gray-400'}`}
+          >
+            Personalised Gifts <LayoutGrid size={14} />
+          </button>
+
+          <div className="py-4 px-2 text-[10px] font-black text-gray-300 uppercase tracking-[0.2em]">Sub Categories</div>
+
+          {/* LIST: We filter out "Personalised Gifts" and "Personalised Gift" so they don't repeat here */}
+          {categories
+            .filter(cat => 
+              cat.name.toLowerCase() !== "personalised gifts" && 
+              cat.name.toLowerCase() !== "personalised gift"
+            )
+            .map((cat) => (
+              <button 
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.name)}
+                className={`w-full flex items-center justify-between px-4 py-4 rounded-xl transition-all duration-300 font-bold text-[11px] uppercase tracking-widest ${activeCategory === cat.name ? 'bg-black text-white shadow-lg translate-x-2' : 'hover:bg-gray-50 text-gray-500 hover:text-black'}`}
+              >
+                {cat.name}
+                <ChevronRight size={14} className={activeCategory === cat.name ? 'opacity-100' : 'opacity-20'} />
+              </button>
+            ))}
+        </nav>
+      </aside>
+
+      {/* MAIN CONTENT */}
+      <main className="flex-1 p-6 md:p-12">
+        <header className="mb-12">
+          <span className="text-primary font-black text-[10px] uppercase tracking-[0.4em] mb-4 block">Store Front</span>
+          <h1 className="text-5xl md:text-6xl font-display font-black uppercase tracking-tighter leading-tight">
+            {activeCategory === 'all' ? 'Personalised Gifts' : activeCategory}
+          </h1>
+          <div className="h-1 w-20 bg-black mt-6"></div>
+        </header>
+
+        {filteredProducts.length > 0 ? (
+          <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10">
+            <AnimatePresence mode='popLayout'>
+              {filteredProducts.map((product) => (
+                <motion.div
+                  key={product.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <ProductCard product={product} />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-32 border-2 border-dashed border-gray-100 rounded-[40px]">
+            <ShoppingBag size={48} className="text-gray-200 mb-4" />
+            <p className="text-gray-400 font-bold uppercase tracking-widest text-xs text-center">
+              No products found in <br /> 
+              <span className="text-black italic">
+                {activeCategory === 'all' ? 'Personalised Gifts' : activeCategory}
+              </span>
+            </p>
+          </div>
+        )}
+      </main>
     </div>
   );
 }

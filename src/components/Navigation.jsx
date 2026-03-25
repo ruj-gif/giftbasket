@@ -2,19 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, Menu, X } from 'lucide-react';
-import { useCart } from '../contexts/CartContext';
+// Changed path from ../contexts/ to ../context/ to match your error log
+import { useCart } from '../contexts/CartContext'; 
 import { useSettings } from '../contexts/SettingsContext';
 import { useUser } from '../contexts/UserContext';
 import { siteConfig } from '../config/siteConfig';
 
 export default function Navigation() {
-  const { getCartCount } = useCart();
+  // 1. Pull cartItems instead of getCartCount
+  const { cartItems } = useCart(); 
   const { settings } = useSettings();
   const { isLoggedIn } = useUser();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
-  const cartCount = getCartCount();
+
+  // 2. Calculate the cart count directly from the array
+  const cartCount = cartItems?.reduce((total, item) => total + item.quantity, 0) || 0;
 
   useEffect(() => {
     const onScroll = () => {
@@ -36,13 +40,13 @@ export default function Navigation() {
   }, [mobileMenuOpen]);
 
   const navLinks = [
-  { path: '/', label: 'Home' },
-  { path: '/shop', label: 'Shop' },
-  { path: '/about', label: 'About Us' },
-  ...(isLoggedIn ? [{ path: '/my-orders', label: 'My Orders' }] : []),
-  { path: isLoggedIn ? '/account' : '/login', label: isLoggedIn ? 'Account' : 'Login' },
-  { path: '/contact', label: 'Contact' },
-];
+    { path: '/', label: 'Home' },
+    { path: '/shop', label: 'Shop' },
+    { path: '/about', label: 'About Us' },
+    ...(isLoggedIn ? [{ path: '/my-orders', label: 'My Orders' }] : []),
+    { path: isLoggedIn ? '/account' : '/login', label: isLoggedIn ? 'Account' : 'Login' },
+    { path: '/contact', label: 'Contact' },
+  ];
 
   const isActive = (path) => location.pathname === path;
 
@@ -97,7 +101,7 @@ export default function Navigation() {
             >
               <ShoppingBag className="h-4 w-4" />
               {cartCount > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-white">
+                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-[10px] font-bold text-white">
                   {cartCount}
                 </span>
               )}
@@ -111,7 +115,7 @@ export default function Navigation() {
             >
               <ShoppingBag className="h-4 w-4" />
               {cartCount > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-white">
+                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-[10px] font-bold text-white">
                   {cartCount}
                 </span>
               )}

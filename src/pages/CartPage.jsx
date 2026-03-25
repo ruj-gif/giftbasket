@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { useCart } from '../contexts/CartContext';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useCart } from '../contexts/CartContext'; // Verify this path!
 import { Trash2, Plus, Minus, ShoppingBag, ArrowRight } from 'lucide-react';
 import { siteConfig } from '../config/siteConfig';
 
@@ -16,29 +16,14 @@ export default function CartPage() {
 
   if (cart.length === 0) {
     return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="min-h-screen bg-background-light py-16"
-      >
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-background-light py-16">
         <div className="container mx-auto px-4 text-center">
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 60 }}
-            className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-primary/10 mb-6"
-          >
-            <ShoppingBag className="w-12 h-12 text-primary" />
-          </motion.div>
-          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-secondary">
-            {cartContent.emptyTitle || 'Your Cart is Empty'}
-          </h1>
-          <p className="text-text-light text-lg mb-8">
-            {cartContent.emptySubtitle || 'Explore our collection and find something special'}
-          </p>
-          <Link to="/shop" className="btn-primary inline-flex items-center gap-2">
-            {cartContent.continueShopping || 'Continue Shopping'}
-            <ArrowRight className="w-5 h-5" />
+          <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-black/5 mb-6">
+            <ShoppingBag className="w-12 h-12 text-black" />
+          </div>
+          <h1 className="font-display text-3xl font-bold mb-4">{cartContent.emptyTitle || 'Your Cart is Empty'}</h1>
+          <Link to="/shop" className="inline-flex items-center gap-2 bg-black text-white px-8 py-3 rounded-full uppercase text-xs font-bold tracking-widest">
+            {cartContent.continueShopping || 'Continue Shopping'} <ArrowRight size={16} />
           </Link>
         </div>
       </motion.div>
@@ -48,109 +33,75 @@ export default function CartPage() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-background-light py-12">
       <div className="container mx-auto px-4">
-        <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-8 sm:mb-12 text-secondary tracking-tight uppercase">{cartContent.title || 'Shopping Cart'}</h1>
-        <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
-          <motion.div className="lg:col-span-2 space-y-4">
+        <h1 className="font-display text-4xl font-bold mb-12 uppercase tracking-tight">{cartContent.title || 'Shopping Cart'}</h1>
+        
+        <div className="grid lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-4">
             <AnimatePresence>
-              {cart.map((item, index) => {
-                const price = Number(item.discount_price || item.price || 0);
-                return (
-                  <motion.div
-                    key={`${item.id}-${item.selectedSize}`}
-                    layout
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 20 }}
-                    transition={{ duration: 0.3, delay: index * 0.05 }}
-                    whileHover={{ y: -4 }}
-                    className="bg-white p-4 sm:p-6 rounded-xl shadow-elegant border border-border/40 group overflow-hidden"
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
-                      <div className="flex gap-4 sm:flex-1">
-                        <div className="relative overflow-hidden rounded-lg shrink-0">
-                          <img
-                            src={item.image_url || item.image || 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=200&q=80'}
-                            alt={item.name}
-                            className="w-20 h-20 sm:w-24 sm:h-24 object-cover group-hover:scale-110 transition-transform duration-500 bg-gray-100"
-                            onError={(e) => {
-                              e.target.src = 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=200&q=80';
-                            }}
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-display font-bold text-base sm:text-lg text-secondary mb-1 sm:mb-2 line-clamp-2 uppercase tracking-tight leading-tight">{item.name}</h3>
-                          {item.selectedSize && <p className="text-[10px] font-black uppercase tracking-widest text-text-light mb-1">Size: {item.selectedSize}</p>}
-                          <p className="text-primary font-black text-base sm:text-lg tracking-tighter">{currency}{price.toLocaleString()}</p>
-                        </div>
-                      </div>
+              {cart.map((item) => (
+                <motion.div
+                  key={item.id}
+                  layout
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, x: -100 }}
+                  className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-center gap-6"
+                >
+                  <img 
+                    src={item.image_url || item.image} 
+                    alt={item.name} 
+                    className="w-24 h-24 object-cover rounded-lg bg-gray-50"
+                    onError={(e) => { e.target.src = 'https://via.placeholder.com/150?text=Mug'; }} 
+                  />
+                  <div className="flex-1 text-center sm:text-left">
+                    <h3 className="font-bold text-lg uppercase tracking-tight">{item.name}</h3>
+                    <p className="text-gray-500 font-bold">{currency}{Number(item.price).toLocaleString()}</p>
+                  </div>
 
-                      <div className="flex items-center justify-between sm:justify-end gap-6">
-                        <div className="flex items-center gap-2 bg-background-light rounded-lg p-1.5 border border-border/30">
-                          <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => updateQuantity(item.id, item.quantity - 1, item.selectedSize)}
-                            className="w-8 h-8 rounded-lg bg-white hover:bg-black hover:text-white flex items-center justify-center shadow-sm transition-all"
-                          >
-                            <Minus className="w-3 h-3" />
-                          </motion.button>
-                          <span className="font-black min-w-[2rem] text-center tracking-tighter">{item.quantity}</span>
-                          <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => updateQuantity(item.id, item.quantity + 1, item.selectedSize)}
-                            className="w-8 h-8 rounded-lg bg-white hover:bg-black hover:text-white flex items-center justify-center shadow-sm transition-all"
-                          >
-                            <Plus className="w-3 h-3" />
-                          </motion.button>
-                        </div>
-                        <button
-                          onClick={() => removeFromCart(item.id, item.selectedSize)}
-                          className="text-text-light hover:text-error transition-colors p-2"
-                        >
-                          <Trash2 className="w-5 h-5" />
-                        </button>
-                      </div>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
+                      <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="w-8 h-8 flex items-center justify-center hover:bg-black hover:text-white rounded-md transition-colors">
+                        <Minus size={14} />
+                      </button>
+                      <span className="w-8 text-center font-bold">{item.quantity}</span>
+                      <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="w-8 h-8 flex items-center justify-center hover:bg-black hover:text-white rounded-md transition-colors">
+                        <Plus size={14} />
+                      </button>
                     </div>
-                  </motion.div>
-                );
-              })}
+                    <button onClick={() => removeFromCart(item.id)} className="text-gray-400 hover:text-red-500 transition-colors">
+                      <Trash2 size={20} />
+                    </button>
+                  </div>
+                </motion.div>
+              ))}
             </AnimatePresence>
-          </motion.div>
+          </div>
 
-          <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="lg:col-span-1">
-            <div className="bg-white p-6 sm:p-8 rounded-xl shadow-elegant lg:sticky lg:top-24 border border-border/40">
-              <h2 className="font-display text-2xl font-black mb-6 text-secondary tracking-tight uppercase">{cartContent.summaryTitle || 'Order Summary'}</h2>
-
-              <div className="space-y-4 mb-8 pb-6 border-b border-border">
-                <div className="flex justify-between text-text-light font-medium">
-                  <span>{cartContent.itemsLabel || 'Items'} ({cart.length})</span>
+          <div className="lg:col-span-1">
+            <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 sticky top-24">
+              <h2 className="text-xl font-bold mb-6 uppercase">{cartContent.summaryTitle || 'Order Summary'}</h2>
+              <div className="space-y-4 mb-6 pb-6 border-b">
+                <div className="flex justify-between text-gray-600">
+                  <span>Subtotal ({cart.length} items)</span>
                   <span>{currency}{subtotal.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between text-text-light font-medium">
-                  <span>{cartContent.shippingLabel || 'Shipping'}</span>
-                  <span className="text-success font-black uppercase text-xs tracking-widest">Free</span>
-                </div>
-
-                <div className="flex justify-between text-xl font-black bg-background-light p-5 rounded-xl border border-border/30">
-                  <span>{cartContent.totalLabel || 'Total'}:</span>
-                  <span className="text-primary tracking-tighter">{currency}{subtotal.toLocaleString()}</span>
+                <div className="flex justify-between text-green-600 font-bold">
+                  <span>Shipping</span>
+                  <span>FREE</span>
                 </div>
               </div>
-
-              <button
+              <div className="flex justify-between text-2xl font-bold mb-8">
+                <span>Total</span>
+                <span>{currency}{subtotal.toLocaleString()}</span>
+              </div>
+              <button 
                 onClick={() => navigate('/checkout')}
-                className="w-full btn-primary flex items-center justify-center gap-2 py-5 uppercase tracking-widest text-xs font-black shadow-hover active:scale-[0.98] transition-all"
+                className="w-full bg-black text-white py-4 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-gray-800 transition-all"
               >
                 {cartContent.checkoutButton || 'Proceed to Checkout'}
-                <ArrowRight className="w-4 h-4" />
               </button>
-
-              <Link to="/shop" className="block text-center mt-6 text-text-light hover:text-black font-black text-[10px] uppercase tracking-[0.2em] transition-colors">
-                {cartContent.continueShopping || 'Continue Shopping'}
-              </Link>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </motion.div>

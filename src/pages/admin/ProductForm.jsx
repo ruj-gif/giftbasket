@@ -74,25 +74,39 @@ export default function ProductForm() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      const data = { ...formData };
-      const response = id ? await api.products.update(id, data) : await api.products.create(data);
+  try {
+    // 1. Prepare the payload to match what a typical backend expects
+    const payload = {
+      ...formData,
+      price: Number(formData.price), // Force price to be a number
+      discount_price: Number(formData.discount_price) || 0,
+      image: formData.image_url,     // Map 'image_url' to 'image'
+    };
 
-      if (response.success) {
-        navigate('/admin/products');
-      } else {
-        alert('Failed to save product');
-      }
-    } catch (error) {
-      alert(error.message || 'Failed to save product');
-    } finally {
-      setLoading(false);
+    // 2. Log it so you can see exactly what is being sent
+    console.log("Submitting this data:", payload);
+
+    const response = id 
+      ? await api.products.update(id, payload) 
+      : await api.products.create(payload);
+
+    if (response.success) {
+      navigate('/admin/products');
+    } else {
+      // 3. This alert will now tell you the ACTUAL reason from the server
+      alert(`Error: ${response.message || "The server rejected the data. Check unique name/slug."}`);
+      console.error("Full Server Response:", response);
     }
-  };
-
+  } catch (error) {
+    console.error("Submit Error:", error);
+    alert('Network error: Is your backend running on port 5000?');
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <div className="max-w-4xl w-full">
       <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">
@@ -196,13 +210,13 @@ export default function ProductForm() {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Image URL or Upload</label>
           <input
-            type="url"
-            name="image_url"
-            value={formData.image_url}
-            onChange={handleChange}
-            placeholder="https://..."
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent mb-4"
-          />
+  type="text" // Changing to text allows paths like /products/mugs/mug1.jpg
+  name="image_url"
+  value={formData.image_url}
+  onChange={handleChange}
+  placeholder="/products/mugs/mug1.jpg"
+  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent mb-4"
+/>
           <FileUpload
             currentUrl={formData.image_url}
             onUploadSuccess={(url) => setFormData({ ...formData, image_url: url })}
