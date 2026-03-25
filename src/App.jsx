@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { QoboBanner } from '@qobo/banner';
+import AboutPage from './pages/AboutPage';
 import { AdminProtectedRoute, initializeAdminAuthFromUrl } from '@qobo/admin-auth';
 import { CartProvider } from './contexts/CartContext';
 import { SettingsProvider } from './contexts/SettingsContext';
@@ -14,7 +15,7 @@ import ProductDetailPage from './pages/ProductDetailPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderConfirmationPage from './pages/OrderConfirmationPage';
-import TrackOrderPage from './pages/TrackOrderPage';
+import TrackOrderPage from './pages/AboutPage';
 import LoginPage from './pages/LoginPage';
 import AccountPage from './pages/AccountPage';
 import MyOrdersPage from './pages/MyOrdersPage';
@@ -104,8 +105,7 @@ function AnimatedRoutes() {
         <Route path="/cart" element={<PageWrapper><Navigation /><CartPage /><Footer /></PageWrapper>} />
         <Route path="/checkout" element={<PageWrapper><Navigation /><CheckoutPage /><Footer /></PageWrapper>} />
         <Route path="/order-confirmation/:orderId" element={<PageWrapper><Navigation /><OrderConfirmationPage /><Footer /></PageWrapper>} />
-        <Route path="/track-order" element={<PageWrapper><Navigation /><TrackOrderPage /><Footer /></PageWrapper>} />
-        <Route path="/login" element={<PageWrapper><Navigation /><LoginPage /><Footer /></PageWrapper>} />
+<Route path="/about" element={<PageWrapper><Navigation /><AboutPage /><Footer /></PageWrapper>} />        <Route path="/login" element={<PageWrapper><Navigation /><LoginPage /><Footer /></PageWrapper>} />
         <Route path="/account" element={<PageWrapper><Navigation /><AccountPage /><Footer /></PageWrapper>} />
         <Route path="/my-orders" element={<PageWrapper><Navigation /><MyOrdersPage /><Footer /></PageWrapper>} />
         <Route path="/contact" element={<PageWrapper><Navigation /><ContactPage /><Footer /></PageWrapper>} />

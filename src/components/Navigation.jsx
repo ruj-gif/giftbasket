@@ -36,13 +36,13 @@ export default function Navigation() {
   }, [mobileMenuOpen]);
 
   const navLinks = [
-    { path: '/', label: 'Home' },
-    { path: '/shop', label: 'Shop' },
-    { path: '/track-order', label: 'Track Order' },
-    ...(isLoggedIn ? [{ path: '/my-orders', label: 'My Orders' }] : []),
-    { path: isLoggedIn ? '/account' : '/login', label: isLoggedIn ? 'Account' : 'Login' },
-    { path: '/contact', label: 'Contact' },
-  ];
+  { path: '/', label: 'Home' },
+  { path: '/shop', label: 'Shop' },
+  { path: '/about', label: 'About Us' },
+  ...(isLoggedIn ? [{ path: '/my-orders', label: 'My Orders' }] : []),
+  { path: isLoggedIn ? '/account' : '/login', label: isLoggedIn ? 'Account' : 'Login' },
+  { path: '/contact', label: 'Contact' },
+];
 
   const isActive = (path) => location.pathname === path;
 
