@@ -12,14 +12,15 @@ export default function AboutPage() {
           alt="Gift Background"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-black/50" />
+
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]" />
 
         <div className="relative z-10 text-white">
-          <h1 className="text-5xl md:text-6xl font-bold tracking-wide">
-            About Gift Basket 
+          <h1 className="text-5xl italic md:text-7xl font-bold drop-shadow-lg">
+            Gift Basket
           </h1>
-          <p className="mt-4 text-sm tracking-[0.3em] uppercase text-gray-300">
-            Bespoke • Luxury • Gifting
+          <p className="mt-4 text-sm tracking-[0.3em] uppercase text-white/90">
+            Bespoke Luxury Hampers Since 2017
           </p>
         </div>
       </div>
@@ -29,7 +30,7 @@ export default function AboutPage() {
 
         {/* 🎨 IMAGE */}
         <div className="relative group">
-          <div className="absolute -inset-1 bg-gradient-to-r from-pink-500 via-orange-400 to-yellow-400 rounded-2xl blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
+          <div className="absolute -inset-1 rounded-2xl blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
 
           <img
             src="https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=800"
@@ -37,44 +38,39 @@ export default function AboutPage() {
             className="relative rounded-2xl shadow-xl w-full h-[400px] object-cover transform group-hover:scale-105 transition duration-500"
           />
         </div>
+<div className="bg-white/70 backdrop-blur-xl p-12 rounded-3xl shadow-2xl border border-white/30">
 
-        {/* 📝 TEXT */}
-        <div className="bg-white/70 backdrop-blur-lg p-8 rounded-2xl shadow-xl">
+  <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight tracking-tight">
+    Established in <span className="text-black">2017</span>
+  </h2>
 
-          <p className="text-lg mb-4">
-            <span className="font-bold text-black">Established in 2017</span>, 
-            Gift Basket is a Kolkata-based gift shop specializing in
-            <span className="text-pink-500 font-semibold"> unique </span> and
-            <span className="text-orange-500 font-semibold"> personalized </span>
-            gift baskets.
-          </p>
+  <p className="text-gray-600 text-lg leading-relaxed mb-5">
+    Gift Basket is a Kolkata-based gift shop specializing in
+    <span className="text-500 font-semibold"> unique </span> and
+    <span className="text-500 font-semibold"> personalized </span> gift baskets.
+  </p>
 
-          <p className="mb-4 text-gray-700">
-            As a family-owned business, we craft gifts for every occasion —
-            from birthdays to corporate celebrations — with elegance and emotion.
-          </p>
+  <p className="text-gray-600 text-lg leading-relaxed mb-5">
+    As a family-owned business, we craft gifts for every occasion — from birthdays to corporate celebrations — with elegance and emotion.
+  </p>
 
-          <p className="mb-4 text-gray-700">
-            Whether it's a heartfelt surprise or a luxury hamper, we create
-            experiences that leave a lasting impression.
-          </p>
+  <p className="text-gray-500 text-lg leading-relaxed mb-8">
+    Whether it's a heartfelt surprise or a luxury hamper, we create experiences that leave a lasting impression.
+  </p>
 
-          <p className="mb-6 text-gray-700">
-            Recognized as one of Kolkata’s finest gifting brands, we deliver
-            quality, creativity, and trust.
-          </p>
+  <Link to="/shop">
+    <button className="group bg-black text-white px-8 py-4 rounded-full
+      border border-black transition-all duration-300
+      hover:bg-white hover:text-black flex items-center gap-2 shadow-lg">
+      
+      Explore Our Collection
+      <span className="group-hover:translate-x-1 transition-transform">→</span>
+      
+    </button>
+  </Link>
 
-          {/* 🔥 BUTTON */}
-          <Link to="/shop">
-            <button className="group bg-black text-white px-6 py-3 rounded-full
-                               border-2 border-black transition-all duration-300
-                               hover:bg-white hover:text-black flex items-center gap-2">
-              Explore Our Collection
-              <span className="group-hover:translate-x-1 transition-transform">→</span>
-            </button>
-          </Link>
+</div>
 
-        </div>
       </div>
 
     </div>
