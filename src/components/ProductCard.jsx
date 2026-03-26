@@ -1,55 +1,66 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { ShoppingCart, Heart, Star, X, Maximize2 } from 'lucide-react';
-import { useCart } from '../contexts/CartContext';
+import { ShoppingCart, Search, X, Star } from 'lucide-react';
 
-export default function ProductCard({ product }) {
-  const { addToCart } = useCart();
-  const [isFavorite, setIsFavorite] = useState(false);
-  const [showFullImage, setShowFullImage] = useState(false);
-
-  const price = Number(product.price).toLocaleString('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 });
+export default function ProductCard({ product, onAddToCart }) {
+  const [isZoomed, setIsZoomed] = useState(false);
 
   return (
     <>
-      <motion.div layout whileHover={{ y: -8 }} className="bg-white rounded-[24px] overflow-hidden border border-gray-100 shadow-sm relative group">
-        <div className="relative aspect-[4/3] overflow-hidden bg-gray-50 cursor-zoom-in" onClick={() => setShowFullImage(true)}>
-          <img src={product.image || product.image_url} alt={product.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-          <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"><Maximize2 className="text-white" size={24} /></div>
+      <div className="group bg-white rounded-[32px] overflow-hidden border border-gray-100 hover:shadow-xl transition-all duration-500 flex flex-col h-full">
+        {/* Image Section */}
+        <div className="relative aspect-square overflow-hidden bg-gray-50">
+          <img 
+            src={product.image} 
+            alt={product.name}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 cursor-zoom-in"
+            onClick={() => setIsZoomed(true)}
+          />
           
-          <button onClick={(e) => { e.stopPropagation(); setIsFavorite(!isFavorite); }} className="absolute bottom-3 left-3 bg-white/90 p-2 rounded-full shadow-sm z-10">
-            <Heart size={18} className={isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-400'} />
+          {/* Zoom Hint Icon */}
+          <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+            <Search className="text-white" size={32} />
+          </div>
+
+          {/* Rating Badge */}
+          <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
+            <Star size={10} className="text-yellow-500 fill-yellow-500" />
+            <span className="text-[10px] font-black text-gray-800">{product.rating || "5.0"}</span>
+          </div>
+        </div>
+
+        {/* Details Section */}
+        <div className="p-6 flex flex-col flex-grow">
+          <div className="mb-auto">
+            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">{product.category}</p>
+            <h3 className="font-black text-lg uppercase tracking-tight leading-tight mb-2">{product.name}</h3>
+            <p className="font-black text-xl text-black">₹{product.price}</p>
+          </div>
+
+          <button 
+            onClick={() => onAddToCart(product)}
+            className="mt-6 w-full bg-black text-white py-4 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] flex items-center justify-center gap-2 hover:bg-gray-800 transition-all active:scale-95 shadow-lg shadow-black/5"
+          >
+            <ShoppingCart size={16} /> Add to Cart
           </button>
-
-          <div className="absolute bottom-3 right-3 flex items-center gap-1 bg-white/90 px-3 py-1.5 rounded-full shadow-sm">
-            <Star size={12} className="text-yellow-400 fill-yellow-400" />
-            <span className="text-[10px] font-black">4.8</span>
-          </div>
         </div>
+      </div>
 
-        <div className="p-6">
-          <Link to={`/product/${product.slug}`}>
-            <p className="text-[10px] font-black uppercase text-gray-400 mb-1">{product.category}</p>
-            <h3 className="text-xl font-bold mb-4 line-clamp-1">{product.name}</h3>
-          </Link>
-          <div className="flex justify-between items-center">
-            <span className="text-2xl font-black">{price}</span>
-            <button onClick={() => addToCart(product)} className="bg-black text-white px-4 py-2 rounded-xl text-xs font-bold uppercase flex items-center gap-2">
-              Add <ShoppingCart size={16} />
-            </button>
-          </div>
+      {/* ZOOM OVERLAY */}
+      {isZoomed && (
+        <div 
+          className="fixed inset-0 z-[9999] bg-black/95 backdrop-blur-md flex items-center justify-center p-4 md:p-12 cursor-zoom-out"
+          onClick={() => setIsZoomed(false)}
+        >
+          <button className="absolute top-10 right-10 text-white hover:rotate-90 transition-transform">
+            <X size={40} />
+          </button>
+          <img 
+            src={product.image} 
+            className="max-w-full max-h-[90vh] rounded-2xl shadow-2xl animate-in zoom-in duration-300"
+            alt="Zoomed product"
+          />
         </div>
-      </motion.div>
-
-      <AnimatePresence>
-        {showFullImage && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowFullImage(false)} className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md flex items-center justify-center p-4">
-            <button className="absolute top-6 right-6 text-white"><X size={32} /></button>
-            <motion.img initial={{ scale: 0.8 }} animate={{ scale: 1 }} src={product.image || product.image_url} className="max-w-full max-h-[85vh] rounded-2xl shadow-2xl" />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      )}
     </>
   );
 }

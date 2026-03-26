@@ -1,7 +1,6 @@
-// src/lib/api.js
-
-const INITIAL_CATEGORIES = [
-  { id: 1, name: "Personalised Gifts", slug: "personalised-gifts" },
+// Full Local Category List
+const LOCAL_CATEGORIES = [
+  
   { id: 101, name: "Personalise Mug", slug: "personalise-mug", parentId: 1 },
   { id: 102, name: "Personalise Photo Frame", slug: "personalise-photo-frame", parentId: 1 },
   { id: 103, name: "Personalise Cushion", slug: "personalise-cushion", parentId: 1 },
@@ -18,78 +17,54 @@ const INITIAL_CATEGORIES = [
   { id: 11, name: "Stickers & Badges", slug: "stickers-badges" }
 ];
 
-const INITIAL_PRODUCTS = [
+const LOCAL_PRODUCTS = [
   {
-    id: 1,
-    name: "Classic White Mug",
-    price: 299,
-    category: "Personalise Mug",
-    slug: "classic-white-mug",
-    image: "/products/mugs/mug1.png"
+    id: "p1",
+    name: "Customized Photo Frame",
+    price: 599,
+    category: "Personalise Photo Frame",
+    image: "/products/photoframe/pf1.png",
+    rating: 4.8,
+    isFavorite: false
   },
   {
-    id: 2,
-    name: "Magic Color Changing Mug",
-    price: 499,
-    category: "Personalise Mug",
-    slug: "magic-mug",
-    image: "/products/mugs/mug2.png"
-  },
-  {
-    id: 3,
-    name: "Inner Color Mug",
+    id: "p2",
+    name: "Personalised Magic Mug",
     price: 350,
     category: "Personalise Mug",
-    slug: "inner-color-mug",
-    image: "/products/mugs/mug3.jpg"
+    image: "/products/mugs/mug1.png",
+    rating: 4.5,
+    isFavorite: true
   },
   {
-    id: 4,
-    name: "Bf Mug",
-    price: 250,
-    category: "Personalise Mug",
-    slug: "bf-mug",
-    image: "/products/mugs/mug4.png"
-  },
-
-  // ✅ ADD CUSHIONS HERE 👇
-
-  {
-    id: 101,
-    name: "Heart Shape Photo Cushion",
-    price: 499,
+    id: "p3",
+    name: "Custom Photo Cushion",
+    price: 450,
     category: "Personalise Cushion",
-    slug: "heart-photo-cushion",
-    image: "/products/cushions/4.png"
-  },
-  {
-    id: 102,
-    name: "Square Fur Photo Cushion",
-    price: 599,
-    category: "Personalise Cushion",
-    slug: "square-fur-cushion",
-    image: "/products/cushions/2.png"
+    image: "/products/cushions/cushion1.png",
+    rating: 4.9,
+    isFavorite: false
   }
 ];
-const getLocal = (key, initial) => {
-  const saved = localStorage.getItem(key);
-  return saved ? JSON.parse(saved) : initial;
-};
 
+
+// Add this to your existing api.js
 export const api = {
   categories: {
-    getAll: async () => ({ success: true, data: getLocal('my_categories', INITIAL_CATEGORIES) })
+    getAll: async () => ({ success: true, data: LOCAL_CATEGORIES })
   },
   products: {
-    getAll: async () => ({ success: true, data: getLocal('my_products', INITIAL_PRODUCTS) }),
-    create: async (data) => {
-      const products = getLocal('my_products', INITIAL_PRODUCTS);
-      products.push({ ...data, id: Date.now(), slug: data.name.toLowerCase().replace(/ /g, '-') });
-      localStorage.setItem('my_products', JSON.stringify(products));
-      return { success: true };
-    }
+    getAll: async () => ({ success: true, data: LOCAL_PRODUCTS })
   },
+  // ADD THIS SECTION TO STOP THE ERROR:
   settings: {
-    getAll: async () => ({ success: true, data: getLocal('my_settings', {}) })
+    getAll: async () => ({ 
+      success: true, 
+      data: { 
+        phone: "919876543210", // Your WhatsApp number
+        email: "contact@example.com",
+        address: "Your Shop Address"
+      } 
+    })
   }
 };

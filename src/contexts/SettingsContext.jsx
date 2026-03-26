@@ -1,38 +1,31 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { api } from '../lib/api';
 
 const SettingsContext = createContext();
 
 export function SettingsProvider({ children }) {
-  const [settings, setSettings] = useState({});
-  const [loading, setLoading] = useState(true);
+  const [settings, setSettings] = useState({ phone: "919876543210" }); // Default value
 
-  const loadSettings = async () => {
-    try {
-      setLoading(true);
-      const response = await api.settings.getAll();
-      if (response.success && response.data) {
-        const data = Array.isArray(response.data) ? response.data[0] : response.data;
-        setSettings(data || {});
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        // Safe check: Only call if api.settings exists
+        if (api.settings && api.settings.getAll) {
+          const res = await api.settings.getAll();
+          if (res.success) setSettings(res.data);
+        }
+      } catch (error) {
+        console.error("Failed to load settings:", error);
       }
-    } catch (error) {
-      console.error('Failed to load settings:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => { loadSettings(); }, []);
+    };
+    loadSettings();
+  }, []);
 
   return (
-    <SettingsContext.Provider value={{ settings, loadSettings, loading }}>
+    <SettingsContext.Provider value={{ settings }}>
       {children}
     </SettingsContext.Provider>
   );
 }
 
-export const useSettings = () => {
-  const context = useContext(SettingsContext);
-  if (!context) throw new Error('useSettings must be used within SettingsProvider');
-  return context;
-};
+export const useSettings = () => useContext(SettingsContext);
