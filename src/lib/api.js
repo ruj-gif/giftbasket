@@ -19,6 +19,7 @@ const INITIAL_CATEGORIES = [
 ];
 
 const INITIAL_PRODUCTS = [
+  // 🟤 MUGS
   {
     id: 1,
     name: "Classic White Mug",
@@ -52,8 +53,7 @@ const INITIAL_PRODUCTS = [
     image: "/products/mugs/mug4.png"
   },
 
-  // ✅ ADD CUSHIONS HERE 👇
-
+  // 🟡 CUSHIONS
   {
     id: 101,
     name: "Heart Shape Photo Cushion",
@@ -69,8 +69,35 @@ const INITIAL_PRODUCTS = [
     category: "Personalise Cushion",
     slug: "square-fur-cushion",
     image: "/products/cushions/2.png"
+  },
+
+  // 🟢 PHOTO FRAMES
+  {
+    id: 201,
+    name: "Classic Wooden Photo Frame",
+    price: 699,
+    category: "Personalise Photo Frame",
+    slug: "classic-photo-frame",
+    image: "/products/frames/frame1.png"
+  },
+  {
+    id: 202,
+    name: "LED Photo Frame",
+    price: 899,
+    category: "Personalise Photo Frame",
+    slug: "led-photo-frame",
+    image: "/products/frames/frame2.png"
+  },
+  {
+    id: 203,
+    name: "Collage Photo Frame",
+    price: 799,
+    category: "Personalise Photo Frame",
+    slug: "collage-frame",
+    image: "/products/frames/frame3.png"
   }
 ];
+
 const getLocal = (key, initial) => {
   const saved = localStorage.getItem(key);
   return saved ? JSON.parse(saved) : initial;
@@ -78,18 +105,31 @@ const getLocal = (key, initial) => {
 
 export const api = {
   categories: {
-    getAll: async () => ({ success: true, data: getLocal('my_categories', INITIAL_CATEGORIES) })
+    getAll: async () => ({
+      success: true,
+      data: getLocal('my_categories', INITIAL_CATEGORIES)
+    })
   },
   products: {
-    getAll: async () => ({ success: true, data: getLocal('my_products', INITIAL_PRODUCTS) }),
+    getAll: async () => ({
+      success: true,
+      data: getLocal('my_products', INITIAL_PRODUCTS)
+    }),
     create: async (data) => {
       const products = getLocal('my_products', INITIAL_PRODUCTS);
-      products.push({ ...data, id: Date.now(), slug: data.name.toLowerCase().replace(/ /g, '-') });
+      products.push({
+        ...data,
+        id: Date.now(),
+        slug: data.name.toLowerCase().replace(/ /g, '-')
+      });
       localStorage.setItem('my_products', JSON.stringify(products));
       return { success: true };
     }
   },
   settings: {
-    getAll: async () => ({ success: true, data: getLocal('my_settings', {}) })
+    getAll: async () => ({
+      success: true,
+      data: getLocal('my_settings', {})
+    })
   }
 };
