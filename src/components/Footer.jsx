@@ -11,7 +11,7 @@ export default function Footer() {
   const { isLoggedIn } = useUser();
 
   // Updated to match the "SettingsPage" variable names
-  const siteName = settings?.siteName || 'Aaroni Gifts';
+  const siteName = settings?.siteName || 'Gift Basket';
   const siteLogo = settings?.siteLogo || '/logo.png';
 
   const contactPhone = settings?.phone || '+91 9674243961'; // Changed .contact_phone to .phone
