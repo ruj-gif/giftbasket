@@ -4,23 +4,23 @@ import { Mail, Phone, MapPin, Instagram } from 'lucide-react';
 import { useSettings } from '../contexts/SettingsContext';
 import { useUser } from '../contexts/UserContext';
 
+// src/components/Footer.jsx
+
 export default function Footer() {
   const { settings } = useSettings();
   const { isLoggedIn } = useUser();
 
-  // ✅ YOUR REAL DETAILS (fallbacks)
-  const siteName = settings?.site_name || 'Gift Basket';
-  const siteLogo = settings?.site_logo || '/logo.png';
+  // Updated to match the "SettingsPage" variable names
+  const siteName = settings?.siteName || 'Aaroni Gifts';
+  const siteLogo = settings?.siteLogo || '/logo.png';
 
-  const contactPhone = settings?.contact_phone || '+91 9674243961';
-  const contactEmail = settings?.contact_email || 'giftbasketkolkata@gmail.com';
-  const address =
-    settings?.address ||
-    '2, Abdul Halim Lane, Kolkata - 700016';
+  const contactPhone = settings?.phone || '+91 9674243961'; // Changed .contact_phone to .phone
+  const contactEmail = settings?.email || 'giftbasketkolkata@gmail.com';
+  const address = settings?.address || '2, Abdul Halim Lane, Kolkata - 700016';
 
-  const socialInstagram =
-    settings?.social_instagram ||
-    'https://linktr.ee/giftbasketkolkata';
+  const socialInstagram = settings?.social_instagram || 'https://linktr.ee/giftbasketkolkata';
+
+  // ... rest of your return code stays the same
 
   return (
     <footer className="bg-black text-white py-16 md:py-24">

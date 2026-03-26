@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, Menu, X } from 'lucide-react';
 // Changed path from ../contexts/ to ../context/ to match your error log
 import { useCart } from '../contexts/CartContext'; 
-import { useSettings } from '../contexts/SettingsContext';
+// src/components/Navigation.jsx
+import { useSettings } from '../contexts/SettingsContext'; // ✅ Correct path and name
 import { useUser } from '../contexts/UserContext';
 import { siteConfig } from '../config/siteConfig';
 
@@ -18,7 +19,8 @@ export default function Navigation() {
   const location = useLocation();
 
   // 2. Calculate the cart count directly from the array
-  const cartCount = cartItems?.reduce((total, item) => total + item.quantity, 0) || 0;
+ // Add a check to ensure cartItems exists before reducing
+const cartCount = (cartItems || []).reduce((total, item) => total + item.quantity, 0);
 
   useEffect(() => {
     const onScroll = () => {
@@ -50,7 +52,7 @@ export default function Navigation() {
 
   const isActive = (path) => location.pathname === path;
 
-  const siteName = settings?.site_name || siteConfig.site.name || 'Online Store';
+  const siteName = settings?.siteName || siteConfig.site.name || 'Online Store';
   const siteLogo = settings?.site_logo || siteConfig.site.logo || 'data:image/svg+xml,%3Csvg%20width%3D%22120%22%20height%3D%22120%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20width%3D%22120%22%20height%3D%22120%22%20fill%3D%22%231A1A2E%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2240%22%20font-weight%3D%22bold%22%20fill%3D%22%23D4AF37%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22central%22%3ESHOP%3C%2Ftext%3E%3C%2Fsvg%3E';
   const officialStoreText = siteConfig.content?.nav?.officialStoreText || 'Official Store';
 

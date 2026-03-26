@@ -4,22 +4,26 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { QoboBanner } from '@qobo/banner';
 import AboutPage from './pages/AboutPage';
 import { AdminProtectedRoute, initializeAdminAuthFromUrl } from '@qobo/admin-auth';
-import { CartProvider } from './contexts/CartContext';
+
+// Ensure these paths and names match your files
+import { CartProvider } from './contexts/CartContext'; 
 import { SettingsProvider } from './contexts/SettingsContext';
 import { UserProvider } from './contexts/UserContext';
+
 import Navigation from './components/Navigation';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
 import ShopPage from './pages/ShopPage';
 import ProductDetailPage from './pages/ProductDetailPage';
-import CartPage from './pages/CartPage';
-import CheckoutPage from './pages/CheckoutPage';
+import CartPage from './pages/CartPage'; // This is your Cart.jsx renamed to CartPage.jsx
+import CheckoutPage from './pages/Checkout'; // This is your Checkout.jsx renamed to CheckoutPage.jsx
 import OrderConfirmationPage from './pages/OrderConfirmationPage';
-import TrackOrderPage from './pages/AboutPage';
 import LoginPage from './pages/LoginPage';
 import AccountPage from './pages/AccountPage';
 import MyOrdersPage from './pages/MyOrdersPage';
 import ContactPage from './pages/ContactPage';
+
+// Admin Imports
 import AdminLayout from './components/admin/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import ProductsList from './pages/admin/ProductsList';
@@ -34,9 +38,11 @@ import HeroSectionsList from './pages/admin/HeroSectionsList';
 import HeroSectionForm from './pages/admin/HeroSectionForm';
 import FeatureBlocksList from './pages/admin/FeatureBlocksList';
 import FeatureBlockForm from './pages/admin/FeatureBlockForm';
-import SettingsPage from './pages/admin/SettingsPage';
+import GeneralSettingsPage from './pages/admin/SettingsPage';
 import PaymentSettingsPage from './pages/admin/PaymentSettingsPage';
+import SettingsPage from './pages/admin/SettingsPage';
 import { siteConfig } from './config/siteConfig';
+
 
 function ThemeInjector() {
   useEffect(() => {
@@ -60,17 +66,25 @@ function ThemeInjector() {
   return null;
 }
 
-if (typeof window !== 'undefined' && import.meta.env.VITE_PROJECT_ID) {
-  if (!window.QOBO_CONFIG) window.QOBO_CONFIG = {};
-  window.QOBO_CONFIG.projectId = import.meta.env.VITE_PROJECT_ID;
-}
-
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
   return null;
+}
+
+function PageWrapper({ children }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      {children}
+    </motion.div>
+  );
 }
 
 export default function App() {
@@ -82,12 +96,12 @@ export default function App() {
     <SettingsProvider>
       <ThemeInjector />
       <UserProvider>
-      <CartProvider>
-        <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-          <ScrollToTop />
-          <AnimatedRoutes />
-        </Router>
-      </CartProvider>
+        <CartProvider>
+          <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+            <ScrollToTop />
+            <AnimatedRoutes />
+          </Router>
+        </CartProvider>
       </UserProvider>
     </SettingsProvider>
   );
@@ -99,16 +113,23 @@ function AnimatedRoutes() {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
+        {/* Public Routes */}
         <Route path="/" element={<PageWrapper><Navigation /><HomePage /><Footer /></PageWrapper>} />
         <Route path="/shop" element={<PageWrapper><Navigation /><ShopPage /><Footer /></PageWrapper>} />
         <Route path="/product/:slug" element={<PageWrapper><Navigation /><ProductDetailPage /><Footer /></PageWrapper>} />
+        
+        {/* Cart and Checkout Routes - These are now active! */}
         <Route path="/cart" element={<PageWrapper><Navigation /><CartPage /><Footer /></PageWrapper>} />
         <Route path="/checkout" element={<PageWrapper><Navigation /><CheckoutPage /><Footer /></PageWrapper>} />
+        
         <Route path="/order-confirmation/:orderId" element={<PageWrapper><Navigation /><OrderConfirmationPage /><Footer /></PageWrapper>} />
-<Route path="/about" element={<PageWrapper><Navigation /><AboutPage /><Footer /></PageWrapper>} />        <Route path="/login" element={<PageWrapper><Navigation /><LoginPage /><Footer /></PageWrapper>} />
+        <Route path="/about" element={<PageWrapper><Navigation /><AboutPage /><Footer /></PageWrapper>} />
+        <Route path="/login" element={<PageWrapper><Navigation /><LoginPage /><Footer /></PageWrapper>} />
         <Route path="/account" element={<PageWrapper><Navigation /><AccountPage /><Footer /></PageWrapper>} />
         <Route path="/my-orders" element={<PageWrapper><Navigation /><MyOrdersPage /><Footer /></PageWrapper>} />
         <Route path="/contact" element={<PageWrapper><Navigation /><ContactPage /><Footer /></PageWrapper>} />
+
+        {/* Admin Routes */}
         <Route path="/admin/*" element={
             <Routes>
               <Route element={<AdminLayout />}>
@@ -131,23 +152,11 @@ function AnimatedRoutes() {
                 <Route path="feature-blocks/:id" element={<FeatureBlockForm />} />
                 <Route path="settings" element={<SettingsPage />} />
                 <Route path="payment-settings" element={<PaymentSettingsPage />} />
+                <Route path="/admin/settings" element={<GeneralSettingsPage />} />
               </Route>
             </Routes>
         } />
       </Routes>
     </AnimatePresence>
-  );
-}
-
-function PageWrapper({ children }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-    >
-      {children}
-    </motion.div>
   );
 }

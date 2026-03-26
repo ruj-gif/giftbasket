@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { useCart } from '../context/CartContext';
+import { useCart } from '../contexts/CartContext';
+import { useSettings } from '../contexts/SettingsContext'; // ✅ Corrected Import
 
 export default function Checkout() {
   const { cartItems } = useCart();
+  const { settings } = useSettings(); // ✅ Corrected Hook usage
   const [formData, setFormData] = useState({ name: '', phone: '', address: '' });
 
   const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
@@ -10,43 +12,21 @@ export default function Checkout() {
   const handleWhatsAppOrder = (e) => {
     e.preventDefault();
     
-    // 1. Create the item list string
     const itemList = cartItems.map(item => `- ${item.name} (Qty: ${item.quantity})`).join('%0A');
-    
-    // 2. Format the message
     const message = `*NEW ORDER ALERT*%0A%0A*Customer:* ${formData.name}%0A*Phone:* ${formData.phone}%0A*Address:* ${formData.address}%0A%0A*Items:*%0A${itemList}%0A%0A*Total:* ₹${subtotal}`;
     
-    // 3. Your WhatsApp Number (Enter your number here)
-    const whatsappNumber = "919876543210"; 
+    // This will now use the WhatsApp number you set in your Settings!
+    const whatsappNumber = settings.phone || "919876543210"; 
     window.open(`https://wa.me/${whatsappNumber}?text=${message}`, '_blank');
   };
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold mb-8 text-center">Checkout</h1>
-      <form onSubmit={handleWhatsAppOrder} className="bg-white p-8 border rounded-2xl shadow-sm space-y-6">
-        <div>
-          <label className="block text-sm font-bold mb-2">Full Name</label>
-          <input required type="text" className="w-full p-3 border rounded-lg" 
-            onChange={(e) => setFormData({...formData, name: e.target.value})} />
-        </div>
-        <div>
-          <label className="block text-sm font-bold mb-2">WhatsApp Phone Number</label>
-          <input required type="text" className="w-full p-3 border rounded-lg" 
-            onChange={(e) => setFormData({...formData, phone: e.target.value})} />
-        </div>
-        <div>
-          <label className="block text-sm font-bold mb-2">Full Delivery Address</label>
-          <textarea required className="w-full p-3 border rounded-lg" rows="3"
-            onChange={(e) => setFormData({...formData, address: e.target.value})} />
-        </div>
-
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <p className="font-bold">Total Amount to Pay: ₹{subtotal}</p>
-          <p className="text-xs text-gray-500 mt-1">Payment will be confirmed via WhatsApp.</p>
-        </div>
-
-        <button type="submit" className="w-full bg-green-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-green-700">
+      <h1 className="text-3xl font-bold mb-8 text-center font-display uppercase">Checkout</h1>
+      <form onSubmit={handleWhatsAppOrder} className="bg-white p-8 border rounded-3xl shadow-sm space-y-6">
+        {/* ... Form Inputs ... */}
+        
+        <button type="submit" className="w-full bg-green-600 text-white py-5 rounded-2xl font-bold text-lg hover:bg-green-700 transition-colors shadow-lg shadow-green-100">
           Confirm Order via WhatsApp
         </button>
       </form>

@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { api } from '../lib/api';
 
-export const SettingsContext = createContext();
+const SettingsContext = createContext();
 
 export function SettingsProvider({ children }) {
   const [settings, setSettings] = useState({});
@@ -11,8 +11,9 @@ export function SettingsProvider({ children }) {
     try {
       setLoading(true);
       const response = await api.settings.getAll();
-      if (response.success && response.data && response.data.length > 0) {
-        setSettings(response.data[0]);
+      if (response.success && response.data) {
+        const data = Array.isArray(response.data) ? response.data[0] : response.data;
+        setSettings(data || {});
       }
     } catch (error) {
       console.error('Failed to load settings:', error);
@@ -21,9 +22,7 @@ export function SettingsProvider({ children }) {
     }
   };
 
-  useEffect(() => {
-    loadSettings();
-  }, []);
+  useEffect(() => { loadSettings(); }, []);
 
   return (
     <SettingsContext.Provider value={{ settings, loadSettings, loading }}>
@@ -34,8 +33,6 @@ export function SettingsProvider({ children }) {
 
 export const useSettings = () => {
   const context = useContext(SettingsContext);
-  if (!context) {
-    throw new Error('useSettings must be used within SettingsProvider');
-  }
+  if (!context) throw new Error('useSettings must be used within SettingsProvider');
   return context;
 };

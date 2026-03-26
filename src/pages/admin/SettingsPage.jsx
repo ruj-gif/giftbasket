@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { api } from '../../lib/api';
-import { SettingsContext } from '../../contexts/SettingsContext';
+import { useSettings } from '../../contexts/SettingsContext';
 import FileUpload from '../../components/FileUpload';
 
 export default function SettingsPage() {
-  const { settings, loadSettings } = useContext(SettingsContext);
+  const { settings, loadSettings } = useSettings();
   const [formData, setFormData] = useState({
     site_name: '',
     site_logo: '',
