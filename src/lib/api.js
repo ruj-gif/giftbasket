@@ -43,17 +43,34 @@ const INITIAL_PRODUCTS = [
     slug: "inner-color-mug",
     image: "/products/mugs/mug3.jpg"
   },
-  // ADD THE REST OF YOUR 20 MUGS HERE FOLLOWING THIS PATTERN
   {
     id: 4,
     name: "Bf Mug",
     price: 250,
     category: "Personalise Mug",
-    slug: "inner-color-mug",
+    slug: "bf-mug",
     image: "/products/mugs/mug4.png"
   },
-];
 
+  // ✅ ADD CUSHIONS HERE 👇
+
+  {
+    id: 101,
+    name: "Heart Shape Photo Cushion",
+    price: 499,
+    category: "Personalise Cushion",
+    slug: "heart-photo-cushion",
+    image: "/products/cushions/4.png"
+  },
+  {
+    id: 102,
+    name: "Square Fur Photo Cushion",
+    price: 599,
+    category: "Personalise Cushion",
+    slug: "square-fur-cushion",
+    image: "/products/cushions/2.png"
+  }
+];
 const getLocal = (key, initial) => {
   const saved = localStorage.getItem(key);
   return saved ? JSON.parse(saved) : initial;

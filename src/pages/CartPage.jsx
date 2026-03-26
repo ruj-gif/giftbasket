@@ -53,7 +53,7 @@ export default function CartPage() {
                     src={item.image_url || item.image} 
                     alt={item.name} 
                     className="w-24 h-24 object-cover rounded-lg bg-gray-50"
-                    onError={(e) => { e.target.src = 'https://via.placeholder.com/150?text=Gift'; }} 
+                    onError={(e) => { e.target.src = '"https://via.placeholder.com/150"'; }} 
                   />
                   <div className="flex-1 text-center sm:text-left">
                     <h3 className="font-bold text-lg uppercase tracking-tight">{item.name}</h3>

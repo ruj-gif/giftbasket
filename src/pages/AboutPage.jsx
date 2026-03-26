@@ -16,7 +16,7 @@ export default function AboutPage() {
 
         <div className="relative z-10 text-white">
           <h1 className="text-5xl md:text-6xl font-bold tracking-wide">
-            About Gift Basket 🎁
+            About Gift Basket 
           </h1>
           <p className="mt-4 text-sm tracking-[0.3em] uppercase text-gray-300">
             Bespoke • Luxury • Gifting
