@@ -8,7 +8,7 @@ export default function AboutPage() {
       {/* 🔥 HERO SECTION */}
       <div className="relative h-[300px] flex items-center justify-center text-center">
         <img
-          src="https://images.unsplash.com/photo-1607083206968-13611e3d76db?q=80&w=1600"
+          src="/close-up-christmas-gift-box-decorated-with-dried-flowers-dry-orange-wrapped-craft-paper_169016-14622.avif"
           alt="Gift Background"
           className="absolute inset-0 w-full h-full object-cover"
         />
@@ -40,21 +40,21 @@ export default function AboutPage() {
         </div>
 <div className="bg-white/70 backdrop-blur-xl p-12 rounded-3xl shadow-2xl border border-white/30">
 
-  <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight tracking-tight">
+  <h2 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-4">
     Established in <span className="text-black">2017</span>
   </h2>
 
-  <p className="text-gray-600 text-lg leading-relaxed mb-5">
+  <p className="text-gray-600 text-base font-normal mb-4">
     Gift Basket is a Kolkata-based gift shop specializing in
     <span className="text-500 font-semibold"> unique </span> and
     <span className="text-500 font-semibold"> personalized </span> gift baskets.
   </p>
 
-  <p className="text-gray-600 text-lg leading-relaxed mb-5">
+  <p className="text-gray-600 text-base font-normal mb-4">
     As a family-owned business, we craft gifts for every occasion — from birthdays to corporate celebrations — with elegance and emotion.
   </p>
 
-  <p className="text-gray-500 text-lg leading-relaxed mb-8">
+  <p className="text-gray-600 text-base font-normal mb-4">
     Whether it's a heartfelt surprise or a luxury hamper, we create experiences that leave a lasting impression.
   </p>
 

@@ -19,7 +19,7 @@ export default function HomePage() {
 
   const loadProducts = async () => {
     try {
-      const res = await api.products.getAll({ featured: true });
+      const res = await api.products.getAll();
       if (res.success) setProducts(res.data || []);
     } catch (err) {
       console.error("Home products error:", err);
@@ -50,154 +50,184 @@ export default function HomePage() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="bg-[#fafafa] text-gray-900 overflow-x-hidden selection:bg-red-600 selection:text-white font-sans">
+    <div className="bg-[#fafafa] text-gray-900 overflow-x-hidden font-sans">
 
-      {/* ================= HERO SECTION ================= */}
+      {/* HERO */}
       <section className="relative h-[90vh] flex items-center justify-center overflow-hidden">
-        
         <motion.div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          className="absolute inset-0 bg-cover bg-center"
           style={{
             y: y1,
-            backgroundImage: `url('/hero_background.jpg')`,
+            backgroundImage: `url('/close-up-christmas-gift-box-decorated-with-dried-flowers-dry-orange-wrapped-craft-paper_169016-14622.avif')`,
             height: "120%"
           }}
         />
+        <div className="absolute inset-0 bg-black/50" />
 
-        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-[#fafafa]" />
+        <div className="relative z-10 text-center text-white">
+          <h1 className="text-7xl md:text-[6rem] italic mb-6">
+            Gift Basket
+          </h1>
 
-        <div className="container mx-auto px-6 relative z-10 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-          >
-            <h1 className="text-7xl italic md:text-[6rem] mb-6 text-white">
-              Gift Basket
-            </h1>
+          <p className="text-sm md:text-lg mb-10 uppercase tracking-[0.2em]">
+            Bespoke Luxury Hampers Since 2017
+          </p>
 
-            <p className="text-sm md:text-lg text-gray-600 mb-10 max-w-lg mx-auto font-medium tracking-[0.2em] uppercase">
-              Bespoke Luxury Hampers Since 2017
-            </p>
-
-            <Link
-              to="/shop"
-              className="group relative inline-flex items-center gap-4 px-12 py-5 bg-gray-900 rounded-full overflow-hidden transition-all hover:bg-red-600 shadow-xl"
-            >
-              <span className="relative z-10 uppercase text-[11px] font-bold tracking-[0.3em] text-white">
-                Shop the Collection
-              </span>
-              <ShoppingBag size={18} className="relative z-10 text-white group-hover:scale-110 transition-transform" />
-            </Link>
-          </motion.div>
+          <Link to="/shop">
+            <button className="px-10 py-4 bg-black rounded-full hover:bg-red-600 transition">
+              Shop the Collection
+            </button>
+          </Link>
         </div>
       </section>
 
-      {/* ================= TRUST INDICATORS ================= */}
-      <section className="bg-white border-y border-gray-100 py-10">
-        <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="flex items-center justify-center gap-4 text-gray-400">
-            <Zap size={18} className="text-red-600" />
-            <span className="text-[10px] font-bold uppercase tracking-widest">
-              Kolkata Same-Day Delivery
-            </span>
-          </div>
+{/* TRUST */}
+<section className="bg-white py-10 border-y mt-12">
+  <div className="container mx-auto px-6 grid md:grid-cols-3 gap-8 text-center">
 
-          <div className="flex items-center justify-center gap-4 text-gray-400 border-x border-gray-100">
-            <ShieldCheck size={18} className="text-red-600" />
-            <span className="text-[10px] font-bold uppercase tracking-widest">
-              Premium Hand-Packed Luxe
-            </span>
-          </div>
+    {/* 1 */}
+    <div className="flex items-center justify-center gap-2">
+      <Zap className="text-red-600" />
+      <span className="text-gray-600 text-base font-light">
+        Same-Day Delivery
+      </span>
+    </div>
 
-          <div className="flex items-center justify-center gap-4 text-gray-400">
-            <Sparkles size={18} className="text-red-600" />
-            <span className="text-[10px] font-bold uppercase tracking-widest">
-              100% Secure Checkout
-            </span>
-          </div>
-        </div>
-      </section>
+    {/* 2 */}
+    <div className="flex items-center justify-center gap-2">
+      <ShieldCheck className="text-red-600" />
+      <span className="text-gray-600 text-base font-light">
+        Premium Quality
+      </span>
+    </div>
 
-      {/* ================= AESTHETIC PRODUCT GRID ================= */}
-      <section className="py-24">
-        <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-            {shopItems.map((item, i) => (
-              <Link
-                to={`/shop?filter=${item.slug}`}
-                key={i}
-                className={`${item.size} group relative h-[500px] rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500`}
-              >
-                <img
-                  src={item.img}
-                  className="w-full h-full object-cover transition-all duration-[1s] grayscale group-hover:grayscale-0 group-hover:scale-105"
-                  alt={item.name}
-                />
-
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-90 transition-opacity duration-500" />
-
-                <div className="absolute bottom-10 left-10 right-10 text-white">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-red-500 mb-3 block transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                    {item.label}
-                  </span>
-
-                  <div className="flex justify-between items-end">
-                    <div>
-                      <h3 className="text-4xl font-serif italic mb-2 leading-none">
-                        {item.name}
-                      </h3>
-                      <p className="text-lg font-light tracking-[0.1em] opacity-80">
-                        {item.price}
-                      </p>
-                    </div>
-
-                    <div className="bg-white text-gray-900 p-3 rounded-full opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
-                      <ArrowRight size={20} />
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-{/* ================= OUR STORY ================= */}
-<section className="py-24 bg-white text-center">
-  <div className="container mx-auto px-6 max-w-3xl">
-
-    <h2 className="text-5xl font-serif italic mb-6">
-      Our Story
-    </h2>
-
-    <p className="text-gray-600 text-lg mb-10 leading-relaxed">
-      Since 2017, Gift Basket has been crafting meaningful gifting experiences.
-      From personalised keepsakes to luxury hampers, every product is designed
-      with emotion, elegance, and attention to detail.
-    </p>
-
-    <Link to="/about">
-      <button className="bg-black text-white px-8 py-4 rounded-full
-        hover:bg-white hover:text-black border-2 border-black
-        transition-all duration-300">
-        Know More →
-      </button>
-    </Link>
+    {/* 3 */}
+    <div className="flex items-center justify-center gap-2">
+      <Sparkles className="text-red-600" />
+      <span className="text-gray-600 text-base font-light">
+        Secure Checkout
+      </span>
+    </div>
 
   </div>
 </section>
 
-      {/* ================= FOOTER ================= */}
-      <footer className="py-20 bg-white border-t border-gray-100 text-center">
-        <div className="container mx-auto px-6">
-          <h2 className="text-4xl font-serif italic text-gray-900 mb-8">
-            Gift Basket
-          </h2>
-          <p className="text-[9px] uppercase tracking-[0.5em] text-gray-400">
-            © 2026 • Kolkata, India
-          </p>
+{/* GRID */}
+<section className="py-24">
+  <div className="container mx-auto px-6">
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+
+      {shopItems.map((item, i) => (
+        <Link
+          key={i}
+          to="/shop"
+          className="md:col-span-6 group relative h-[500px] rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500"
+        >
+
+          <img
+            src={item.img}
+            className="w-full h-full object-cover transition-all duration-[1s] grayscale group-hover:grayscale-0 group-hover:scale-105"
+            alt={item.name}
+          />
+
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-90 transition" />
+
+          <div className="absolute bottom-10 left-10 text-white">
+            <h3 className="text-4xl font-serif italic mb-2">
+              {item.name}
+            </h3>
+            <p className="text-lg opacity-80">{item.price}</p>
+          </div>
+
+        </Link>
+      ))}
+
+    </div>
+  </div>
+</section>
+
+{/* OUR STORY */}
+<section>...</section>
+      {/* OUR STORY */}
+      <section className="py-20 bg-white text-center">
+        <h2 className="text-5xl font-serif italic mb-6">
+          Our Story
+        </h2>
+
+        <p className="max-w-xl mx-auto text-gray-600 mb-10">
+          Since 2017, Gift Basket has been crafting meaningful gifting experiences.
+        </p>
+
+        <Link to="/about">
+          <button className="px-8 py-3 border border-black rounded-full hover:bg-black hover:text-white transition">
+            Know More →
+          </button>
+        </Link>
+      </section>
+
+      {/* ================= INSTAGRAM ================= */}
+<section className="py-20 bg-[#fafafa]">
+  <h2 className="text-4xl text-center mb-12 font-serif italic">
+    Our Creations
+  </h2>
+
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-6">
+
+    {[ 
+      "/products/mugs/mug1.png",
+      "/products/cushions/4.png",
+      "/products/cushions/2.png",
+      "/products/mugs/mug2.png"
+    ].map((img, i) => (
+
+      <div key={i} className="relative group overflow-hidden rounded-xl">
+
+        {/* IMAGE */}
+        <img
+          src={img}
+          className="w-full h-64 md:h-72 object-contain bg-white p-2"
+        />
+
+        {/* DARK OVERLAY */}
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition duration-300" />
+
+        {/* ICONS / TEXT */}
+        <div className="absolute inset-0 flex items-center justify-center gap-6 text-white opacity-0 group-hover:opacity-100 transition duration-300">
+
+          <span className="text-sm">❤️ 120</span>
+          <span className="text-sm">👁 300</span>
+
         </div>
+
+      </div>
+
+    ))}
+
+  </div>
+
+  {/* BUTTON */}
+  <div className="text-center mt-10">
+    <a
+      href="https://www.instagram.com/giftbasketkolkata?igsh=c3BqNmpwdTZmOHUz"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-block border border-black px-6 py-3 rounded-full hover:bg-black hover:text-white transition"
+    >
+      View on Instagram →
+    </a>
+  </div>
+</section>
+
+      
+
+      {/* FOOTER */}
+      <footer className="py-20 text-center bg-white">
+        <h2 className="text-4xl font-serif italic mb-4">
+          Gift Basket
+        </h2>
+        <p className="text-sm text-gray-400">
+          © 2026 • Kolkata, India
+        </p>
       </footer>
 
     </div>

@@ -14,7 +14,7 @@ export default function LoginPage() {
     name: '',
     password: '',
   });
-  const [mode, setMode] = useState('login'); // 'login' | 'register'
+  const [mode, setMode] = useState('login');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -77,13 +77,12 @@ export default function LoginPage() {
 
   if (isLoggedIn) {
     return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-background-light py-16 flex items-center justify-center">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-gradient-to-br from-[#f8f5f2] to-white flex items-center justify-center">
         <div className="container mx-auto px-4 max-w-md text-center">
-          <div className="bg-white p-12 rounded-2xl shadow-elegant border border-border/40">
-            <p className="text-secondary font-bold text-lg mb-8">You are already logged in.</p>
-            <Link to="/account" className="w-full bg-black text-white hover:bg-white hover:text-black border-2 border-black font-black uppercase tracking-[0.2em] py-5 transition-all duration-300 flex items-center justify-center gap-3 text-xs shadow-hover active:scale-[0.98]">
-              Go to My Account
-              <ArrowRight className="w-4 h-4" />
+          <div className="bg-white/70 backdrop-blur-xl p-10 rounded-3xl shadow-xl border border-white/30">
+            <p className="text-gray-700 text-lg mb-6">You are already logged in.</p>
+            <Link to="/account" className="bg-black text-white px-6 py-3 rounded-full hover:scale-105 transition-all">
+              Go to My Account →
             </Link>
           </div>
         </div>
@@ -92,103 +91,88 @@ export default function LoginPage() {
   }
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-background-light py-12 md:py-20 flex items-center">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="min-h-screen bg-gradient-to-br from-[#f8f5f2] to-white py-12 md:py-20 flex items-center"
+    >
       <div className="container mx-auto px-4 max-w-xl">
+
+        {/* HEADER */}
         <div className="text-center mb-12">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black text-white mb-8 border border-white/10 shadow-lg">
-              <ShieldCheck className="w-4 h-4 text-primary" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Secure Access</span>
-            </div>
-            <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-black mb-6 text-secondary tracking-tight uppercase">
-              {mode === 'login' ? authContent.loginTitle || 'Welcome Back' : authContent.registerTitle || 'Create Account'}
-            </h1>
-            <p className="text-text-light text-lg md:text-xl font-medium leading-relaxed opacity-80">
-              {mode === 'login' 
-                ? authContent.loginSubtitle || 'Login to your account to track orders' 
-                : authContent.registerSubtitle || 'Create an account to track your orders'}
-            </p>
-          </motion.div>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black text-white mb-6">
+            <ShieldCheck className="w-4 h-4" />
+            <span className="text-[10px] uppercase tracking-[0.2em]">Secure Access</span>
+          </div>
+
+          <h1 className="text-4xl md:text-5xl font-semibold text-gray-900 mb-4">
+            {mode === 'login' ? 'Welcome Back' : 'Create Account'}
+          </h1>
+
+          <p className="text-gray-500 text-sm">
+            {mode === 'login'
+              ? 'Login to manage your orders'
+              : 'Create an account to track your orders'}
+          </p>
         </div>
 
+        {/* CARD */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="bg-white p-8 sm:p-12 rounded-2xl shadow-elegant border border-border/40 relative overflow-hidden"
+          className="bg-white/70 backdrop-blur-xl p-8 sm:p-10 rounded-3xl shadow-xl border border-white/30"
         >
-          <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
-            <Lock className="w-48 h-48" />
-          </div>
+          <form onSubmit={handleSubmit} className="space-y-6">
 
-          <form onSubmit={handleSubmit} className="space-y-8 relative z-10">
             {mode === 'register' && (
               <div>
-                <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-3 text-text-light">{authContent.nameLabel || 'Full Name'} *</label>
-                <div className="relative">
-                  <User className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-text-light" />
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required={mode === 'register'}
-                    placeholder="Full Name"
-                    className="w-full pl-14 pr-5 py-4 border-2 border-border/60 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all font-bold text-secondary bg-background-light/30"
-                  />
-                </div>
+                <label className="text-xs text-gray-400">Full Name *</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                  className="w-full mt-2 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black/20 outline-none"
+                />
               </div>
             )}
 
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-3 text-text-light">{authContent.emailLabel || 'Email Address'} *</label>
-              <div className="relative">
-                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-text-light" />
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  placeholder="Email Address"
-                  className="w-full pl-14 pr-5 py-4 border-2 border-border/60 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all font-bold text-secondary bg-background-light/30"
-                />
-              </div>
+              <label className="text-xs text-gray-400">Email Address *</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="w-full mt-2 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black/20 outline-none"
+              />
             </div>
 
             <div>
-              <label className="block text-[10px] font-black uppercase tracking-[0.2em] mb-3 text-text-light">{authContent.passwordLabel || 'Password'} *</label>
-              <div className="relative">
-                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-text-light" />
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  placeholder="Password"
-                  minLength={6}
-                  className="w-full pl-14 pr-5 py-4 border-2 border-border/60 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent transition-all font-bold text-secondary bg-background-light/30"
-                />
-              </div>
+              <label className="text-xs text-gray-400">Password *</label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                className="w-full mt-2 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black/20 outline-none"
+              />
             </div>
 
             <AnimatePresence>
               {(error || success) && (
-                <motion.div 
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className={`p-5 rounded-xl border-2 flex items-center gap-3 text-xs font-black uppercase tracking-tight ${
-                    error ? 'bg-error/10 border-error/20 text-error' : 'bg-success/10 border-success/20 text-success'
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className={`p-3 rounded-lg text-sm ${
+                    error ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'
                   }`}
                 >
-                  {error ? <XCircle className="w-5 h-5" /> : <Sparkles className="w-5 h-5" />}
-                  <span className="leading-relaxed">{error || success}</span>
+                  {error || success}
                 </motion.div>
               )}
             </AnimatePresence>
@@ -196,45 +180,36 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-black text-white hover:bg-white hover:text-black border-2 border-black font-black uppercase tracking-[0.2em] py-5 transition-all duration-300 flex items-center justify-center gap-3 text-xs shadow-hover active:scale-[0.98] disabled:opacity-50"
+              className="w-full bg-black text-white py-3 rounded-full hover:scale-[1.02] transition-all"
             >
-              {loading ? 'Please wait...' : mode === 'login' ? authContent.loginButton || 'Login' : authContent.registerButton || 'Create Account'}
-              {!loading && <ArrowRight className="w-4 h-4" />}
+              {loading ? 'Please wait...' : mode === 'login' ? 'Login →' : 'Create Account →'}
             </button>
 
-            <div className="text-center pt-4">
+            <div className="text-center">
               <button
                 type="button"
-                onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setError(''); }}
-                className="text-text-light hover:text-black transition-colors text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 mx-auto"
+                onClick={() => {
+                  setMode(mode === 'login' ? 'register' : 'login');
+                  setError('');
+                }}
+                className="text-gray-500 text-sm hover:text-black"
               >
-                {mode === 'login' ? (
-                  <>
-                    {authContent.noAccount || "Don't have an account?"} 
-                    <span className="text-primary">{authContent.registerLink || 'Register'}</span>
-                  </>
-                ) : (
-                  <>
-                    {authContent.hasAccount || 'Already have an account?'} 
-                    <span className="text-primary">{authContent.loginLink || 'Login'}</span>
-                  </>
-                )}
+                {mode === 'login'
+                  ? "Don't have an account? Register"
+                  : 'Already have an account? Login'}
               </button>
             </div>
+
           </form>
         </motion.div>
 
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="text-center mt-12"
-        >
-          <Link to="/track-order" className="inline-flex items-center gap-3 text-text-light hover:text-black transition-colors font-black uppercase tracking-widest text-[10px] group">
-            {authContent.trackGuest || 'Track order without login'}
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
+        {/* TRACK */}
+        <div className="text-center mt-8">
+          <Link to="/track-order" className="text-gray-500 text-sm hover:text-black">
+            Track order without login →
           </Link>
-        </motion.div>
+        </div>
+
       </div>
     </motion.div>
   );
