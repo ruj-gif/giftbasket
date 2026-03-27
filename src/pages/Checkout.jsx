@@ -60,7 +60,7 @@ export default function Checkout() {
                     `*Items:*%0A${itemList}%0A%0A` +
                     `*Total Amount:* ₹${subtotal}`;
     
-    window.open(`https://wa.me/919876543210?text=${message}`, '_blank');
+    window.open(`https://wa.me/+919674243961?text=${message}`, '_blank');
   };
 
   return (
