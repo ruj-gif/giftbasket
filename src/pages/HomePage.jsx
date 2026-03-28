@@ -58,7 +58,7 @@ export default function HomePage() {
           className="absolute inset-0 bg-cover bg-center"
           style={{
             y: y1,
-            backgroundImage: `url('/close-up-christmas-gift-box-decorated-with-dried-flowers-dry-orange-wrapped-craft-paper_169016-14622.avif')`,
+            backgroundImage: `url('/hero.jpg')`,
             height: "120%"
           }}
         />

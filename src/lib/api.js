@@ -1,6 +1,5 @@
 // Full Local Category List
 const LOCAL_CATEGORIES = [
-  
   { id: 101, name: "Personalise Mug", slug: "personalise-mug", parentId: 1 },
   { id: 102, name: "Personalise Photo Frame", slug: "personalise-photo-frame", parentId: 1 },
   { id: 103, name: "Personalise Cushion", slug: "personalise-cushion", parentId: 1 },
@@ -41,30 +40,75 @@ const LOCAL_PRODUCTS = [
     name: "Custom Photo Cushion",
     price: 450,
     category: "Personalise Cushion",
-    image: "/products/cushions/cushion1.png",
+    image: "/products/cushions/2.png",
     rating: 4.9,
     isFavorite: false
-  },
+  }
 ];
 
+// ✅ helper
+const getLocal = (key, initial) => {
+  const saved = localStorage.getItem(key);
+  return saved ? JSON.parse(saved) : initial;
+};
 
-// Add this to your existing api.js
+// API
 export const api = {
   categories: {
-    getAll: async () => ({ success: true, data: LOCAL_CATEGORIES })
+    getAll: async () => ({
+      success: true,
+      data: LOCAL_CATEGORIES
+    })
   },
+
   products: {
-    getAll: async () => ({ success: true, data: LOCAL_PRODUCTS })
+    // ✅ GET
+    getAll: async () => ({
+      success: true,
+      data: getLocal("my_products", LOCAL_PRODUCTS)
+    }),
+
+    // ✅ CREATE
+    create: async (data) => {
+      const products = getLocal("my_products", LOCAL_PRODUCTS);
+
+      const newProduct = {
+        ...data,
+        id: Date.now().toString(),
+        slug: data.name.toLowerCase().replace(/ /g, "-"),
+        rating: 0,
+        isFavorite: false
+      };
+
+      products.push(newProduct);
+
+      localStorage.setItem("my_products", JSON.stringify(products));
+
+      return { success: true, data: newProduct };
+    },
+
+    // ✅ UPDATE (FIXED)
+    update: async (id, data) => {
+      const products = getLocal("my_products", LOCAL_PRODUCTS);
+
+      const updated = products.map(p =>
+        p.id === id ? { ...p, ...data } : p
+      );
+
+      localStorage.setItem("my_products", JSON.stringify(updated));
+
+      return { success: true };
+    }
   },
-  // ADD THIS SECTION TO STOP THE ERROR:
+
   settings: {
-    getAll: async () => ({ 
-      success: true, 
-      data: { 
-        phone: "919876543210", // Your WhatsApp number
-        email: "contact@example.com",
-        address: "Your Shop Address"
-      } 
+    getAll: async () => ({
+      success: true,
+      data: {
+        phone: "+919674243961",
+        email: "giftbasketkolkata@gmail.com",
+        address: "2, Abdul Halim Lane, Kolkata - 700 016"
+      }
     })
   }
 };

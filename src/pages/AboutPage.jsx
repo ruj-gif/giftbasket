@@ -8,7 +8,7 @@ export default function AboutPage() {
       {/* 🔥 HERO SECTION */}
       <div className="relative h-[300px] flex items-center justify-center text-center">
         <img
-          src="/close-up-christmas-gift-box-decorated-with-dried-flowers-dry-orange-wrapped-craft-paper_169016-14622.avif"
+          src="/main.jpg"
           alt="Gift Background"
           className="absolute inset-0 w-full h-full object-cover"
         />
