@@ -1,269 +1,83 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { api } from '../../lib/api';
-import FileUpload from '../../components/FileUpload';
+import React, { useState } from "react";
+import { api } from "../../lib/api";
+import { categories } from "../../data/categories";
 
 export default function ProductForm() {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [categories, setCategories] = useState([]);
-  const [formData, setFormData] = useState({
-    name: '',
-    slug: '',
-    category: '',
-    price: '',
-    discount_price: '',
-    image_url: '',
-    description: '',
-    sizes: '',
-    featured: false,
-    published: true,
-  });
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    loadCategories();
-    if (id) loadProduct();
-  }, [id]);
-
-  const loadCategories = async () => {
-    try {
-      const response = await api.categories.getAll();
-      if (response.success) {
-        setCategories(response.data || []);
-      }
-    } catch (error) {
-      console.error('Failed to load categories:', error);
-    }
-  };
-
-  const loadProduct = async () => {
-    try {
-      const response = await api.products.getById(id);
-      if (response.success) {
-        const product = response.data;
-        setFormData({
-          name: product.name || '',
-          slug: product.slug || '',
-          category: product.category || '',
-          price: product.price || '',
-          discount_price: product.discount_price || '',
-          image_url: product.image_url || '',
-          description: product.description || '',
-          sizes: typeof product.sizes === 'string' ? product.sizes : JSON.stringify(product.sizes || []),
-          featured: product.featured || false,
-          published: product.published !== false,
-        });
-      }
-    } catch (error) {
-      console.error('Failed to load product:', error);
-    }
-  };
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : value,
-    });
-
-    if (name === 'name' && !id) {
-      const slug = value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-      setFormData((prev) => ({ ...prev, slug }));
-    }
-  };
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+  const [category, setCategory] = useState("");
+  const [imageFile, setImageFile] = useState(null);
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+    e.preventDefault();
 
-  try {
-    // 1. Prepare the payload to match what a typical backend expects
-    const payload = {
-      ...formData,
-      price: Number(formData.price), // Force price to be a number
-      discount_price: Number(formData.discount_price) || 0,
-      image: formData.image_url,     // Map 'image_url' to 'image'
-    };
-
-    // 2. Log it so you can see exactly what is being sent
-    console.log("Submitting this data:", payload);
-
-    const response = id 
-      ? await api.products.update(id, payload) 
-      : await api.products.create(payload);
-
-    if (response.success) {
-      navigate('/admin/products');
-    } else {
-      // 3. This alert will now tell you the ACTUAL reason from the server
-      alert(`Error: ${response.message || "The server rejected the data. Check unique name/slug."}`);
-      console.error("Full Server Response:", response);
+    if (!imageFile) {
+      alert("Please select image ❌");
+      return;
     }
-  } catch (error) {
-    console.error("Submit Error:", error);
-    alert('Network error: Is your backend running on port 5000?');
-  } finally {
-    setLoading(false);
-  }
-};
+
+    try {
+      await api.createProduct(
+        {
+          name,
+          price,
+          category, // ✅ combined value
+          slug: name.toLowerCase().replace(/\s+/g, "-"),
+        },
+        imageFile
+      );
+
+      alert("Product added ✅");
+
+      setName("");
+      setPrice("");
+      setCategory("");
+      setImageFile(null);
+    } catch (err) {
+      console.error(err);
+      alert("Error adding product ❌");
+    }
+  };
+
   return (
-    <div className="max-w-4xl w-full">
-      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">
-        {id ? 'Edit Product' : 'Add New Product'}
-      </h1>
+    <form onSubmit={handleSubmit}>
+      <h2>Add Product</h2>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-4 sm:p-6 space-y-6">
-        <div className="grid md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Name *</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-            />
-          </div>
+      <input
+        placeholder="Name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Slug *</label>
-            <input
-              type="text"
-              name="slug"
-              value={formData.slug}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-            />
-          </div>
-        </div>
+      <input
+        placeholder="Price"
+        value={price}
+        onChange={(e) => setPrice(e.target.value)}
+      />
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-          <select
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-          >
-            <option value="">Select Category</option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.name}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
-        </div>
+      {/* 🔥 CATEGORY + SUBCATEGORY COMBINED */}
+     <select value={category} onChange={(e) => setCategory(e.target.value)}>
+  <option value="">Select Category</option>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Price *</label>
-            <input
-              type="number"
-              name="price"
-              value={formData.price}
-              onChange={handleChange}
-              required
-              step="0.01"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-            />
-          </div>
+  {categories.map((cat) => (
+    <React.Fragment key={cat.name}>
+      <option value={cat.name}>{cat.name}</option>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Discount Price</label>
-            <input
-              type="number"
-              name="discount_price"
-              value={formData.discount_price}
-              onChange={handleChange}
-              step="0.01"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-            />
-          </div>
-        </div>
+      {cat.sub.map((sub) => (
+        <option key={sub} value={sub}>
+          — {sub}
+        </option>
+      ))}
+    </React.Fragment>
+  ))}
+</select>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            rows={4}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-          />
-        </div>
+      <input
+        type="file"
+        onChange={(e) => setImageFile(e.target.files[0])}
+      />
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Sizes (JSON array)</label>
-          <input
-            type="text"
-            name="sizes"
-            value={formData.sizes}
-            onChange={handleChange}
-            placeholder='["XS","S","M","L","XL"]'
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Image URL or Upload</label>
-          <input
-  type="text" // Changing to text allows paths like /products/mugs/mug1.jpg
-  name="image_url"
-  value={formData.image_url}
-  onChange={handleChange}
-  placeholder="/products/mugs/mug1.jpg"
-  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent mb-4"
-/>
-          <FileUpload
-            currentUrl={formData.image_url}
-            onUploadSuccess={(url) => setFormData({ ...formData, image_url: url })}
-          />
-        </div>
-
-        <div className="flex flex-wrap gap-4 sm:gap-6">
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              name="featured"
-              checked={formData.featured}
-              onChange={handleChange}
-              className="w-5 h-5 text-primary rounded"
-            />
-            <span className="ml-2 text-sm font-medium text-gray-700">Featured</span>
-          </label>
-
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              name="published"
-              checked={formData.published}
-              onChange={handleChange}
-              className="w-5 h-5 text-primary rounded"
-            />
-            <span className="ml-2 text-sm font-medium text-gray-700">Published</span>
-          </label>
-        </div>
-
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full sm:w-auto px-6 py-3 sm:py-2 bg-primary text-secondary rounded-lg hover:bg-primary-dark font-semibold disabled:opacity-50 touch-manipulation"
-          >
-            {loading ? 'Saving...' : id ? 'Update Product' : 'Create Product'}
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate('/admin/products')}
-            className="w-full sm:w-auto px-6 py-3 sm:py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-semibold touch-manipulation"
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
-    </div>
+      <button type="submit">Save</button>
+    </form>
   );
 }

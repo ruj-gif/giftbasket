@@ -16,6 +16,7 @@ import HomePage from './pages/HomePage';
 import ShopPage from './pages/ShopPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import CartPage from './pages/CartPage'; // This is your Cart.jsx renamed to CartPage.jsx
+import Checkout from './pages/Checkout';
 import CheckoutPage from './pages/Checkout'; // This is your Checkout.jsx renamed to CheckoutPage.jsx
 import OrderConfirmationPage from './pages/OrderConfirmationPage';
 import LoginPage from './pages/LoginPage';
@@ -130,32 +131,33 @@ function AnimatedRoutes() {
         <Route path="/contact" element={<PageWrapper><Navigation /><ContactPage /><Footer /></PageWrapper>} />
 
         {/* Admin Routes */}
-        <Route path="/admin/*" element={
-            <Routes>
-              <Route element={<AdminLayout />}>
-                <Route index element={<AdminDashboard />} />
-                <Route path="products" element={<ProductsList />} />
-                <Route path="products/new" element={<ProductForm />} />
-                <Route path="products/:id" element={<ProductForm />} />
-                <Route path="categories" element={<CategoriesList />} />
-                <Route path="categories/new" element={<CategoryForm />} />
-                <Route path="categories/:id" element={<CategoryForm />} />
-                <Route path="orders" element={<OrdersList />} />
-                <Route path="orders/:id" element={<OrderDetail />} />
-                <Route path="contact-messages" element={<ContactMessagesList />} />
-                <Route path="contact-messages/:id" element={<ContactMessageDetail />} />
-                <Route path="hero-sections" element={<HeroSectionsList />} />
-                <Route path="hero-sections/new" element={<HeroSectionForm />} />
-                <Route path="hero-sections/:id" element={<HeroSectionForm />} />
-                <Route path="feature-blocks" element={<FeatureBlocksList />} />
-                <Route path="feature-blocks/new" element={<FeatureBlockForm />} />
-                <Route path="feature-blocks/:id" element={<FeatureBlockForm />} />
-                <Route path="settings" element={<SettingsPage />} />
-                <Route path="payment-settings" element={<PaymentSettingsPage />} />
-                <Route path="/admin/settings" element={<GeneralSettingsPage />} />
-              </Route>
-            </Routes>
-        } />
+        <Route path="/admin/*" element={<AdminLayout />}>
+  <Route index element={<AdminDashboard />} />
+  <Route path="products" element={<ProductsList />} />
+  <Route path="products/new" element={<ProductForm />} />
+  <Route path="products/:id" element={<ProductForm />} />
+  
+  <Route path="categories" element={<CategoriesList />} />
+  <Route path="categories/new" element={<CategoryForm />} />
+  <Route path="categories/:id" element={<CategoryForm />} />
+  
+  <Route path="orders" element={<OrdersList />} />
+  <Route path="orders/:id" element={<OrderDetail />} />
+  
+  <Route path="contact-messages" element={<ContactMessagesList />} />
+  <Route path="contact-messages/:id" element={<ContactMessageDetail />} />
+  
+  <Route path="hero-sections" element={<HeroSectionsList />} />
+  <Route path="hero-sections/new" element={<HeroSectionForm />} />
+  <Route path="hero-sections/:id" element={<HeroSectionForm />} />
+  
+  <Route path="feature-blocks" element={<FeatureBlocksList />} />
+  <Route path="feature-blocks/new" element={<FeatureBlockForm />} />
+  <Route path="feature-blocks/:id" element={<FeatureBlockForm />} />
+  
+  <Route path="settings" element={<SettingsPage />} />
+  <Route path="payment-settings" element={<PaymentSettingsPage />} />
+</Route>
       </Routes>
     </AnimatePresence>
   );

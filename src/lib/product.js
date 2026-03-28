@@ -1,30 +1,22 @@
 import { supabase } from "./supabase";
 
-export const saveFavourite = async (product) => {
-  const { error } = await supabase
-    .from("favourites")
-    .insert([{ product_id: product.id }]);
-
-  if (error) console.error(error);
-};
-
-// ✅ GET PRODUCTS
-const getProducts = async () => {
+// GET PRODUCTS
+export const getProducts = async () => {
   const { data, error } = await supabase
     .from("products")
     .select("*")
-    .order("id", { ascending: false });
+    .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("FETCH ERROR:", error.message);
+    console.error("GET ERROR:", error.message);
     return [];
   }
 
   return data;
 };
 
-// ✅ UPLOAD IMAGE
-const uploadImage = async (file) => {
+// UPLOAD IMAGE
+export const uploadImage = async (file) => {
   const fileName = `${Date.now()}-${file.name}`;
 
   const { error } = await supabase.storage
@@ -33,6 +25,7 @@ const uploadImage = async (file) => {
 
   if (error) {
     console.error("UPLOAD ERROR:", error.message);
+    alert("Image upload failed ❌");
     return null;
   }
 
@@ -43,11 +36,11 @@ const uploadImage = async (file) => {
   return data.publicUrl;
 };
 
-// ✅ CREATE PRODUCT
-const createProduct = async (product, file) => {
+// ADD PRODUCT
+export const addProduct = async (product, file) => {
   const imageUrl = await uploadImage(file);
 
-  if (!imageUrl) throw new Error("Image upload failed");
+  if (!imageUrl) return null;
 
   const { data, error } = await supabase
     .from("products")
@@ -55,21 +48,16 @@ const createProduct = async (product, file) => {
       {
         name: product.name,
         price: Number(product.price),
-        category: product.category,
         image: imageUrl,
+        slug: product.slug,
       },
-    ]);
+    ])
+    .select();
 
   if (error) {
     console.error("INSERT ERROR:", error.message);
-    throw error;
+    return null; // ✅ IMPORTANT
   }
 
   return data;
-};
-
-export const api = {
-  getProducts,
-  createProduct,
-  uploadImage,
 };

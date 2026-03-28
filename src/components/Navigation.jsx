@@ -3,13 +3,14 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, Menu, X } from 'lucide-react';
 import { useCart } from '../contexts/CartContext'; 
-import { useSettings } from '../contexts/SettingsContext';
+import { useSettings } from "../contexts/SettingsContext";
 import { useUser } from '../contexts/UserContext';
 import { siteConfig } from '../config/siteConfig';
 
 export default function Navigation() {
   const { cartItems } = useCart(); 
-  const { settings } = useSettings();
+  const settingsContext = useSettings();
+const settings = settingsContext?.settings || {};
   const { isLoggedIn } = useUser();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
