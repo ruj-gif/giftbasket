@@ -9,15 +9,15 @@ export default function ProductCard({ product }) {
   const productId = product.id || product._id || product.slug;
   const isFav = isInWishlist(productId);
 
-  const [addedMsg, setAddedMsg] = useState(false);
   const [wishMsg, setWishMsg] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
   return (
     <>
       {/* 🧱 PRODUCT CARD */}
       <div
-        onClick={() => setShowModal(true)} // ✅ OPEN MODAL
+        onClick={() => setShowModal(true)}
         style={{
           borderRadius: "12px",
           overflow: "hidden",
@@ -34,7 +34,6 @@ export default function ProductCard({ product }) {
           (e.currentTarget.style.transform = "translateY(0)")
         }
       >
-
         {/* ❤️ WISHLIST */}
         <button
           onClick={(e) => {
@@ -63,19 +62,21 @@ export default function ProductCard({ product }) {
           ♥
         </button>
 
-        {/* ❤️ POPUP */}
+        {/* ❤️ WISHLIST POPUP */}
         {wishMsg && (
-          <div style={{
-            position: "absolute",
-            top: "50px",
-            right: "10px",
-            background: "#000",
-            color: "#fff",
-            padding: "5px 10px",
-            borderRadius: "6px",
-            fontSize: "12px",
-            zIndex: 2
-          }}>
+          <div
+            style={{
+              position: "absolute",
+              top: "50px",
+              right: "10px",
+              background: "#000",
+              color: "#fff",
+              padding: "5px 10px",
+              borderRadius: "6px",
+              fontSize: "12px",
+              zIndex: 2
+            }}
+          >
             {isFav ? "Added ❤️" : "Removed ❌"}
           </div>
         )}
@@ -103,30 +104,40 @@ export default function ProductCard({ product }) {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              addToCart(product);
+              addToCart({ ...product, id: productId });
 
-              setAddedMsg(true);
-              setTimeout(() => setAddedMsg(false), 1200);
-
-              window.dispatchEvent(new Event("cartUpdated"));
+              setShowPopup(true);
+              setTimeout(() => setShowPopup(false), 1200);
             }}
             style={{
               background: "#000",
               color: "#fff",
               border: "none",
-              padding: "8px",
+              padding: "8px 12px",
               borderRadius: "6px",
-              width: "100%",
-              marginTop: "10px"
+              cursor: "pointer",
+              marginTop: "10px",
+              width: "100%"
             }}
           >
             🛒 Add to Cart
           </button>
 
-          {addedMsg && (
-            <p style={{ color: "green", fontSize: "12px" }}>
-              Added ✅
-            </p>
+          {/* 🛒 CART POPUP */}
+          {showPopup && (
+            <div
+              style={{
+                marginTop: "8px",
+                background: "#000",
+                color: "#fff",
+                padding: "5px",
+                borderRadius: "5px",
+                fontSize: "12px",
+                textAlign: "center"
+              }}
+            >
+              Added to cart ✅
+            </div>
           )}
         </div>
       </div>
