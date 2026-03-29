@@ -1,30 +1,73 @@
 import React from "react";
 import { useWishlist } from "../contexts/WishlistContext";
-import ProductCard from "../components/ProductCard";
+import { useCart } from "../contexts/CartContext";
 
 export default function WishlistPage() {
-  const { wishlist } = useWishlist();
+  const { wishlist, toggleWishlist } = useWishlist();
+  const { addToCart } = useCart();
 
   return (
-    <div style={{ padding: "40px" }}>
-      <h2>❤️ Wishlist</h2>
+    <div className="min-h-screen bg-[#fafafa] px-6 py-10">
 
-      {wishlist.length === 0 ? (
-        <p>No items yet</p>
-      ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-            gap: "20px",
-            marginTop: "20px",
-          }}
-        >
-          {wishlist.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+      {/* TITLE */}
+      <h2 className="text-3xl font-semibold mb-8 flex items-center gap-2">
+        ❤️ Wishlist
+      </h2>
+
+      {/* EMPTY STATE */}
+      {wishlist.length === 0 && (
+        <div className="text-center mt-20 text-gray-500">
+          No items in wishlist 💔
         </div>
       )}
+
+      {/* GRID */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {wishlist.map((product) => (
+          <div
+            key={product.id}
+            className="bg-white rounded-2xl shadow hover:shadow-xl transition overflow-hidden group"
+          >
+
+            {/* IMAGE */}
+            <div className="relative">
+              <img
+                src={product.image}
+                alt={product.name}
+                className="h-48 w-full object-cover group-hover:scale-105 transition duration-300"
+              />
+
+              {/* ❤️ REMOVE */}
+              <button
+                onClick={() => toggleWishlist(product)}
+                className="absolute top-3 right-3 bg-white p-2 rounded-full shadow hover:scale-110 transition"
+              >
+                ❤️
+              </button>
+            </div>
+
+            {/* DETAILS */}
+            <div className="p-4">
+              <h4 className="font-medium text-sm mb-1">
+                {product.name}
+              </h4>
+
+              <p className="text-red-600 font-semibold mb-3">
+                ₹ {product.price}
+              </p>
+
+              {/* BUTTON */}
+              <button
+                onClick={() => addToCart(product)}
+                className="w-full bg-black text-white py-2 rounded-full hover:bg-red-500 transition"
+              >
+                🛒 Add to Cart
+              </button>
+            </div>
+
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

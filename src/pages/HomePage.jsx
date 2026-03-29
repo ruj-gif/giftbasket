@@ -14,19 +14,20 @@ export default function HomePage() {
   const { scrollY } = useScroll();
   const y1 = useTransform(scrollY, [0, 500], [0, 200]);
 
-  // ✅ SAFE SETTINGS
   const settingsContext = useSettings();
   const settings = settingsContext?.settings || {};
 
-  // ✅ LOAD PRODUCTS
   useEffect(() => {
     loadProducts();
   }, []);
 
   const loadProducts = async () => {
     try {
-      const data = await api.getProducts(); // ✅ correct API call
-      setProducts(data || []);
+      const response = await api.products.getAll();
+
+      if (response.success) {
+        setProducts(response.data || []);
+      }
     } catch (err) {
       console.error("Home products error:", err);
     } finally {
@@ -39,24 +40,24 @@ export default function HomePage() {
   return (
     <div className="bg-[#fafafa] text-gray-900 overflow-x-hidden font-sans">
 
-      {/* ================= HERO ================= */}
+      {/* HERO */}
       <section className="relative h-[90vh] flex items-center justify-center overflow-hidden">
         <motion.div
-          className="absolute inset-0 bg-cover bg-center"
+          className="absolute inset-0 bg-cover bg-center scale-110"
           style={{
             y: y1,
             backgroundImage: `url('/hero.jpg')`,
-            height: "120%"
           }}
         />
-        <div className="absolute inset-0 bg-black/50" />
 
-        <div className="relative z-10 text-center text-white">
-          <h1 className="text-7xl md:text-[6rem] italic mb-6">
+        <div className="absolute inset-0 bg-black/60" />
+
+        <div className="relative z-10 text-center text-white px-4">
+          <h1 className="text-6xl italic mb-6 font-semibold">
             {settings?.siteName || "Gift Basket"}
           </h1>
 
-          <p className="text-sm md:text-lg mb-10 uppercase tracking-[0.2em]">
+          <p className="text-sm mb-10 uppercase tracking-[0.25em]">
             Bespoke Luxury Hampers Since 2017
           </p>
 
@@ -68,122 +69,93 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ================= TRUST ================= */}
-      <section className="bg-white py-10 border-y mt-12">
+      {/* TRUST */}
+      <section className="bg-white py-12 border-y mt-12">
         <div className="container mx-auto px-6 grid md:grid-cols-3 gap-8 text-center">
 
-          <div className="flex items-center justify-center gap-2">
-            <Zap className="text-red-600" />
-            <span className="text-gray-600">Same-Day Delivery</span>
-          </div>
-
-          <div className="flex items-center justify-center gap-2">
-            <ShieldCheck className="text-red-600" />
-            <span className="text-gray-600">Premium Quality</span>
-          </div>
-
-          <div className="flex items-center justify-center gap-2">
-            <Sparkles className="text-red-600" />
-            <span className="text-gray-600">Secure Checkout</span>
-          </div>
+          {[{
+            icon: <Zap className="text-red-600" />,
+            text: "Same-Day Delivery"
+          },{
+            icon: <ShieldCheck className="text-red-600" />,
+            text: "Premium Quality"
+          },{
+            icon: <Sparkles className="text-red-600" />,
+            text: "Secure Checkout"
+          }].map((item, i) => (
+            <div key={i} className="flex flex-col items-center gap-2">
+              {item.icon}
+              <span>{item.text}</span>
+            </div>
+          ))}
 
         </div>
       </section>
 
-      {/* ================= FEATURED GRID ================= */}
+      {/* ✅ FEATURED GRID (FIXED LINKS) */}
       <section className="py-24">
-        <div className="container mx-auto px-6">
-          <div className="grid md:grid-cols-2 gap-8">
+        <div className="container mx-auto px-6 grid md:grid-cols-2 gap-8">
 
-            <Link
-              to="/shop"
-              className="group relative h-[400px] rounded-2xl overflow-hidden"
-            >
-              <img
-                src="https://images.unsplash.com/photo-1549465220-1a8b9238cd48"
-                className="w-full h-full object-cover group-hover:scale-105 transition"
-              />
-              <div className="absolute inset-0 bg-black/40" />
-              <div className="absolute bottom-6 left-6 text-white text-2xl">
-                Bestseller Hampers
-              </div>
-            </Link>
+          {/* Bestseller Hampers */}
+          <Link
+            to="/shop?category=Gift Hampers"
+            className="group relative h-[400px] rounded-2xl overflow-hidden"
+          >
+            <img
+              src="/unnamed.jpg"
+              className="w-full h-full object-cover group-hover:scale-110 transition"
+            />
+            <div className="absolute inset-0 bg-black/50" />
+            <div className="absolute bottom-6 left-6 text-white text-2xl font-semibold">
+              Bestseller Hampers
+            </div>
+          </Link>
 
-            <Link
-              to="/shop"
-              className="group relative h-[400px] rounded-2xl overflow-hidden"
-            >
-              <img
-                src="https://images.unsplash.com/photo-1513201099705-a9746e1e201f"
-                className="w-full h-full object-cover group-hover:scale-105 transition"
-              />
-              <div className="absolute inset-0 bg-black/40" />
-              <div className="absolute bottom-6 left-6 text-white text-2xl">
-                New Arrivals
-              </div>
-            </Link>
+          {/* Build a Basket */}
+          <Link
+            to="/shop?category=Personalised Gifts"
+            className="group relative h-[400px] rounded-2xl overflow-hidden"
+          >
+            <img
+              src="/unnamed (1).jpg"
+              className="w-full h-full object-cover group-hover:scale-110 transition"
+            />
+            <div className="absolute inset-0 bg-black/50" />
+            <div className="absolute bottom-6 left-6 text-white text-2xl font-semibold">
+              Build a Basket
+            </div>
+          </Link>
 
-          </div>
         </div>
       </section>
 
-      {/* ================= PRODUCTS (REAL DATA) ================= */}
-      <section className="py-20 bg-white">
-        <h2 className="text-4xl text-center mb-12 font-serif italic">
+      {/* PRODUCTS */}
+      <section className="py-24 bg-white">
+        <h2 className="text-3xl text-center mb-12 italic">
           Featured Products
         </h2>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 px-6">
+
           {products.slice(0, 8).map((product) => (
-            <div
-              key={product.id}
-              className="bg-white rounded-xl shadow hover:shadow-xl transition p-4"
-            >
+            <div key={product.id} className="bg-white rounded-xl shadow p-4">
+
               <img
                 src={product.image}
                 className="h-40 w-full object-contain mb-4"
               />
-              <h3 className="text-sm font-medium">{product.name}</h3>
+
+              <h3 className="text-sm">
+                {product.name}
+              </h3>
+
               <p className="text-red-600 font-semibold">
                 ₹{product.price}
               </p>
+
             </div>
           ))}
-        </div>
-      </section>
 
-      {/* ================= INSTAGRAM ================= */}
-      <section className="py-20 bg-[#fafafa]">
-        <h2 className="text-4xl text-center mb-12 font-serif italic">
-          Our Creations
-        </h2>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-6">
-          {[
-            "/products/mugs/mug1.png",
-            "/products/cushions/4.png",
-            "/products/cushions/2.png",
-            "/products/mugs/mug2.png"
-          ].map((img, i) => (
-            <div key={i} className="group relative overflow-hidden rounded-xl">
-              <img
-                src={img}
-                className="w-full h-64 object-contain bg-white p-2"
-              />
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition" />
-            </div>
-          ))}
-        </div>
-
-        <div className="text-center mt-10">
-          <a
-            href="https://www.instagram.com/giftbasketkolkata"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="border px-6 py-3 rounded-full hover:bg-black hover:text-white transition"
-          >
-            View on Instagram →
-          </a>
         </div>
       </section>
 

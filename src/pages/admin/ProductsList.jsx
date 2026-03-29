@@ -38,10 +38,14 @@ export default function ProductsList() {
 
   const columns = [
     {
-      key: 'image_url',
+      key: 'image',
       label: 'Image',
       render: (row) => (
-        <img src={row.image_url} alt={row.name} className="w-16 h-16 object-cover rounded" />
+        <img
+          src={row.image || row.image_url || "/placeholder.png"} // ✅ fallback added
+          alt={row.name}
+          className="w-16 h-16 object-cover rounded"
+        />
       ),
     },
     { key: 'name', label: 'Name' },
@@ -55,8 +59,14 @@ export default function ProductsList() {
       key: 'published',
       label: 'Status',
       render: (row) => (
-        <span className={`px-2 py-1 rounded text-xs font-semibold ${row.published ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-          {row.published ? 'Published' : 'Draft'}
+        <span
+          className={`px-2 py-1 rounded text-xs font-semibold ${
+            row.published !== false
+              ? 'bg-green-100 text-green-800'
+              : 'bg-gray-100 text-gray-800'
+          }`}
+        >
+          {row.published !== false ? 'Published' : 'Draft'}
         </span>
       ),
     },
@@ -73,8 +83,14 @@ export default function ProductsList() {
   return (
     <div>
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Products</h1>
-        <Link to="/admin/products/new" className="flex items-center justify-center gap-2 px-4 py-2.5 sm:py-2 bg-primary text-secondary rounded-lg hover:bg-primary-dark text-sm sm:text-base touch-manipulation shrink-0">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+          Products
+        </h1>
+
+        <Link
+          to="/admin/products/new"
+          className="flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-secondary rounded-lg hover:bg-primary-dark text-sm sm:text-base"
+        >
           <Plus className="w-5 h-5" />
           <span className="font-semibold">Add Product</span>
         </Link>

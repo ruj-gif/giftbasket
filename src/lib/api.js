@@ -1,75 +1,93 @@
 import { supabase } from "./supabase";
 
-export const saveFavourite = async (product) => {
-  const { error } = await supabase
-    .from("favourites")
-    .insert([{ product_id: product.id }]);
+/* ================= PRODUCTS ================= */
 
-  if (error) console.error(error);
-};
-
-// ✅ GET PRODUCTS
-const getProducts = async () => {
+const getAllProducts = async () => {
   const { data, error } = await supabase
     .from("products")
     .select("*")
     .order("id", { ascending: false });
 
   if (error) {
-    console.error("FETCH ERROR:", error.message);
-    return [];
+    console.error(error);
+    return { success: false, data: [] };
   }
 
-  return data;
+  return { success: true, data };
 };
 
-// ✅ UPLOAD IMAGE
-const uploadImage = async (file) => {
-  const fileName = `${Date.now()}-${file.name}`;
+/* ================= CATEGORIES ================= */
 
-  const { error } = await supabase.storage
-    .from("products")
-    .upload(fileName, file);
-
-  if (error) {
-    console.error("UPLOAD ERROR:", error.message);
-    return null;
-  }
-
-  const { data } = supabase.storage
-    .from("products")
-    .getPublicUrl(fileName);
-
-  return data.publicUrl;
-};
-
-// ✅ CREATE PRODUCT
-const createProduct = async (product, file) => {
-  const imageUrl = await uploadImage(file);
-
-  if (!imageUrl) throw new Error("Image upload failed");
-
+const getAllCategories = async () => {
   const { data, error } = await supabase
-    .from("products")
-    .insert([
-      {
-        name: product.name,
-        price: Number(product.price),
-        category: product.category,
-        image: imageUrl,
-      },
-    ]);
+    .from("categories") // 🔥 MAKE SURE TABLE EXISTS
+    .select("*")
+    .order("id", { ascending: false });
 
   if (error) {
-    console.error("INSERT ERROR:", error.message);
+    console.error("CATEGORY ERROR:", error.message);
+    return { success: false, data: [] };
+  }
+
+  return { success: true, data };
+};
+
+const deleteCategory = async (id) => {
+  const { error } = await supabase
+    .from("categories")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    console.error(error);
     throw error;
   }
-
-  return data;
 };
 
+// ================= AUTH =================
+
+const login = async ({ email, password }) => {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) {
+    return { success: false, error };
+  }
+
+  return { success: true, data: data.user };
+};
+
+const register = async ({ email, password, name }) => {
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        name,
+      },
+    },
+  });
+
+  if (error) {
+    return { success: false, error };
+  }
+
+  return { success: true, data: data.user };
+};
+
+/* ================= EXPORT ================= */
+
 export const api = {
-  getProducts,
-  createProduct,
-  uploadImage,
+  products: {
+    getAll: getAllProducts,
+  },
+  categories: {
+    getAll: getAllCategories,
+    delete: deleteCategory,
+  },
+  auth: {
+    login,
+    register,}
 };

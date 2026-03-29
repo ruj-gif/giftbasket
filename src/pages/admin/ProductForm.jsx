@@ -7,6 +7,7 @@ export default function ProductForm() {
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
   const [imageFile, setImageFile] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,11 +18,13 @@ export default function ProductForm() {
     }
 
     try {
+      setLoading(true);
+
       await api.createProduct(
         {
           name,
           price,
-          category, // ✅ combined value
+          category,
           slug: name.toLowerCase().replace(/\s+/g, "-"),
         },
         imageFile
@@ -36,48 +39,87 @@ export default function ProductForm() {
     } catch (err) {
       console.error(err);
       alert("Error adding product ❌");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Add Product</h2>
+    <div className="min-h-screen flex items-center justify-center bg-[#fafafa] px-4">
 
-      <input
-        placeholder="Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
+      {/* CARD */}
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-xl bg-white p-8 rounded-3xl shadow-xl border border-gray-100 space-y-5"
+      >
+        {/* TITLE */}
+        <h2 className="text-2xl font-semibold text-center italic">
+          Add New Product
+        </h2>
 
-      <input
-        placeholder="Price"
-        value={price}
-        onChange={(e) => setPrice(e.target.value)}
-      />
+        {/* NAME */}
+        <input
+          placeholder="Product Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-full p-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-red-400"
+          required
+        />
 
-      {/* 🔥 CATEGORY + SUBCATEGORY COMBINED */}
-     <select value={category} onChange={(e) => setCategory(e.target.value)}>
-  <option value="">Select Category</option>
+        {/* PRICE */}
+        <input
+          placeholder="Price (₹)"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+          type="number"
+          className="w-full p-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-red-400"
+          required
+        />
 
-  {categories.map((cat) => (
-    <React.Fragment key={cat.name}>
-      <option value={cat.name}>{cat.name}</option>
+        {/* CATEGORY */}
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className="w-full p-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-red-400"
+          required
+        >
+          <option value="">Select Category</option>
 
-      {cat.sub.map((sub) => (
-        <option key={sub} value={sub}>
-          — {sub}
-        </option>
-      ))}
-    </React.Fragment>
-  ))}
-</select>
+          {categories.map((cat) => (
+            <React.Fragment key={cat.name}>
+              <option value={cat.name}>{cat.name}</option>
 
-      <input
-        type="file"
-        onChange={(e) => setImageFile(e.target.files[0])}
-      />
+              {cat.sub.map((sub) => (
+                <option key={sub} value={sub}>
+                  — {sub}
+                </option>
+              ))}
+            </React.Fragment>
+          ))}
+        </select>
 
-      <button type="submit">Save</button>
-    </form>
+        {/* IMAGE */}
+        <div className="border-2 border-dashed border-gray-200 p-4 rounded-xl text-center hover:border-red-400 transition">
+          <input
+            type="file"
+            onChange={(e) => setImageFile(e.target.files[0])}
+            className="w-full cursor-pointer"
+          />
+          <p className="text-xs text-gray-500 mt-2">
+            Upload product image
+          </p>
+        </div>
+
+        {/* BUTTON */}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full py-3 rounded-full bg-black text-white font-medium tracking-wide 
+          hover:bg-red-500 transition-all duration-300 shadow-md hover:scale-[1.02]"
+        >
+          {loading ? "Adding..." : "Save Product"}
+        </button>
+      </form>
+    </div>
   );
 }

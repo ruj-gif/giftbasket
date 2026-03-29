@@ -9,6 +9,7 @@ export default function ShopPage() {
   const [openCategory, setOpenCategory] = useState("");
   const [search, setSearch] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
 
   // ✅ CATEGORY DATA
   const categories = [
@@ -47,26 +48,34 @@ export default function ShopPage() {
     { name: "Handicraft Items", sub: [] },
     { name: "Home Decor", sub: [] },
     { name: "Chocolate & Hampers", sub: [] },
-    { name: "Islamic Gifts", sub: [] },
-    { name: "Personalise Sticker & Badges", sub: [] },
   ];
 
-  // ✅ LOAD PRODUCTS
+  // ✅ LOAD PRODUCTS (FIXED)
   useEffect(() => {
     const loadProducts = async () => {
       try {
-        const data = await api.getProducts();
-        setProducts(data || []);
-        setFiltered(data || []);
+        const response = await api.products.getAll();
+
+        if (response.success) {
+          // ✅ ONLY SHOW PUBLISHED
+          const publishedProducts = response.data.filter(
+            (p) => p.published !== false
+          );
+
+          setProducts(publishedProducts);
+          setFiltered(publishedProducts);
+        }
       } catch (err) {
         console.error(err);
+      } finally {
+        setLoading(false);
       }
     };
 
     loadProducts();
   }, []);
 
-  // ✅ FILTER
+  // ✅ FILTER FUNCTION
   const handleFilter = (category, searchText = search) => {
     setActiveCategory(category);
 
@@ -80,7 +89,7 @@ export default function ShopPage() {
 
     if (searchText) {
       data = data.filter((p) =>
-        p.name.toLowerCase().includes(searchText.toLowerCase())
+        p.name?.toLowerCase().includes(searchText.toLowerCase())
       );
     }
 
@@ -93,7 +102,6 @@ export default function ShopPage() {
 
       {/* 🔥 SIDEBAR */}
       <div className="w-64 bg-white p-4 overflow-y-auto border-r">
-
         <h2 className="text-xl font-semibold mb-4">Categories</h2>
 
         {categories.map((cat, i) => (
@@ -108,7 +116,7 @@ export default function ShopPage() {
                   handleFilter(cat.name);
                 }
               }}
-              className={`flex justify-between items-center cursor-pointer p-2 rounded 
+              className={`flex justify-between items-center cursor-pointer p-2 rounded
               ${activeCategory === cat.name ? "bg-black text-white" : "hover:bg-gray-200"}`}
             >
               <span>{cat.name}</span>
@@ -118,7 +126,6 @@ export default function ShopPage() {
             {/* SUB CATEGORY */}
             {openCategory === cat.name && cat.sub.length > 0 && (
               <div className="ml-4 mt-2 space-y-1 max-h-40 overflow-y-auto">
-
                 {cat.sub.map((sub, j) => (
                   <div
                     key={j}
@@ -129,10 +136,8 @@ export default function ShopPage() {
                     {sub}
                   </div>
                 ))}
-
               </div>
             )}
-
           </div>
         ))}
       </div>
@@ -152,22 +157,26 @@ export default function ShopPage() {
           }}
         />
 
+        {/* LOADING */}
+        {loading && (
+          <p className="text-center text-gray-500">Loading products...</p>
+        )}
+
         {/* MESSAGE */}
-        {message && (
+        {!loading && message && (
           <p className="text-center text-gray-500 text-lg mb-6">
             {message}
           </p>
         )}
 
         {/* PRODUCTS */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-          {filtered.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-
-        </div>
-
+        {!loading && filtered.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {filtered.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

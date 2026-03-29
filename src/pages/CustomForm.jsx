@@ -1,97 +1,86 @@
-import React, { useState } from "react";
+import React from "react";
 
 export default function CustomForm() {
-  const [form, setForm] = useState({
-    name: "",
-    phone: "",
-    product: "",
-    message: ""
-  });
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    // 🔥 YOUR WHATSAPP NUMBER (CHANGE THIS)
-    const ownerNumber = "919674243961"; // include country code
-
-    const text = `Hello! I want to customize a product:
-
-Name: ${form.name}
-Phone: ${form.phone}
-Product: ${form.product}
-Details: ${form.message}`;
-
-    const whatsappURL = `https://wa.me/${ownerNumber}?text=${encodeURIComponent(text)}`;
-
-    window.open(whatsappURL, "_blank");
-  };
-
   return (
-    <div style={{ padding: "40px", maxWidth: "600px", margin: "auto" }}>
-      <h2 style={{ marginBottom: "20px" }}>✨ Customize Your Product</h2>
+    <div className="min-h-screen bg-gradient-to-b from-[#fafafa] to-[#fff] flex items-center justify-center px-4 py-16">
 
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-        
-        <input
-          type="text"
-          name="name"
-          placeholder="Your Name"
-          required
-          onChange={handleChange}
-          style={inputStyle}
-        />
+      {/* CARD */}
+      <div className="w-full max-w-2xl bg-white/80 backdrop-blur-lg p-10 rounded-3xl shadow-2xl border border-gray-100">
 
-        <input
-          type="tel"
-          name="phone"
-          placeholder="Phone Number"
-          required
-          onChange={handleChange}
-          style={inputStyle}
-        />
+        {/* TITLE */}
+        <h2 className="text-2xl md:text-3xl font-semibold text-center mb-2 italic">
+          ✨ Customize Your Product
+        </h2>
 
-        <input
-          type="text"
-          name="product"
-          placeholder="Which product?"
-          required
-          onChange={handleChange}
-          style={inputStyle}
-        />
+        <p className="text-center text-gray-500 mb-8 text-sm">
+          Tell us your idea — we’ll create something beautiful for you 💝
+        </p>
 
-        <textarea
-          name="message"
-          placeholder="Describe your customization..."
-          required
-          onChange={handleChange}
-          style={{ ...inputStyle, height: "100px" }}
-        />
+        {/* FORM */}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
 
-        <button type="submit" style={buttonStyle}>
-          Send on WhatsApp 
-        </button>
-      </form>
+            const name = e.target.name.value;
+            const phone = e.target.phone.value;
+            const product = e.target.product.value;
+            const message = e.target.message.value;
+
+            const whatsappNumber = "919674243961"; // 🔥 replace with your real number
+
+            const text = `Hello! I'm ${name}
+📞 Phone: ${phone}
+🛍 Product: ${product}
+
+✨ Customization:
+${message}`;
+
+            const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`;
+
+            console.log(url); // debug
+
+            window.open(url, "_blank"); // ✅ THIS REDIRECTS
+          }}
+          className="space-y-5"
+        >
+          {/* INPUTS */}
+          <input
+            name="name"
+            placeholder="Your Name"
+            required
+            className="w-full border border-gray-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-red-400"
+          />
+
+          <input
+            name="phone"
+            placeholder="Phone Number"
+            required
+            className="w-full border border-gray-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-red-400"
+          />
+
+          <input
+            name="product"
+            placeholder="Which product?"
+            className="w-full border border-gray-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-red-400"
+          />
+
+          <textarea
+            name="message"
+            placeholder="Describe your customization..."
+            rows="4"
+            className="w-full border border-gray-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-red-400"
+          />
+
+          {/* BUTTON */}
+          <button
+            type="submit"
+            className="w-full py-3 rounded-full bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold tracking-wide shadow-md hover:scale-[1.02] transition"
+          >
+            💬 Send on WhatsApp
+          </button>
+        </form>
+
+      </div>
     </div>
   );
 }
-
-const inputStyle = {
-  padding: "10px",
-  borderRadius: "6px",
-  border: "1px solid #ccc",
-  fontSize: "14px"
-};
-
-const buttonStyle = {
-  background: "#25D366",
-  color: "#fff",
-  border: "none",
-  padding: "12px",
-  borderRadius: "6px",
-  cursor: "pointer",
-  fontWeight: "bold"
-};
