@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { api, saveFavourite } from "../lib/api";
+import { api } from "../lib/api";
+import ProductCard from "../components/ProductCard";
 
 export default function ShopPage() {
   const [products, setProducts] = useState([]);
   const [filtered, setFiltered] = useState([]);
-  const [openCategory, setOpenCategory] = useState(null);
-  const [favourites, setFavourites] = useState([]);
+  const [activeCategory, setActiveCategory] = useState("");
+  const [openCategory, setOpenCategory] = useState("");
   const [search, setSearch] = useState("");
+  const [message, setMessage] = useState("");
 
-  // ✅ CATEGORIES
+  // ✅ CATEGORY DATA
   const categories = [
     {
       name: "Personalised Gifts",
@@ -39,41 +41,40 @@ export default function ShopPage() {
       name: "Corporate Gifts",
       sub: ["Seasonal Gift", "Hampers", "Others"],
     },
-    {
-      name: "Ready-to-get Gifts",
-      sub: ["Show Pieces", "Mycological Gifts", "Mugs", "Handicrafts"],
-    },
-    { name: "Gifts for Kids" },
-    { name: "Trophies and Mementos" },
-    { name: "Handicraft Items" },
-    { name: "Home Decor" },
-    { name: "Chocolate & Hampers" },
-    { name: "Islamic Gifts" },
-    { name: "Personalise Sticker & Badges" },
+    { name: "Ready-to-get Gifts", sub: [] },
+    { name: "Gifts for Kids", sub: [] },
+    { name: "Trophies and Mementos", sub: [] },
+    { name: "Handicraft Items", sub: [] },
+    { name: "Home Decor", sub: [] },
+    { name: "Chocolate & Hampers", sub: [] },
+    { name: "Islamic Gifts", sub: [] },
+    { name: "Personalise Sticker & Badges", sub: [] },
   ];
 
   // ✅ LOAD PRODUCTS
   useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const data = await api.getProducts();
+        setProducts(data || []);
+        setFiltered(data || []);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
     loadProducts();
   }, []);
 
-  const loadProducts = async () => {
-    const data = await api.getProducts();
-    setProducts(data || []);
-    setFiltered(data || []);
-  };
-
-  // ✅ FILTER FUNCTION
+  // ✅ FILTER
   const handleFilter = (category, searchText = search) => {
+    setActiveCategory(category);
+
     let data = products;
 
     if (category) {
-      data = data.filter(
-        (p) =>
-          (p.category &&
-            p.category.toLowerCase().includes(category.toLowerCase())) ||
-          (p.subcategory &&
-            p.subcategory.toLowerCase().includes(category.toLowerCase()))
+      data = data.filter((p) =>
+        p.category?.toLowerCase().includes(category.toLowerCase())
       );
     }
 
@@ -84,77 +85,51 @@ export default function ShopPage() {
     }
 
     setFiltered(data);
-  };
-
-  // 🛒 ADD TO CART
-  const handleAddToCart = (product) => {
-    alert(`${product.name} added to cart 🛒`);
-  };
-
-  // ❤️ FAVOURITE
-  const toggleFavourite = async (product) => {
-    await saveFavourite(product);
-
-    const isFav = favourites.includes(product.id);
-
-    setFavourites((prev) =>
-      isFav
-        ? prev.filter((id) => id !== product.id)
-        : [...prev, product.id]
-    );
-
-    alert(
-      isFav
-        ? `${product.name} removed from favourites`
-        : `${product.name} added to favourites ❤️`
-    );
+    setMessage(data.length === 0 ? "Coming Soon 🚀" : "");
   };
 
   return (
-    <div className="flex">
+    <div className="flex min-h-screen bg-gray-100">
 
-      {/* ================= SIDEBAR ================= */}
-      <div className="w-72 p-6 border-r h-screen overflow-y-auto">
+      {/* 🔥 SIDEBAR */}
+      <div className="w-64 bg-white p-4 overflow-y-auto border-r">
 
-        <h2 className="text-xl mb-4 font-semibold">Categories</h2>
+        <h2 className="text-xl font-semibold mb-4">Categories</h2>
 
-        {categories.map((cat, index) => (
-          <div key={index} className="mb-2">
+        {categories.map((cat, i) => (
+          <div key={i} className="mb-2">
 
             {/* MAIN CATEGORY */}
             <div
               onClick={() => {
-                const isOpen = openCategory === cat.name;
-                setOpenCategory(isOpen ? null : cat.name);
-                handleFilter(cat.name);
+                if (cat.sub.length > 0) {
+                  setOpenCategory(openCategory === cat.name ? "" : cat.name);
+                } else {
+                  handleFilter(cat.name);
+                }
               }}
-              className={`flex justify-between items-center cursor-pointer px-3 py-2 rounded-lg transition ${
-                openCategory === cat.name
-                  ? "bg-black text-white"
-                  : "hover:bg-gray-100"
-              }`}
+              className={`flex justify-between items-center cursor-pointer p-2 rounded 
+              ${activeCategory === cat.name ? "bg-black text-white" : "hover:bg-gray-200"}`}
             >
               <span>{cat.name}</span>
-
-              {cat.sub && (
-                <span>
-                  {openCategory === cat.name ? "−" : "+"}
-                </span>
-              )}
+              {cat.sub.length > 0 && <span>+</span>}
             </div>
 
-            {/* SUBCATEGORY */}
-            {cat.sub && openCategory === cat.name && (
-              <div className="ml-3 mt-2 max-h-40 overflow-y-auto border rounded-lg p-2 space-y-2 bg-gray-50">
-                {cat.sub.map((sub, i) => (
-                  <p
-                    key={i}
+            {/* SUB CATEGORY */}
+            {openCategory === cat.name && cat.sub.length > 0 && (
+              <div className="ml-4 mt-2 space-y-1 max-h-40 overflow-y-auto">
+
+                {cat.sub.map((sub, j) => (
+                  <div
+                    key={j}
                     onClick={() => handleFilter(sub)}
-                    className="cursor-pointer text-gray-600 hover:text-black px-2 py-1 rounded hover:bg-gray-200"
+                    className={`cursor-pointer p-1 rounded text-sm
+                    ${activeCategory === sub ? "bg-black text-white" : "hover:bg-gray-200"}`}
                   >
                     {sub}
-                  </p>
+                  </div>
                 ))}
+
               </div>
             )}
 
@@ -162,68 +137,33 @@ export default function ShopPage() {
         ))}
       </div>
 
-      {/* ================= PRODUCTS ================= */}
-      <div className="flex-1 p-8">
+      {/* 🔥 MAIN CONTENT */}
+      <div className="flex-1 p-6">
 
-        {/* 🔍 SEARCH */}
-        <div className="mb-6">
-          <input
-            type="text"
-            placeholder="Search products..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              handleFilter(openCategory, e.target.value);
-            }}
-            className="w-full border px-4 py-3 rounded-full outline-none focus:ring-2 focus:ring-black"
-          />
-        </div>
+        {/* SEARCH */}
+        <input
+          type="text"
+          placeholder="Search products..."
+          className="w-full p-3 mb-6 border rounded"
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            handleFilter(activeCategory, e.target.value);
+          }}
+        />
 
-        {/* GRID */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {/* MESSAGE */}
+        {message && (
+          <p className="text-center text-gray-500 text-lg mb-6">
+            {message}
+          </p>
+        )}
+
+        {/* PRODUCTS */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
           {filtered.map((product) => (
-            <div
-              key={product.id}
-              className="border rounded-xl p-4 hover:shadow-lg transition group"
-            >
-              {/* IMAGE */}
-              <div className="overflow-hidden rounded-lg">
-                <img
-                  src={product.image}
-                  className="w-full h-48 object-cover group-hover:scale-110 transition duration-500"
-                />
-              </div>
-
-              {/* INFO */}
-              <h3 className="mt-3 font-semibold">{product.name}</h3>
-              <p className="text-gray-500">₹{product.price}</p>
-
-              {/* ACTIONS */}
-              <div className="flex justify-between mt-3 text-lg">
-
-                {/* CART */}
-                <button
-                  onClick={() => handleAddToCart(product)}
-                  className="hover:scale-110 transition"
-                >
-                  🛒
-                </button>
-
-                {/* FAV */}
-                <button
-                  onClick={() => toggleFavourite(product)}
-                  className={`transition text-xl ${
-                    favourites.includes(product.id)
-                      ? "text-red-500"
-                      : "text-gray-400"
-                  }`}
-                >
-                  ❤️
-                </button>
-
-              </div>
-            </div>
+            <ProductCard key={product.id} product={product} />
           ))}
 
         </div>

@@ -5,24 +5,27 @@ import { QoboBanner } from '@qobo/banner';
 import AboutPage from './pages/AboutPage';
 import { AdminProtectedRoute, initializeAdminAuthFromUrl } from '@qobo/admin-auth';
 
-// Ensure these paths and names match your files
-import { CartProvider } from './contexts/CartContext'; 
+import { CartProvider } from './contexts/CartContext';
 import { SettingsProvider } from './contexts/SettingsContext';
 import { UserProvider } from './contexts/UserContext';
 
 import Navigation from './components/Navigation';
 import Footer from './components/Footer';
+
 import HomePage from './pages/HomePage';
 import ShopPage from './pages/ShopPage';
 import ProductDetailPage from './pages/ProductDetailPage';
-import CartPage from './pages/CartPage'; // This is your Cart.jsx renamed to CartPage.jsx
-import Checkout from './pages/Checkout';
-import CheckoutPage from './pages/Checkout'; // This is your Checkout.jsx renamed to CheckoutPage.jsx
+import CartPage from './pages/CartPage';
+import CheckoutPage from './pages/Checkout';
 import OrderConfirmationPage from './pages/OrderConfirmationPage';
 import LoginPage from './pages/LoginPage';
 import AccountPage from './pages/AccountPage';
 import MyOrdersPage from './pages/MyOrdersPage';
 import ContactPage from './pages/ContactPage';
+
+// ✅ NEW PAGES
+import WishlistPage from "./pages/WishlistPage";
+import CustomForm from "./pages/CustomForm";
 
 // Admin Imports
 import AdminLayout from './components/admin/AdminLayout';
@@ -39,11 +42,11 @@ import HeroSectionsList from './pages/admin/HeroSectionsList';
 import HeroSectionForm from './pages/admin/HeroSectionForm';
 import FeatureBlocksList from './pages/admin/FeatureBlocksList';
 import FeatureBlockForm from './pages/admin/FeatureBlockForm';
-import GeneralSettingsPage from './pages/admin/SettingsPage';
-import PaymentSettingsPage from './pages/admin/PaymentSettingsPage';
 import SettingsPage from './pages/admin/SettingsPage';
-import { siteConfig } from './config/siteConfig';
+import PaymentSettingsPage from './pages/admin/PaymentSettingsPage';
 
+import { siteConfig } from './config/siteConfig';
+import { WishlistProvider } from "./contexts/WishlistContext";
 
 function ThemeInjector() {
   useEffect(() => {
@@ -97,12 +100,14 @@ export default function App() {
     <SettingsProvider>
       <ThemeInjector />
       <UserProvider>
+        <WishlistProvider>
         <CartProvider>
-          <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <Router>
             <ScrollToTop />
             <AnimatedRoutes />
           </Router>
         </CartProvider>
+        </WishlistProvider>
       </UserProvider>
     </SettingsProvider>
   );
@@ -110,19 +115,17 @@ export default function App() {
 
 function AnimatedRoutes() {
   const location = useLocation();
-  
+
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        {/* Public Routes */}
+
+        {/* ✅ PUBLIC ROUTES */}
         <Route path="/" element={<PageWrapper><Navigation /><HomePage /><Footer /></PageWrapper>} />
         <Route path="/shop" element={<PageWrapper><Navigation /><ShopPage /><Footer /></PageWrapper>} />
         <Route path="/product/:slug" element={<PageWrapper><Navigation /><ProductDetailPage /><Footer /></PageWrapper>} />
-        
-        {/* Cart and Checkout Routes - These are now active! */}
         <Route path="/cart" element={<PageWrapper><Navigation /><CartPage /><Footer /></PageWrapper>} />
         <Route path="/checkout" element={<PageWrapper><Navigation /><CheckoutPage /><Footer /></PageWrapper>} />
-        
         <Route path="/order-confirmation/:orderId" element={<PageWrapper><Navigation /><OrderConfirmationPage /><Footer /></PageWrapper>} />
         <Route path="/about" element={<PageWrapper><Navigation /><AboutPage /><Footer /></PageWrapper>} />
         <Route path="/login" element={<PageWrapper><Navigation /><LoginPage /><Footer /></PageWrapper>} />
@@ -130,34 +133,52 @@ function AnimatedRoutes() {
         <Route path="/my-orders" element={<PageWrapper><Navigation /><MyOrdersPage /><Footer /></PageWrapper>} />
         <Route path="/contact" element={<PageWrapper><Navigation /><ContactPage /><Footer /></PageWrapper>} />
 
-        {/* Admin Routes */}
+        {/* ✅ NEW ROUTES (FIXED POSITION) */}
+        <Route path="/wishlist" element={
+  <PageWrapper>
+    <Navigation />
+    <WishlistPage />
+    <Footer />
+  </PageWrapper>
+} />
+
+        <Route path="/customize" element={
+          <PageWrapper>
+            <Navigation />
+            <CustomForm />
+            <Footer />
+          </PageWrapper>
+        } />
+
+        {/* ✅ ADMIN ROUTES */}
         <Route path="/admin/*" element={<AdminLayout />}>
-  <Route index element={<AdminDashboard />} />
-  <Route path="products" element={<ProductsList />} />
-  <Route path="products/new" element={<ProductForm />} />
-  <Route path="products/:id" element={<ProductForm />} />
-  
-  <Route path="categories" element={<CategoriesList />} />
-  <Route path="categories/new" element={<CategoryForm />} />
-  <Route path="categories/:id" element={<CategoryForm />} />
-  
-  <Route path="orders" element={<OrdersList />} />
-  <Route path="orders/:id" element={<OrderDetail />} />
-  
-  <Route path="contact-messages" element={<ContactMessagesList />} />
-  <Route path="contact-messages/:id" element={<ContactMessageDetail />} />
-  
-  <Route path="hero-sections" element={<HeroSectionsList />} />
-  <Route path="hero-sections/new" element={<HeroSectionForm />} />
-  <Route path="hero-sections/:id" element={<HeroSectionForm />} />
-  
-  <Route path="feature-blocks" element={<FeatureBlocksList />} />
-  <Route path="feature-blocks/new" element={<FeatureBlockForm />} />
-  <Route path="feature-blocks/:id" element={<FeatureBlockForm />} />
-  
-  <Route path="settings" element={<SettingsPage />} />
-  <Route path="payment-settings" element={<PaymentSettingsPage />} />
-</Route>
+          <Route index element={<AdminDashboard />} />
+          <Route path="products" element={<ProductsList />} />
+          <Route path="products/new" element={<ProductForm />} />
+          <Route path="products/:id" element={<ProductForm />} />
+
+          <Route path="categories" element={<CategoriesList />} />
+          <Route path="categories/new" element={<CategoryForm />} />
+          <Route path="categories/:id" element={<CategoryForm />} />
+
+          <Route path="orders" element={<OrdersList />} />
+          <Route path="orders/:id" element={<OrderDetail />} />
+
+          <Route path="contact-messages" element={<ContactMessagesList />} />
+          <Route path="contact-messages/:id" element={<ContactMessageDetail />} />
+
+          <Route path="hero-sections" element={<HeroSectionsList />} />
+          <Route path="hero-sections/new" element={<HeroSectionForm />} />
+          <Route path="hero-sections/:id" element={<HeroSectionForm />} />
+
+          <Route path="feature-blocks" element={<FeatureBlocksList />} />
+          <Route path="feature-blocks/new" element={<FeatureBlockForm />} />
+          <Route path="feature-blocks/:id" element={<FeatureBlockForm />} />
+
+          <Route path="settings" element={<SettingsPage />} />
+          <Route path="payment-settings" element={<PaymentSettingsPage />} />
+        </Route>
+
       </Routes>
     </AnimatePresence>
   );
