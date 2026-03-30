@@ -1,17 +1,19 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { QoboBanner } from '@qobo/banner';
-import AboutPage from './pages/AboutPage';
-import { AdminProtectedRoute, initializeAdminAuthFromUrl } from '@qobo/admin-auth';
+import { initializeAdminAuthFromUrl } from '@qobo/admin-auth';
 
+// CONTEXTS
 import { CartProvider } from './contexts/CartContext';
 import { SettingsProvider } from './contexts/SettingsContext';
 import { UserProvider } from './contexts/UserContext';
+import { WishlistProvider } from "./contexts/WishlistContext";
 
+// COMPONENTS
 import Navigation from './components/Navigation';
 import Footer from './components/Footer';
 
+// PAGES
 import HomePage from './pages/HomePage';
 import ShopPage from './pages/ShopPage';
 import ProductDetailPage from './pages/ProductDetailPage';
@@ -22,12 +24,13 @@ import LoginPage from './pages/LoginPage';
 import AccountPage from './pages/AccountPage';
 import MyOrdersPage from './pages/MyOrdersPage';
 import ContactPage from './pages/ContactPage';
+import AboutPage from './pages/AboutPage';
 
-// ✅ NEW PAGES
+// NEW PAGES
 import WishlistPage from "./pages/WishlistPage";
 import CustomForm from "./pages/CustomForm";
 
-// Admin Imports
+// ADMIN
 import AdminLayout from './components/admin/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import ProductsList from './pages/admin/ProductsList';
@@ -45,36 +48,31 @@ import FeatureBlockForm from './pages/admin/FeatureBlockForm';
 import SettingsPage from './pages/admin/SettingsPage';
 import PaymentSettingsPage from './pages/admin/PaymentSettingsPage';
 
+// CONFIG
 import { siteConfig } from './config/siteConfig';
-import { WishlistProvider } from "./contexts/WishlistContext";
 
 function ThemeInjector() {
   useEffect(() => {
     const root = document.documentElement;
     const { theme } = siteConfig;
+
     if (theme) {
-      if (theme.primary) root.style.setProperty('--color-primary', theme.primary);
-      if (theme.primaryLight) root.style.setProperty('--color-primary-light', theme.primaryLight);
-      if (theme.primaryDark) root.style.setProperty('--color-primary-dark', theme.primaryDark);
-      if (theme.secondary) root.style.setProperty('--color-secondary', theme.secondary);
-      if (theme.accent) root.style.setProperty('--color-accent', theme.accent);
-      if (theme.background) root.style.setProperty('--color-background', theme.background);
-      if (theme.backgroundLight) root.style.setProperty('--color-background-light', theme.backgroundLight);
-      if (theme.text) root.style.setProperty('--color-text', theme.text);
-      if (theme.textLight) root.style.setProperty('--color-text-light', theme.textLight);
-      if (theme.border) root.style.setProperty('--color-border', theme.border);
-      if (theme.fontSans) root.style.setProperty('--font-sans', theme.fontSans);
-      if (theme.fontDisplay) root.style.setProperty('--font-display', theme.fontDisplay);
+      Object.entries(theme).forEach(([key, value]) => {
+        if (value) root.style.setProperty(`--${key}`, value);
+      });
     }
   }, []);
+
   return null;
 }
 
 function ScrollToTop() {
   const { pathname } = useLocation();
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
+
   return null;
 }
 
@@ -101,12 +99,12 @@ export default function App() {
       <ThemeInjector />
       <UserProvider>
         <WishlistProvider>
-        <CartProvider>
-          <Router>
-            <ScrollToTop />
-            <AnimatedRoutes />
-          </Router>
-        </CartProvider>
+          <CartProvider>
+            <Router>
+              <ScrollToTop />
+              <AnimatedRoutes />
+            </Router>
+          </CartProvider>
         </WishlistProvider>
       </UserProvider>
     </SettingsProvider>
@@ -125,7 +123,10 @@ function AnimatedRoutes() {
         <Route path="/shop" element={<PageWrapper><Navigation /><ShopPage /><Footer /></PageWrapper>} />
         <Route path="/product/:slug" element={<PageWrapper><Navigation /><ProductDetailPage /><Footer /></PageWrapper>} />
         <Route path="/cart" element={<PageWrapper><Navigation /><CartPage /><Footer /></PageWrapper>} />
+
+        {/* ✅ FIXED CHECKOUT ROUTE (ONLY ONE) */}
         <Route path="/checkout" element={<PageWrapper><Navigation /><CheckoutPage /><Footer /></PageWrapper>} />
+
         <Route path="/order-confirmation/:orderId" element={<PageWrapper><Navigation /><OrderConfirmationPage /><Footer /></PageWrapper>} />
         <Route path="/about" element={<PageWrapper><Navigation /><AboutPage /><Footer /></PageWrapper>} />
         <Route path="/login" element={<PageWrapper><Navigation /><LoginPage /><Footer /></PageWrapper>} />
@@ -133,24 +134,11 @@ function AnimatedRoutes() {
         <Route path="/my-orders" element={<PageWrapper><Navigation /><MyOrdersPage /><Footer /></PageWrapper>} />
         <Route path="/contact" element={<PageWrapper><Navigation /><ContactPage /><Footer /></PageWrapper>} />
 
-        {/* ✅ NEW ROUTES (FIXED POSITION) */}
-        <Route path="/wishlist" element={
-  <PageWrapper>
-    <Navigation />
-    <WishlistPage />
-    <Footer />
-  </PageWrapper>
-} />
+        {/* ✅ EXTRA PAGES */}
+        <Route path="/wishlist" element={<PageWrapper><Navigation /><WishlistPage /><Footer /></PageWrapper>} />
+        <Route path="/customize" element={<PageWrapper><Navigation /><CustomForm /><Footer /></PageWrapper>} />
 
-        <Route path="/customize" element={
-          <PageWrapper>
-            <Navigation />
-            <CustomForm />
-            <Footer />
-          </PageWrapper>
-        } />
-
-        {/* ✅ ADMIN ROUTES */}
+        {/* ✅ ADMIN */}
         <Route path="/admin/*" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
           <Route path="products" element={<ProductsList />} />
