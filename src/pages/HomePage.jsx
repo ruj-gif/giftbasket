@@ -16,9 +16,7 @@ const staggerContainer = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.15
-    }
+    transition: { staggerChildren: 0.15 }
   }
 };
 
@@ -65,7 +63,7 @@ export default function HomePage() {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/80" />
 
-        <motion.div 
+        <motion.div
           className="relative z-10 text-center text-white px-6 w-full max-w-4xl mx-auto"
           initial="hidden"
           animate="visible"
@@ -90,7 +88,7 @@ export default function HomePage() {
       {/* TRUST INDICATORS */}
       <section className="bg-white py-16 border-b border-stone-200 relative z-20">
         <div className="container mx-auto px-6 max-w-6xl">
-          <motion.div 
+          <motion.div
             className="grid grid-cols-1 md:grid-cols-3 gap-10 text-center"
             initial="hidden"
             whileInView="visible"
@@ -102,8 +100,8 @@ export default function HomePage() {
               { icon: <ShieldCheck size={28} className="text-stone-700" />, title: "Artisan Quality", desc: "Curated with the finest global selections." },
               { icon: <Sparkles size={28} className="text-stone-700" />, title: "Bespoke Gifting", desc: "Personalize every detail of your hamper." }
             ].map((item, i) => (
-              <motion.div key={i} variants={fadeUp} className="flex flex-col items-center gap-4 group cursor-default">
-                <div className="w-16 h-16 rounded-full bg-stone-50 flex items-center justify-center border border-stone-100 group-hover:scale-110 group-hover:bg-stone-100 group-hover:shadow-sm transition-all duration-500">
+              <motion.div key={i} variants={fadeUp} className="flex flex-col items-center gap-4">
+                <div className="w-16 h-16 rounded-full bg-stone-50 flex items-center justify-center border border-stone-100">
                   {item.icon}
                 </div>
                 <div>
@@ -116,138 +114,139 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* EXPERIENCES GRID (FEATURED CATEGORIES) */}
-      <section className="py-24 bg-[#fafafa]">
-        <div className="container mx-auto px-6 max-w-7xl">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-serif italic text-stone-900 mb-4">Curated Collections</h2>
-            <div className="w-16 h-[1px] bg-stone-300 mx-auto"></div>
-          </motion.div>
+     {/* CURATED COLLECTIONS */}
+<section className="py-24 bg-[#fafafa]">
+  <div className="container mx-auto px-6 max-w-7xl">
+    <div className="text-center mb-16">
+      <h2 className="text-4xl md:text-5xl font-serif italic text-stone-900 mb-4">
+        Curated Collections
+      </h2>
+      <div className="w-16 h-[1px] bg-stone-300 mx-auto"></div>
+    </div>
 
-          <div className="grid md:grid-cols-2 gap-6 lg:gap-10">
-            {/* Box 1 */}
-            <Link to="/shop?category=Gift Hampers" className="group relative h-[500px] lg:h-[600px] overflow-hidden bg-stone-200">
-              <img
-                src="/unnamed.jpg"
-                alt="Signature Hampers"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 ease-out"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500" />
-              <div className="absolute bottom-0 left-0 p-8 md:p-12 w-full">
-                <p className="text-stone-300 text-xs uppercase tracking-[0.2em] mb-3 font-medium">The Classics</p>
-                <h3 className="text-white text-3xl md:text-4xl font-serif mb-4 flex items-center justify-between">
-                  Signature Hampers
-                  <ArrowRight className="w-6 h-6 transform translate-x-0 group-hover:translate-x-2 transition-transform duration-300" />
-                </h3>
-              </div>
-            </Link>
+    <div className="grid md:grid-cols-2 gap-6 lg:gap-10">
 
-            {/* Box 2 */}
-            <Link to="/shop?category=Personalised Gifts" className="group relative h-[500px] lg:h-[600px] overflow-hidden bg-stone-200">
-              <img
-                src="/unnamed (1).jpg"
-                alt="Bespoke Creation"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 ease-out"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500" />
-              <div className="absolute bottom-0 left-0 p-8 md:p-12 w-full">
-                <p className="text-stone-300 text-xs uppercase tracking-[0.2em] mb-3 font-medium">Custom Build</p>
-                <h3 className="text-white text-3xl md:text-4xl font-serif mb-4 flex items-center justify-between">
-                  Personalised Gifts
-                  <ArrowRight className="w-6 h-6 transform translate-x-0 group-hover:translate-x-2 transition-transform duration-300" />
-                </h3>
-              </div>
-            </Link>
-          </div>
+      {/* CARD 1 */}
+      <Link
+        to="/shop?category=Gift Hampers"
+        className="group relative h-[500px] overflow-hidden"
+      >
+        <img
+          src="/unnamed.jpg"
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+        />
+
+        {/* DARK OVERLAY */}
+        <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition duration-300"></div>
+
+        {/* TEXT */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition duration-300">
+          <h3 className="text-3xl font-serif italic mb-2">
+            Gift Hampers
+          </h3>
+          <p className="text-sm tracking-wide">
+            Explore luxury hampers
+          </p>
         </div>
-      </section>
+      </Link>
 
-      {/* FEATURED PRODUCTS */}
-      <section className="py-24 bg-white relative">
-        <div className="container mx-auto px-6 max-w-7xl">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="flex flex-col md:flex-row md:items-end justify-between mb-16"
-          >
-            <div>
-              <h2 className="text-4xl md:text-5xl font-serif italic text-stone-900 mb-4">Latest Additions</h2>
-              <div className="w-16 h-[1px] bg-stone-300"></div>
-            </div>
-            <Link to="/shop" className="group text-sm uppercase tracking-widest text-stone-500 hover:text-stone-900 transition-colors mt-6 md:mt-0 flex items-center gap-2">
-              View All <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </motion.div>
+      {/* CARD 2 */}
+      <Link to="/customize"
+        className="group relative h-[500px] overflow-hidden"
+      >
+        <img
+          src="/unnamed (1).jpg"
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+        />
 
-          <motion.div 
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={staggerContainer}
-          >
-            {products.slice(0, 8).map((product) => (
-              <motion.div key={product.id} variants={fadeUp} className="group relative bg-[#fdfdfd] border border-stone-100 hover:border-stone-200 hover:shadow-2xl hover:shadow-stone-200/50 transition-all duration-500 rounded-none overflow-hidden flex flex-col">
-                <Link to={`/product/${product.id}`} className="absolute inset-0 z-10" />
-                
-                <div className="h-64 sm:h-72 w-full bg-stone-50 relative overflow-hidden flex items-center justify-center p-6">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="max-h-full max-w-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700 ease-in-out"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/50 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex justify-center">
-                    <span className="text-white text-xs uppercase tracking-widest font-medium">Quick View</span>
-                  </div>
-                </div>
+        {/* DARK OVERLAY */}
+        <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition duration-300"></div>
 
-                <div className="p-6 flex flex-col flex-grow bg-white relative z-0">
-                  <h3 className="text-stone-900 font-serif text-lg mb-2 line-clamp-2 leading-snug group-hover:text-amber-800 transition-colors">
-                    {product.name}
-                  </h3>
-                  <div className="mt-auto pt-4 flex items-center justify-between border-t border-stone-100">
-                    <p className="text-stone-800 font-medium">
-                      ₹{product.price.toLocaleString("en-IN")}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
+        {/* TEXT */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition duration-300">
+          <h3 className="text-3xl font-serif italic mb-2">
+            Personalised Gifts
+          </h3>
+          <p className="text-sm tracking-wide">
+            Customize your gifts
+          </p>
         </div>
-      </section>
+      </Link>
 
-      {/* BRAND STORY SECTION */}
-      <section className="bg-stone-900 text-stone-100 py-32 overflow-hidden relative">
-        <div className="absolute top-0 right-0 w-1/2 h-full bg-stone-800/20 transform skew-x-12 opacity-50" />
-        <div className="container mx-auto px-6 max-w-5xl relative z-10 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1 }}
-          >
-            <Sparkles className="w-8 h-8 mx-auto text-amber-500 mb-8 opacity-70" />
-            <h2 className="text-4xl md:text-6xl font-serif italic mb-8 drop-shadow-sm">The Art of Gifting</h2>
-            <p className="text-stone-300 md:text-lg lg:text-xl font-light leading-relaxed max-w-3xl mx-auto mb-12">
-              Every hamper we create is a testament to quality, luxury, and the joy of giving. From hand-picked artisanal treats to bespoke packaging, we obsess over the details so you can deliver unforgettable moments.
-            </p>
-            <Link to="/about">
-              <button className="px-10 py-4 border border-stone-600 hover:border-white hover:bg-white hover:text-black transition-all duration-300 uppercase text-xs tracking-[0.2em]">
-                Discover Our Story
-              </button>
-            </Link>
-          </motion.div>
+    </div>
+  </div>
+</section>
+
+      {/* PREMIUM STORE EXPERIENCE */}
+<section className="bg-[#0f0f0f] text-white py-28 relative overflow-hidden">
+  <div className="absolute inset-0 bg-gradient-to-r from-black via-stone-900 to-black opacity-80" />
+
+  <div className="relative z-10 max-w-7xl mx-auto px-6">
+
+    <div className="text-center mb-16">
+      <h2 className="text-4xl md:text-5xl font-serif italic mb-4">
+        Visit Our Store
+      </h2>
+      <div className="w-16 h-[1px] bg-stone-500 mx-auto mb-4"></div>
+      <p className="text-stone-400 text-sm">
+        Experience our handcrafted luxury gifting in person
+      </p>
+    </div>
+
+    <div className="grid md:grid-cols-2 gap-12 items-center">
+
+      {/* MAP */}
+      <div className="relative">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3684.6036474333346!2d88.3638738!3d22.5565155!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a0276fdeb418815%3A0x498a37aadcbd26bd!2sGift%20Basket%20-%20Premium%20Gift%20Shop%20%26%20Unique%20Gift%20Idea!5e0!3m2!1sen!2sin!4v1774889644956!5m2!1sen!2sin"
+          className="w-full h-[400px] rounded-xl border border-white/10 shadow-2xl"
+          style={{ border: 0 }}
+          allowFullScreen
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          title="store-location"
+        ></iframe>
+      </div>
+
+      {/* DETAILS */}
+      <div className="space-y-6">
+        <h3 className="text-2xl font-serif italic">
+          Gift Basket Boutique
+        </h3>
+
+        <p className="text-stone-400 text-sm">
+          Step into our boutique and explore curated hampers and bespoke gifting.
+        </p>
+
+        <div className="space-y-2 text-sm text-stone-300">
+          <p><strong>Address:</strong> 2, Abdul Halim Lane, Kolkata</p>
+          <p><strong>Phone:</strong> +91 9674243961</p>
+          <p><strong>Email:</strong> giftbasketkolkata@gmail.com</p>
         </div>
+
+        <a
+          href="https://maps.app.goo.gl/RtZZgAkrZvfMRgq4A"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block px-6 py-3 border border-white text-white text-xs uppercase hover:bg-white hover:text-black transition"
+        >
+          Get Directions
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+      {/* BRAND STORY */}
+      <section className="bg-stone-900 text-stone-100 py-32 text-center">
+        <Sparkles className="w-8 h-8 mx-auto text-amber-500 mb-6" />
+        <h2 className="text-4xl md:text-6xl font-serif italic mb-6">
+          The Art of Gifting
+        </h2>
+        <p className="max-w-2xl mx-auto text-stone-300">
+          Every hamper we create is a testament to quality and luxury.
+        </p>
       </section>
 
     </div>

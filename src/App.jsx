@@ -26,7 +26,10 @@ import MyOrdersPage from './pages/MyOrdersPage';
 import ContactPage from './pages/ContactPage';
 import AboutPage from './pages/AboutPage';
 
-// NEW PAGES
+// ✅ ADD THIS IMPORT
+import TrackOrder from './pages/TrackOrder';
+
+// EXTRA PAGES
 import WishlistPage from "./pages/WishlistPage";
 import CustomForm from "./pages/CustomForm";
 
@@ -118,15 +121,12 @@ function AnimatedRoutes() {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
 
-        {/* ✅ PUBLIC ROUTES */}
+        {/* PUBLIC ROUTES */}
         <Route path="/" element={<PageWrapper><Navigation /><HomePage /><Footer /></PageWrapper>} />
         <Route path="/shop" element={<PageWrapper><Navigation /><ShopPage /><Footer /></PageWrapper>} />
         <Route path="/product/:slug" element={<PageWrapper><Navigation /><ProductDetailPage /><Footer /></PageWrapper>} />
         <Route path="/cart" element={<PageWrapper><Navigation /><CartPage /><Footer /></PageWrapper>} />
-
-        {/* ✅ FIXED CHECKOUT ROUTE (ONLY ONE) */}
         <Route path="/checkout" element={<PageWrapper><Navigation /><CheckoutPage /><Footer /></PageWrapper>} />
-
         <Route path="/order-confirmation/:orderId" element={<PageWrapper><Navigation /><OrderConfirmationPage /><Footer /></PageWrapper>} />
         <Route path="/about" element={<PageWrapper><Navigation /><AboutPage /><Footer /></PageWrapper>} />
         <Route path="/login" element={<PageWrapper><Navigation /><LoginPage /><Footer /></PageWrapper>} />
@@ -134,11 +134,23 @@ function AnimatedRoutes() {
         <Route path="/my-orders" element={<PageWrapper><Navigation /><MyOrdersPage /><Footer /></PageWrapper>} />
         <Route path="/contact" element={<PageWrapper><Navigation /><ContactPage /><Footer /></PageWrapper>} />
 
-        {/* ✅ EXTRA PAGES */}
+        {/* ✅ TRACK ORDER ROUTE (FIXED) */}
+        <Route
+          path="/track-order"
+          element={
+            <PageWrapper>
+              <Navigation />
+              <TrackOrder />
+              <Footer />
+            </PageWrapper>
+          }
+        />
+
+        {/* EXTRA */}
         <Route path="/wishlist" element={<PageWrapper><Navigation /><WishlistPage /><Footer /></PageWrapper>} />
         <Route path="/customize" element={<PageWrapper><Navigation /><CustomForm /><Footer /></PageWrapper>} />
 
-        {/* ✅ ADMIN */}
+        {/* ADMIN */}
         <Route path="/admin/*" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
           <Route path="products" element={<ProductsList />} />
