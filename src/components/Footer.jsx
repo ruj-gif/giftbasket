@@ -12,14 +12,14 @@ import { useSettings } from "../contexts/SettingsContext";
 import { useUser } from "../contexts/UserContext";
 
 export default function Footer() {
- const settingsContext = useSettings();
-const settings = settingsContext?.settings || {};
+  const settingsContext = useSettings();
+  const settings = settingsContext?.settings || {};
   const { isLoggedIn } = useUser();
 
   const siteName = settings?.siteName || "Gift Basket";
   const siteLogo = settings?.siteLogo || "/logoPNG-C.png";
 
-  const contactPhone = settings?.phone || "+91 9674243961";
+  const contactPhone = settings?.phone || "919674243961";
   const contactEmail = settings?.email || "giftbasketkolkata@gmail.com";
   const address =
     settings?.address || "2, Abdul Halim Lane, Kolkata - 700016";
@@ -29,18 +29,18 @@ const settings = settingsContext?.settings || {};
     "https://linktr.ee/giftbasketkolkata";
 
   const socialFacebook =
-  settings?.social_facebook ||
-  "https://www.facebook.com/people/Gift-Basket/100063696037449/?mibextid=ZbWKwL";
+    settings?.social_facebook ||
+    "https://www.facebook.com/people/Gift-Basket/100063696037449/?mibextid=ZbWKwL";
 
-const socialYoutube =
-  settings?.social_youtube ||
-  "https://www.youtube.com/@giftbasket771";
+  const socialYoutube =
+    settings?.social_youtube ||
+    "https://www.youtube.com/@giftbasket771";
   return (
-    <footer className="bg-black text-white py-16 md:py-24">
+    <footer className="bg-stone-900 text-white py-16 md:py-24 border-t border-stone-800">
       <div className="container mx-auto px-4 max-w-7xl">
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-          
+
           {/* BRAND */}
           <div className="space-y-6">
             <Link to="/">
@@ -51,13 +51,13 @@ const socialYoutube =
               />
             </Link>
 
-            <p className="text-gray-400 text-sm">
+            <p className="text-stone-400 text-sm font-light leading-relaxed">
               Crafting beautiful, personalized gift baskets with love since 2017.
             </p>
 
             {/* SOCIAL ICONS */}
-            <div className="flex gap-4 text-gray-400">
-              
+            <div className="flex gap-4 text-stone-500">
+
               <a
                 href={socialInstagram}
                 target="_blank"
@@ -90,22 +90,22 @@ const socialYoutube =
 
           {/* NAVIGATION */}
           <div>
-            <h4 className="text-xs font-bold uppercase mb-6">
+            <h4 className="text-[10px] font-medium tracking-[0.3em] text-stone-400 uppercase mb-6">
               Navigation
             </h4>
-            <ul className="space-y-3 text-sm">
+            <ul className="space-y-3 text-sm font-light">
               <li>
-                <Link to="/" className="text-gray-400 hover:text-white">
+                <Link to="/" className="text-stone-400 hover:text-white transition-colors">
                   Home
                 </Link>
               </li>
               <li>
-                <Link to="/shop" className="text-gray-400 hover:text-white">
+                <Link to="/shop" className="text-stone-400 hover:text-white transition-colors">
                   Shop
                 </Link>
               </li>
               <li>
-                <Link to="/about" className="text-gray-400 hover:text-white">
+                <Link to="/about" className="text-stone-400 hover:text-white transition-colors">
                   About Us
                 </Link>
               </li>
@@ -114,7 +114,7 @@ const socialYoutube =
                 <li>
                   <Link
                     to="/my-orders"
-                    className="text-gray-400 hover:text-white"
+                    className="text-stone-400 hover:text-white transition-colors"
                   >
                     My Orders
                   </Link>
@@ -122,7 +122,7 @@ const socialYoutube =
               )}
 
               <li>
-                <Link to="/contact" className="text-gray-400 hover:text-white">
+                <Link to="/contact" className="text-stone-400 hover:text-white transition-colors">
                   Contact
                 </Link>
               </li>
@@ -131,35 +131,35 @@ const socialYoutube =
 
           {/* CONTACT */}
           <div>
-            <h4 className="text-xs font-bold uppercase mb-6">
+            <h4 className="text-[10px] font-medium tracking-[0.3em] text-stone-400 uppercase mb-6">
               Contact
             </h4>
 
-            <ul className="space-y-4 text-sm text-gray-400">
-              
+            <ul className="space-y-4 text-sm text-stone-400 font-light">
+
               <li className="flex items-center gap-3">
-                <Phone size={16} />
+                <Phone size={16} className="text-stone-500" />
                 <a
                   href={`tel:${contactPhone}`}
-                  className="hover:text-white"
+                  className="hover:text-white transition-colors"
                 >
                   {contactPhone}
                 </a>
               </li>
 
               <li className="flex items-center gap-3">
-                <Mail size={16} />
+                <Mail size={16} className="text-stone-500" />
                 <a
                   href={`mailto:${contactEmail}`}
-                  className="hover:text-white"
+                  className="hover:text-white transition-colors"
                 >
                   {contactEmail}
                 </a>
               </li>
 
               <li className="flex items-start gap-3">
-                <MapPin size={16} className="mt-1" />
-                <span>{address}</span>
+                <MapPin size={16} className="mt-1 text-stone-500" />
+                <span className="leading-relaxed">{address}</span>
               </li>
 
             </ul>
@@ -167,11 +167,11 @@ const socialYoutube =
 
           {/* CTA */}
           <div>
-            <h4 className="text-xs font-bold uppercase mb-6">
+            <h4 className="text-[10px] font-medium tracking-[0.3em] text-stone-400 uppercase mb-6">
               Order Now
             </h4>
 
-            <p className="text-gray-400 text-sm mb-6">
+            <p className="text-stone-400 text-sm mb-6 font-light leading-relaxed">
               Order custom hampers directly via Instagram or Linktree.
             </p>
 
@@ -188,8 +188,8 @@ const socialYoutube =
         </div>
 
         {/* BOTTOM */}
-        <div className="border-t border-white/10 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-400 gap-4">
-          
+        <div className="border-t border-stone-800 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-stone-500 gap-4 font-light tracking-wide">
+
           <p>
             © {new Date().getFullYear()} {siteName}
           </p>

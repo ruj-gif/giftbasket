@@ -9,11 +9,11 @@ export default function CustomForm() {
 
         {/* TITLE */}
         <h2 className="text-2xl md:text-3xl font-semibold text-center mb-2 italic">
-          ✨ Customize Your Product
+          Customize Your Product
         </h2>
 
         <p className="text-center text-gray-500 mb-8 text-sm">
-          Tell us your idea — we’ll create something beautiful for you 💝
+          Tell us your idea — we’ll create something beautiful for you
         </p>
 
         {/* FORM */}
@@ -26,60 +26,59 @@ export default function CustomForm() {
             const product = e.target.product.value;
             const message = e.target.message.value;
 
-            const whatsappNumber = "919674243961"; // 🔥 replace with your real number
+            const whatsappNumber = "919674243961";
 
-            const text = `Hello! I'm ${name}
-📞 Phone: ${phone}
-🛍 Product: ${product}
+            const text = `Hello, my name is ${name}
+Phone: ${phone}
+Product: ${product}
 
-✨ Customization:
+Customization Details:
 ${message}`;
 
             const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`;
 
-            console.log(url); // debug
-
-            window.open(url, "_blank"); // ✅ THIS REDIRECTS
+            window.open(url, "_blank");
           }}
           className="space-y-5"
         >
+
           {/* INPUTS */}
           <input
             name="name"
             placeholder="Your Name"
             required
-            className="w-full border border-gray-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-red-400"
+            className="w-full border border-gray-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-black/20"
           />
 
           <input
             name="phone"
             placeholder="Phone Number"
             required
-            className="w-full border border-gray-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-red-400"
+            className="w-full border border-gray-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-black/20"
           />
 
           <input
             name="product"
             placeholder="Which product?"
-            className="w-full border border-gray-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-red-400"
+            className="w-full border border-gray-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-black/20"
           />
 
           <textarea
             name="message"
             placeholder="Describe your customization..."
             rows="4"
-            className="w-full border border-gray-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-red-400"
+            className="w-full border border-gray-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-black/20"
           />
 
           {/* BUTTON */}
           <button
             type="submit"
-            className="w-full py-3 rounded-full bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold tracking-wide shadow-md hover:scale-[1.02] transition"
+            className="w-full py-3 rounded-full bg-green-600 text-white font-semibold tracking-wide shadow-md hover:bg-green-700 transition"
           >
-            💬 Send on WhatsApp
+            Send on WhatsApp
           </button>
-        </form>
 
+        </form>
       </div>
     </div>
   );

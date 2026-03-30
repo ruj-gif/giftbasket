@@ -18,21 +18,7 @@ export default function ProductCard({ product }) {
       {/* 🧱 PRODUCT CARD */}
       <div
         onClick={() => setShowModal(true)}
-        style={{
-          borderRadius: "12px",
-          overflow: "hidden",
-          boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
-          transition: "0.3s",
-          background: "#fff",
-          position: "relative",
-          cursor: "pointer"
-        }}
-        onMouseEnter={(e) =>
-          (e.currentTarget.style.transform = "translateY(-8px)")
-        }
-        onMouseLeave={(e) =>
-          (e.currentTarget.style.transform = "translateY(0)")
-        }
+        className="group relative bg-[#fdfdfd] border border-stone-100 hover:border-stone-200 hover:-translate-y-2 hover:shadow-2xl hover:shadow-stone-200/50 transition-all duration-500 rounded-none overflow-hidden flex flex-col cursor-pointer"
       >
         {/* ❤️ WISHLIST */}
         <button
@@ -82,23 +68,18 @@ export default function ProductCard({ product }) {
         )}
 
         {/* IMAGE */}
-        <div style={{ height: "220px", overflow: "hidden" }}>
+        <div className="h-64 sm:h-72 w-full bg-stone-50 relative overflow-hidden flex items-center justify-center p-6">
           <img
             src={product.image}
             alt={product.name}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              transition: "0.4s"
-            }}
+            className="max-h-full max-w-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700 ease-in-out"
           />
         </div>
 
         {/* DETAILS */}
-        <div style={{ padding: "12px" }}>
-          <h4>{product.name}</h4>
-          <p style={{ fontWeight: "bold" }}>₹ {product.price}</p>
+        <div className="p-6 flex flex-col flex-grow bg-white relative z-0">
+          <h4 className="text-stone-900 font-serif text-lg mb-2 line-clamp-2 leading-snug group-hover:text-amber-800 transition-colors">{product.name}</h4>
+          <p className="text-stone-800 font-medium pt-2">₹ {product.price}</p>
 
           {/* 🛒 ADD TO CART */}
           <button
@@ -126,15 +107,7 @@ export default function ProductCard({ product }) {
           {/* 🛒 CART POPUP */}
           {showPopup && (
             <div
-              style={{
-                marginTop: "8px",
-                background: "#000",
-                color: "#fff",
-                padding: "5px",
-                borderRadius: "5px",
-                fontSize: "12px",
-                textAlign: "center"
-              }}
+              className="mt-3 bg-stone-900 text-white p-2 rounded-none text-xs text-center uppercase tracking-widest absolute bottom-2 left-4 right-4"
             >
               Added to cart ✅
             </div>
@@ -180,8 +153,8 @@ export default function ProductCard({ product }) {
               }}
             />
 
-            <h3>{product.name}</h3>
-            <p style={{ fontWeight: "bold" }}>₹ {product.price}</p>
+            <h3 className="text-2xl font-serif italic text-stone-900 mb-2">{product.name}</h3>
+            <p className="text-stone-800 font-medium mb-4">₹ {product.price}</p>
 
             <button
               onClick={() => setShowModal(false)}

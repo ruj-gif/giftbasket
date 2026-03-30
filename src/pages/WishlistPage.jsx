@@ -10,14 +10,14 @@ export default function WishlistPage() {
     <div className="min-h-screen bg-[#fafafa] px-6 py-10">
 
       {/* TITLE */}
-      <h2 className="text-3xl font-semibold mb-8 flex items-center gap-2">
-        ❤️ Wishlist
+      <h2 className="text-4xl font-serif italic text-stone-900 border-b border-stone-200 pb-4 mb-8">
+        Wishlist
       </h2>
 
       {/* EMPTY STATE */}
       {wishlist.length === 0 && (
-        <div className="text-center mt-20 text-gray-500">
-          No items in wishlist 💔
+        <div className="text-center mt-20 text-stone-500 uppercase tracking-widest text-sm font-medium">
+          No items in wishlist
         </div>
       )}
 
@@ -26,15 +26,15 @@ export default function WishlistPage() {
         {wishlist.map((product) => (
           <div
             key={product.id}
-            className="bg-white rounded-2xl shadow hover:shadow-xl transition overflow-hidden group"
+            className="bg-[#fdfdfd] border border-stone-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden group rounded-none relative"
           >
 
             {/* IMAGE */}
-            <div className="relative">
+            <div className="relative bg-stone-50 h-48 flex items-center justify-center p-4">
               <img
                 src={product.image}
                 alt={product.name}
-                className="h-48 w-full object-cover group-hover:scale-105 transition duration-300"
+                className="max-h-full max-w-full object-contain mix-blend-multiply group-hover:scale-105 transition duration-500"
               />
 
               {/* ❤️ REMOVE */}
@@ -47,12 +47,12 @@ export default function WishlistPage() {
             </div>
 
             {/* DETAILS */}
-            <div className="p-4">
-              <h4 className="font-medium text-sm mb-1">
+            <div className="p-6">
+              <h4 className="font-serif text-lg text-stone-900 mb-2 truncate">
                 {product.name}
               </h4>
 
-              <p className="text-red-600 font-semibold mb-3">
+              <p className="text-stone-800 font-medium mb-4">
                 ₹ {product.price}
               </p>
 

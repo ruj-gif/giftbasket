@@ -94,22 +94,22 @@ export default function LoginPage() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen bg-gradient-to-br from-[#f8f5f2] to-white py-12 md:py-20 flex items-center"
+      className="min-h-screen bg-[#fafafa] py-12 md:py-24 flex items-center"
     >
-      <div className="container mx-auto px-4 max-w-xl">
+      <div className="container mx-auto px-6 max-w-xl">
 
         {/* HEADER */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black text-white mb-6">
-            <ShieldCheck className="w-4 h-4" />
-            <span className="text-[10px] uppercase tracking-[0.2em]">Secure Access</span>
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 border border-stone-200 bg-white/50 text-stone-600 mb-6">
+            <ShieldCheck className="w-4 h-4 text-amber-700" />
+            <span className="text-[10px] font-medium uppercase tracking-[0.3em]">Secure Access</span>
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-semibold text-gray-900 mb-4">
+          <h1 className="text-4xl md:text-5xl font-serif italic text-stone-900 mb-4 drop-shadow-sm">
             {mode === 'login' ? 'Welcome Back' : 'Create Account'}
           </h1>
 
-          <p className="text-gray-500 text-sm">
+          <p className="text-stone-500 font-light text-sm">
             {mode === 'login'
               ? 'Login to manage your orders'
               : 'Create an account to track your orders'}
@@ -120,45 +120,45 @@ export default function LoginPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white/70 backdrop-blur-xl p-8 sm:p-10 rounded-3xl shadow-xl border border-white/30"
+          className="bg-[#fdfdfd] border border-stone-200 p-8 sm:p-12 shadow-sm relative rounded-none"
         >
           <form onSubmit={handleSubmit} className="space-y-6">
 
             {mode === 'register' && (
               <div>
-                <label className="text-xs text-gray-400">Full Name *</label>
+                <label className="text-[10px] font-medium text-stone-400 uppercase tracking-widest">Full Name *</label>
                 <input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  className="w-full mt-2 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black/20 outline-none"
+                  className="w-full mt-2 px-4 py-4 border border-stone-200 rounded-none bg-white focus:border-stone-500 outline-none transition-all font-sans text-sm text-stone-800"
                 />
               </div>
             )}
 
             <div>
-              <label className="text-xs text-gray-400">Email Address *</label>
+              <label className="text-[10px] font-medium text-stone-400 uppercase tracking-widest">Email Address *</label>
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full mt-2 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black/20 outline-none"
+                className="w-full mt-2 px-4 py-4 border border-stone-200 rounded-none bg-white focus:border-stone-500 outline-none transition-all font-sans text-sm text-stone-800"
               />
             </div>
 
             <div>
-              <label className="text-xs text-gray-400">Password *</label>
+              <label className="text-[10px] font-medium text-stone-400 uppercase tracking-widest">Password *</label>
               <input
                 type="password"
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
                 required
-                className="w-full mt-2 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black/20 outline-none"
+                className="w-full mt-2 px-4 py-4 border border-stone-200 rounded-none bg-white focus:border-stone-500 outline-none transition-all font-sans text-sm text-stone-800"
               />
             </div>
 

@@ -61,27 +61,27 @@ export default function ProductDetailPage() {
   const currency = theme.currency || '₹';
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-background-light py-6 sm:py-8">
-      <div className="container mx-auto px-4">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-[#fafafa] py-10 sm:py-16">
+      <div className="container mx-auto px-6 max-w-6xl">
         <motion.div
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
-          className="flex items-center space-x-2 text-sm text-text-light mb-8 font-medium"
+          className="flex items-center space-x-2 text-[10px] uppercase tracking-widest text-stone-400 mb-10 font-medium"
         >
-          <Link to="/" className="hover:text-primary transition-colors">Home</Link>
-          <ChevronRight className="w-4 h-4 opacity-50" />
-          <Link to="/shop" className="hover:text-primary transition-colors">Shop</Link>
-          <ChevronRight className="w-4 h-4 opacity-50" />
-          <span className="text-secondary font-bold">{product.name}</span>
+          <Link to="/" className="hover:text-amber-800 transition-colors">Home</Link>
+          <ChevronRight className="w-3 h-3 opacity-50" />
+          <Link to="/shop" className="hover:text-amber-800 transition-colors">Shop</Link>
+          <ChevronRight className="w-3 h-3 opacity-50" />
+          <span className="text-stone-900 font-bold">{product.name}</span>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 bg-white rounded-2xl p-4 sm:p-6 lg:p-10 shadow-elegant mb-8 sm:mb-12 border border-border/40 overflow-hidden relative">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 bg-[#fdfdfd] border border-stone-200 p-8 sm:p-12 mb-12 relative">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="aspect-[3/4] rounded-xl overflow-hidden bg-background-light mb-6 border border-border/20 group">
+            <div className="aspect-[3/4] overflow-hidden bg-stone-50 mb-6 border border-stone-100 group">
               <motion.img
                 whileHover={{ scale: 1.08 }}
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -97,41 +97,41 @@ export default function ProductDetailPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
           >
-            <h1 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold mb-4 text-secondary leading-tight uppercase tracking-tight">{product.name}</h1>
+            <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-normal italic mb-6 text-stone-900 leading-tight">{product.name}</h1>
 
             {product.category && (
-              <p className="text-xs font-bold text-primary uppercase tracking-[0.2em] mb-6 inline-block bg-primary/10 px-4 py-1.5 rounded-full">
+              <p className="text-[10px] font-medium text-stone-600 uppercase tracking-[0.2em] mb-8 inline-block bg-stone-100 border border-stone-200 px-4 py-1.5">
                 {product.category}
               </p>
             )}
 
-            <motion.div className="mb-8 p-8 bg-background-light rounded-xl border border-border/30">
+            <motion.div className="mb-10 p-8 bg-stone-50 border border-stone-200 relative">
               <div className="flex items-baseline space-x-4 mb-2">
-                <span className="font-display text-5xl font-black text-secondary tracking-tighter">
+                <span className="font-serif text-4xl text-stone-900">
                   {currency}{price.toLocaleString()}
                 </span>
                 {originalPrice && (
-                  <span className="text-2xl text-text-light line-through font-medium tracking-tighter">
+                  <span className="text-xl text-stone-400 line-through font-light">
                     {currency}{originalPrice.toLocaleString()}
                   </span>
                 )}
               </div>
               {discount && (
-                <div className="inline-flex items-center gap-2 bg-black text-white px-4 py-1.5 rounded-lg text-xs font-black uppercase tracking-[0.1em]">
-                  <Sparkles className="w-3 h-3" />
+                <div className="inline-flex items-center gap-2 bg-stone-900 text-white px-3 py-1.5 text-[10px] uppercase font-medium tracking-widest absolute top-0 -translate-y-1/2 right-8">
+                  <Sparkles className="w-3 h-3 text-amber-500" />
                   Save {discount}% OFF
                 </div>
               )}
             </motion.div>
 
-            <div className="mb-8">
-              <h3 className="text-xs font-black uppercase tracking-[0.2em] text-text-light mb-4">{productContent.descriptionTitle || 'Description'}</h3>
-              <p className="text-text-light leading-relaxed text-sm md:text-base font-medium">{product.description}</p>
+            <div className="mb-10">
+              <h3 className="text-[10px] font-medium uppercase tracking-[0.3em] text-stone-900 mb-4">{productContent.descriptionTitle || 'Description'}</h3>
+              <p className="text-stone-500 leading-relaxed text-sm font-light">{product.description}</p>
             </div>
 
             {sizes.length > 0 && (
-              <motion.div className="mb-8">
-                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-text-light mb-4">{productContent.selectSize || 'Select Size'}</h3>
+              <motion.div className="mb-10">
+                <h3 className="text-[10px] font-medium uppercase tracking-[0.3em] text-stone-900 mb-4">{productContent.selectSize || 'Select Size'}</h3>
                 <div className="flex flex-wrap gap-3">
                   {sizes.map((size) => (
                     <motion.button
@@ -153,7 +153,7 @@ export default function ProductDetailPage() {
             )}
 
             <motion.div className="mb-10">
-              <h3 className="text-xs font-black uppercase tracking-[0.2em] text-text-light mb-4">{productContent.quantity || 'Quantity'}</h3>
+              <h3 className="text-[10px] font-medium uppercase tracking-[0.3em] text-stone-900 mb-4">{productContent.quantity || 'Quantity'}</h3>
               <div className="flex items-center gap-2 bg-background-light rounded-xl w-fit p-1.5 border border-border/30">
                 <motion.button
                   whileHover={{ scale: 1.1 }}
@@ -194,24 +194,24 @@ export default function ProductDetailPage() {
               </motion.button>
             </div>
 
-            <motion.div className="space-y-4 border-t border-border/60 pt-8">
-              <div className="flex items-center gap-4 text-text-light group">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                  <Truck className="w-4 h-4 text-primary" />
+            <motion.div className="space-y-5 border-t border-stone-200 pt-10">
+              <div className="flex items-center gap-5 text-stone-500 group">
+                <div className="w-10 h-10 border border-stone-200 flex items-center justify-center bg-stone-50 group-hover:bg-stone-100 transition-colors">
+                  <Truck className="w-4 h-4 text-stone-600" />
                 </div>
-                <span className="text-xs font-bold uppercase tracking-widest">{productContent.freeShippingText || 'Free shipping on orders above'} ₹2000</span>
+                <span className="text-[10px] font-medium uppercase tracking-widest text-stone-700">{productContent.freeShippingText || 'Free shipping on orders above'} ₹2000</span>
               </div>
-              <div className="flex items-center gap-4 text-text-light group">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                  <RotateCcw className="w-4 h-4 text-primary" />
+              <div className="flex items-center gap-5 text-stone-500 group">
+                <div className="w-10 h-10 border border-stone-200 flex items-center justify-center bg-stone-50 group-hover:bg-stone-100 transition-colors">
+                  <RotateCcw className="w-4 h-4 text-stone-600" />
                 </div>
-                <span className="text-xs font-bold uppercase tracking-widest">{productContent.returnsText || 'Easy returns within 7 days'}</span>
+                <span className="text-[10px] font-medium uppercase tracking-widest text-stone-700">{productContent.returnsText || 'Easy returns within 7 days'}</span>
               </div>
-              <div className="flex items-center gap-4 text-text-light group">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                  <ShieldCheck className="w-4 h-4 text-primary" />
+              <div className="flex items-center gap-5 text-stone-500 group">
+                <div className="w-10 h-10 border border-stone-200 flex items-center justify-center bg-stone-50 group-hover:bg-stone-100 transition-colors">
+                  <ShieldCheck className="w-4 h-4 text-stone-600" />
                 </div>
-                <span className="text-xs font-bold uppercase tracking-widest">{productContent.securePaymentText || '100% secure payment'}</span>
+                <span className="text-[10px] font-medium uppercase tracking-widest text-stone-700">{productContent.securePaymentText || '100% secure payment'}</span>
               </div>
             </motion.div>
           </motion.div>

@@ -33,31 +33,31 @@ export default function CartPage() {
     <div className="p-6 md:p-10 grid md:grid-cols-3 gap-8 bg-[#fafafa] min-h-screen">
 
       {/* LEFT */}
-      <div className="md:col-span-2 space-y-4">
-        <h2 className="text-3xl font-semibold mb-4">Your Cart</h2>
+      <div className="md:col-span-2 space-y-6">
+        <h2 className="text-4xl font-serif italic text-stone-900 border-b border-stone-200 pb-4 mb-8">Your Cart</h2>
 
         {/* ✅ EMPTY CART */}
         {cart.length === 0 && (
-          <div className="text-center text-gray-500 mt-20">
-            🛒 Your cart is empty
+          <div className="text-center text-stone-500 mt-20 uppercase tracking-widest text-sm font-medium">
+            Your cart is empty
           </div>
         )}
 
         {cart.map((item) => (
           <div
             key={item.id}
-            className="flex justify-between items-center bg-white p-4 rounded-xl shadow hover:shadow-md transition"
+            className="flex justify-between items-center bg-[#fdfdfd] p-6 rounded-none border border-stone-200 transition-all hover:border-stone-300 hover:shadow-sm"
           >
-            <div className="flex gap-4 items-center">
+            <div className="flex gap-6 items-center">
 
               <img
                 src={item.image}
-                className="w-20 h-20 object-contain rounded-lg bg-gray-50 p-2"
+                className="w-24 h-24 object-contain bg-stone-50 p-2 border border-stone-100 rounded-none mix-blend-multiply"
               />
 
               <div>
-                <h4 className="font-medium">{item.name}</h4>
-                <p className="text-gray-500">₹{item.price}</p>
+                <h4 className="font-serif text-lg text-stone-900 mb-1">{item.name}</h4>
+                <p className="text-stone-500 font-medium">₹{item.price}</p>
 
                 {/* QTY */}
                 <div className="flex items-center gap-2 mt-2">
@@ -83,48 +83,90 @@ export default function CartPage() {
             </div>
 
             {/* RIGHT */}
-            <div className="text-right">
-              <p className="font-semibold">
+            <div className="text-right flex flex-col items-end">
+              <p className="font-medium text-stone-900 text-lg">
                 ₹{item.price * item.qty}
               </p>
 
               <button
-                onClick={() => removeFromCart(item.id)}
-                className="mt-2 text-gray-400 hover:text-red-500 text-lg transition"
-              >
-                🗑️
-              </button>
+  onClick={() => removeFromCart(item.id)}
+  style={{
+    background: "none",
+    border: "none",
+    cursor: "pointer",
+    padding: "6px",
+    opacity: "0.6",
+    transition: "0.2s"
+  }}
+  onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+  onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.6")}
+>
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <polyline points="3 6 5 6 21 6" />
+    <path d="M19 6l-1 14H6L5 6" />
+    <path d="M10 11v6M14 11v6" />
+    <path d="M9 6V4h6v2" />
+  </svg>
+</button>
             </div>
           </div>
         ))}
       </div>
 
       {/* RIGHT */}
-      <div className="bg-white p-6 rounded-2xl shadow-lg h-fit sticky top-20">
+      <div className="bg-[#fdfdfd] p-8 rounded-none border border-stone-200 shadow-sm h-fit sticky top-20">
 
-        <h3 className="text-xl font-semibold mb-4">
+        <h3 className="text-2xl font-serif italic text-stone-900 mb-6 border-b border-stone-200 pb-4">
           Order Summary
         </h3>
 
         {cart.map((item) => (
-          <div key={item.id} className="flex justify-between text-sm mb-2">
-            <span>{item.name} x{item.qty}</span>
-            <span>₹{item.price * item.qty}</span>
+          <div key={item.id} className="flex justify-between text-sm mb-3 text-stone-700 font-medium">
+            <span>{item.name} <span className="text-stone-400">x{item.qty}</span></span>
+            <span className="text-stone-900">₹{item.price * item.qty}</span>
           </div>
         ))}
 
-        <hr className="my-4" />
+        <hr className="my-6 border-stone-200" />
 
-        <h3 className="text-lg font-semibold">
-          Total: ₹{total}
+        <h3 className="text-xl font-serif italic text-stone-900 mb-6 flex justify-between">
+          <span>Total</span>
+          <span>₹{total}</span>
         </h3>
 
         <button
-          onClick={handleWhatsApp}
-          className="w-full mt-5 bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-full hover:scale-[1.02] transition"
-        >
-          💬 Proceed to WhatsApp
-        </button>
+  style={{
+    background: "#111",
+    color: "#fff",
+    padding: "14px",
+    borderRadius: "8px",
+    width: "100%",
+    fontSize: "14px",
+    fontWeight: "500",
+    letterSpacing: "0.6px",
+    border: "1px solid #111",
+    transition: "all 0.3s ease",
+  }}
+  onMouseEnter={(e) => {
+    e.target.style.background = "#fff";
+    e.target.style.color = "#111";
+  }}
+  onMouseLeave={(e) => {
+    e.target.style.background = "#111";
+    e.target.style.color = "#fff";
+  }}
+>
+  Continue to Checkout
+</button>
       </div>
 
     </div>

@@ -98,11 +98,11 @@ export default function ShopPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-[#fafafa] font-sans">
 
       {/* 🔥 SIDEBAR */}
-      <div className="w-64 bg-white p-4 overflow-y-auto border-r">
-        <h2 className="text-xl font-semibold mb-4">Categories</h2>
+      <div className="w-64 bg-[#fdfdfd] p-4 overflow-y-auto border-r border-stone-200">
+        <h2 className="text-2xl font-serif italic text-stone-900 mb-6 border-b border-stone-200 pb-2">Categories</h2>
 
         {categories.map((cat, i) => (
           <div key={i} className="mb-2">
@@ -116,8 +116,8 @@ export default function ShopPage() {
                   handleFilter(cat.name);
                 }
               }}
-              className={`flex justify-between items-center cursor-pointer p-2 rounded
-              ${activeCategory === cat.name ? "bg-black text-white" : "hover:bg-gray-200"}`}
+              className={`flex justify-between items-center cursor-pointer p-3 rounded-none transition-colors border-l-2 text-sm uppercase tracking-wider
+              ${activeCategory === cat.name ? "bg-stone-100 border-stone-900 font-medium text-stone-900" : "border-transparent text-stone-600 hover:bg-stone-50 hover:text-stone-900"}`}
             >
               <span>{cat.name}</span>
               {cat.sub.length > 0 && <span>+</span>}
@@ -130,8 +130,8 @@ export default function ShopPage() {
                   <div
                     key={j}
                     onClick={() => handleFilter(sub)}
-                    className={`cursor-pointer p-1 rounded text-sm
-                    ${activeCategory === sub ? "bg-black text-white" : "hover:bg-gray-200"}`}
+                    className={`cursor-pointer p-2 pl-4 rounded-none text-xs uppercase tracking-wider transition-colors border-l-2
+                    ${activeCategory === sub ? "bg-stone-100 border-stone-400 font-medium text-stone-900" : "border-transparent text-stone-500 hover:bg-stone-50 hover:text-stone-800"}`}
                   >
                     {sub}
                   </div>
@@ -149,7 +149,7 @@ export default function ShopPage() {
         <input
           type="text"
           placeholder="Search products..."
-          className="w-full p-3 mb-6 border rounded"
+          className="w-full p-4 mb-8 border border-stone-200 rounded-none bg-white font-sans text-sm focus:outline-none focus:border-stone-500 focus:ring-1 focus:ring-stone-500 transition-all shadow-sm"
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
@@ -159,12 +159,12 @@ export default function ShopPage() {
 
         {/* LOADING */}
         {loading && (
-          <p className="text-center text-gray-500">Loading products...</p>
+          <p className="text-center text-stone-500 uppercase tracking-widest text-sm mt-10">Loading products...</p>
         )}
 
         {/* MESSAGE */}
         {!loading && message && (
-          <p className="text-center text-gray-500 text-lg mb-6">
+          <p className="text-center text-stone-500 text-lg mb-6 font-serif italic">
             {message}
           </p>
         )}
