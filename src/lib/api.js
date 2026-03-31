@@ -80,10 +80,7 @@ const updateProduct = async (id, updatedData, imageFile) => {
       .from("products")
       .upload(fileName, imageFile);
 
-    if (uploadError) {
-      console.error(uploadError);
-      throw uploadError;
-    }
+    if (uploadError) throw uploadError;
 
     const { data } = supabase.storage
       .from("products")
@@ -96,18 +93,14 @@ const updateProduct = async (id, updatedData, imageFile) => {
     .from("products")
     .update({
       ...updatedData,
-      image: imageUrl,
+      image: imageUrl, // ✅ always correct
     })
     .eq("id", id);
 
-  if (error) {
-    console.error("UPDATE ERROR:", error.message);
-    throw error;
-  }
+  if (error) throw error;
 
   return { success: true };
 };
-
 /* ================= CATEGORIES ================= */
 
 const getAllCategories = async () => {
