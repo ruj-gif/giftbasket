@@ -36,16 +36,16 @@ export default function CartPage() {
         {cart.map((item) => (
           <div
             key={item.id}
-            className="flex justify-between items-center bg-[#fdfdfd] p-6 border border-stone-200 hover:shadow-sm"
+            className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 bg-[#fdfdfd] p-6 border border-stone-200 hover:shadow-sm"
           >
-            <div className="flex gap-6 items-center">
+            <div className="flex gap-4 sm:gap-6 items-center w-full sm:w-auto">
 
               <img
                 src={item.image}
-                className="w-24 h-24 object-contain bg-stone-50 p-2 border border-stone-100"
+                className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 object-contain bg-stone-50 p-2 border border-stone-100"
               />
 
-              <div>
+              <div className="flex-1">
                 <h4 className="font-serif text-lg text-stone-900 mb-1">
                   {item.name}
                 </h4>
@@ -61,7 +61,7 @@ export default function CartPage() {
             </div>
 
             {/* RIGHT */}
-            <div className="text-right flex flex-col items-end">
+            <div className="w-full sm:w-auto flex flex-row sm:flex-col justify-between sm:justify-start items-center sm:items-end border-t sm:border-t-0 border-stone-100 pt-4 sm:pt-0">
               <p className="font-medium text-stone-900 text-lg">
                 ₹{item.price * item.qty}
               </p>

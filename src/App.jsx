@@ -25,6 +25,7 @@ import AccountPage from './pages/AccountPage';
 import MyOrdersPage from './pages/MyOrdersPage';
 import ContactPage from './pages/ContactPage';
 import AboutPage from './pages/AboutPage';
+import WelcomePage from './pages/WelcomePage';
 
 // ✅ ADD THIS IMPORT
 import TrackOrder from './pages/TrackOrder';
@@ -121,8 +122,12 @@ function AnimatedRoutes() {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
 
-        {/* PUBLIC ROUTES */}
-        <Route path="/" element={<PageWrapper><Navigation /><HomePage /><Footer /></PageWrapper>} />
+        {/* ✅ SPLASH FIRST */}
+        <Route path="/" element={<WelcomePage />} />
+
+        {/* ✅ HOME MOVED HERE */}
+        <Route path="/home" element={<PageWrapper><Navigation /><HomePage /><Footer /></PageWrapper>} />
+
         <Route path="/shop" element={<PageWrapper><Navigation /><ShopPage /><Footer /></PageWrapper>} />
         <Route path="/product/:slug" element={<PageWrapper><Navigation /><ProductDetailPage /><Footer /></PageWrapper>} />
         <Route path="/cart" element={<PageWrapper><Navigation /><CartPage /><Footer /></PageWrapper>} />
@@ -134,7 +139,7 @@ function AnimatedRoutes() {
         <Route path="/my-orders" element={<PageWrapper><Navigation /><MyOrdersPage /><Footer /></PageWrapper>} />
         <Route path="/contact" element={<PageWrapper><Navigation /><ContactPage /><Footer /></PageWrapper>} />
 
-        {/* ✅ TRACK ORDER ROUTE (FIXED) */}
+        {/* ✅ TRACK ORDER */}
         <Route
           path="/track-order"
           element={

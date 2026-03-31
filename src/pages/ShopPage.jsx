@@ -98,10 +98,10 @@ export default function ShopPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#fafafa] font-sans">
+    <div className="flex flex-col md:flex-row min-h-screen bg-[#fafafa] font-sans">
 
       {/* 🔥 SIDEBAR */}
-      <div className="w-64 bg-[#fdfdfd] p-4 overflow-y-auto border-r border-stone-200">
+      <div className="w-full md:w-64 shrink-0 bg-[#fdfdfd] p-4 overflow-y-auto border-b md:border-b-0 md:border-r border-stone-200">
         <h2 className="text-2xl font-serif italic text-stone-900 mb-6 border-b border-stone-200 pb-2">Categories</h2>
 
         {categories.map((cat, i) => (

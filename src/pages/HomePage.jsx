@@ -53,37 +53,38 @@ export default function HomePage() {
     <div className="bg-[#fafafa] text-gray-900 overflow-x-hidden font-sans">
 
       {/* HERO SECTION */}
-      <section className="relative h-[95vh] flex items-center justify-center overflow-hidden">
-        <motion.div
-          className="absolute inset-0 bg-cover bg-center scale-[1.05]"
-          style={{
-            y: yParallax,
-            backgroundImage: `url('/hero.jpg')`,
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/80" />
+      <section className="relative h-[100vh] w-full overflow-hidden">
 
-        <motion.div
-          className="relative z-10 text-center text-white px-6 w-full max-w-4xl mx-auto"
-          initial="hidden"
-          animate="visible"
-          variants={staggerContainer}
-        >
-          <motion.p variants={fadeUp} className="text-xs md:text-sm font-light mb-6 uppercase tracking-[0.3em] text-white/80">
-            Bespoke Luxury Hampers Since 2017
-          </motion.p>
-          <motion.h1 variants={fadeUp} className="text-5xl md:text-7xl lg:text-8xl font-serif italic mb-10 drop-shadow-lg text-white">
-            {settings?.siteName || "Gift Basket"}
-          </motion.h1>
-          <motion.div variants={fadeUp}>
-            <Link to="/shop">
-              <button className="px-12 py-4 bg-white text-black text-sm uppercase tracking-widest font-medium hover:bg-stone-200 transition-colors duration-300 rounded-none shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]">
-                Shop the Collection
-              </button>
-            </Link>
-          </motion.div>
-        </motion.div>
-      </section>
+  {/* BACKGROUND IMAGE */}
+  <img
+    src="/hero.jpg"
+    alt="Gift Basket Banner"
+    className="absolute inset-0 w-full h-full object-cover"
+  />
+
+  {/* DARK OVERLAY (for premium feel) */}
+  <div className="absolute inset-0 bg-black/40" />
+
+  {/* CONTENT */}
+  <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-6">
+
+    <h1 className="text-white text-4xl md:text-6xl lg:text-7xl font-serif italic mb-6 drop-shadow-lg">
+      Gift Basket
+    </h1>
+
+    <p className="text-white/90 text-sm md:text-lg tracking-[0.3em] uppercase mb-10">
+      Bespoke Luxury Hampers Since 2017
+    </p>
+
+    <button
+      onClick={() => window.location.href = "/shop"}
+      className="px-10 py-4 bg-white text-black text-sm uppercase tracking-widest font-medium hover:bg-stone-200 transition duration-300 shadow-lg"
+    >
+      Shop Now
+    </button>
+
+  </div>
+</section>
 
       {/* TRUST INDICATORS */}
       <section className="bg-white py-16 border-b border-stone-200 relative z-20">
@@ -211,11 +212,11 @@ export default function HomePage() {
       {/* DETAILS */}
       <div className="space-y-6">
         <h3 className="text-2xl font-serif italic">
-          Gift Basket Boutique
+          Gift Basket 
         </h3>
 
         <p className="text-stone-400 text-sm">
-          Step into our boutique and explore curated hampers and bespoke gifting.
+          Step into our store and explore curated hampers and bespoke gifting.
         </p>
 
         <div className="space-y-2 text-sm text-stone-300">

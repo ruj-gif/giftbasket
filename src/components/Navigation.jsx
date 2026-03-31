@@ -1,87 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
+import { Menu, X } from "lucide-react";
 
 function Navigation() {
   const { cartCount } = useCart();
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   return (
-    <nav
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "14px 40px",
-        background: "rgba(255,255,255,0.9)",
-        backdropFilter: "blur(10px)",
-        borderBottom: "1px solid #eee",
-        position: "sticky",
-        top: 0,
-        zIndex: 1000,
-      }}
-    >
+    <nav className="flex justify-between items-center px-6 md:px-10 py-4 bg-white/90 backdrop-blur-md border-b border-[#eee] sticky top-0 z-[1000]">
+      
       {/* LOGO */}
-      <div
-        style={{
-          fontWeight: "700",
-          fontSize: "20px",
-          letterSpacing: "0.5px",
-        }}
-      >
-        Gift Basket
+      <div className="font-bold text-xl tracking-[0.5px]">
+        <Link to="/" className="text-[#333] no-underline">Gift Basket</Link>
       </div>
 
-      {/* LINKS */}
-      <div
-        style={{
-          display: "flex",
-          gap: "30px",
-          alignItems: "center",
-        }}
-      >
-        {["Home", "About", "Shop", "Wishlist", "Customize", "Login"].map((item, i) => (
-          <Link
-            key={i}
-            to={`/${item.toLowerCase() === "home" ? "" : item.toLowerCase()}`}
-            style={{
-              textDecoration: "none",
-              color: "#333",
-              fontSize: "14px",
-              fontWeight: "500",
-              transition: "0.3s",
-            }}
-            onMouseEnter={(e) => (e.target.style.color = "#e11d48")}
-            onMouseLeave={(e) => (e.target.style.color = "#333")}
-          >
-            {item}
-          </Link>
-        ))}
-
-        {/* 🛍️ CART (Sophisticated) */}
-        <Link to="/cart" style={{ position: "relative", textDecoration: "none" }}>
-          <div
-            style={{
-              position: "relative",
-              width: "28px",
-              height: "28px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              border: "1.5px solid #333",
-              borderRadius: "6px",
-              transition: "all 0.3s ease",
-              cursor: "pointer",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "#111";
-              e.currentTarget.style.borderColor = "#111";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "transparent";
-              e.currentTarget.style.borderColor = "#333";
-            }}
-          >
-            {/* SVG ICON */}
+      {/* MOBILE HAMBURGER & CART */}
+      <div className="md:hidden flex items-center gap-4">
+        {/* MOBILE CART */}
+        <Link to="/cart" className="relative no-underline">
+          <div className="relative w-[28px] h-[28px] flex items-center justify-center border-[1.5px] border-[#333] rounded-md transition-all duration-300 cursor-pointer group hover:bg-[#111] hover:border-[#111]">
             <svg
               width="16"
               height="16"
@@ -91,30 +29,65 @@ function Navigation() {
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              style={{ color: "#333" }}
+              className="text-[#333] group-hover:text-white transition-colors"
+            >
+              <circle cx="9" cy="21" r="1" />
+              <circle cx="20" cy="21" r="1" />
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+            </svg>
+            {cartCount > 0 && (
+              <span className="absolute -top-[6px] -right-[6px] bg-[#111] text-white text-[10px] font-semibold rounded-full px-1.5 min-w-[18px] text-center">
+                {cartCount}
+              </span>
+            )}
+          </div>
+        </Link>
+        <button 
+          onClick={() => setIsMobileOpen(!isMobileOpen)} 
+          className="text-[#333] outline-none"
+        >
+          {isMobileOpen ? <X size={26} /> : <Menu size={26} />}
+        </button>
+      </div>
+
+      {/* LINKS DROPDOWN / DESKTOP ROW */}
+      <div
+        className={`${
+          isMobileOpen ? "flex" : "hidden"
+        } md:flex flex-col md:flex-row absolute md:relative top-full left-0 w-full md:w-auto bg-white/95 md:bg-transparent backdrop-blur-md md:backdrop-blur-none shadow-md md:shadow-none p-6 md:p-0 gap-6 md:gap-[30px] items-start md:items-center border-b md:border-none border-[#eee]`}
+      >
+        {["Home", "About", "Shop", "Wishlist", "Customize", "Login"].map((item, i) => (
+          <Link
+            key={i}
+            to={`/${item.toLowerCase() === "home" ? "" : item.toLowerCase()}`}
+            onClick={() => setIsMobileOpen(false)}
+            className="no-underline text-[#333] text-sm font-medium transition-colors duration-300 hover:text-[#e11d48]"
+          >
+            {item}
+          </Link>
+        ))}
+
+        {/* 🛍️ CART (DESKTOP) */}
+        <Link to="/cart" className="relative no-underline hidden md:block">
+          <div className="relative w-[28px] h-[28px] flex items-center justify-center border-[1.5px] border-[#333] rounded-md transition-all duration-300 cursor-pointer group hover:bg-[#111] hover:border-[#111]">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-[#333] group-hover:text-white transition-colors"
             >
               <circle cx="9" cy="21" r="1" />
               <circle cx="20" cy="21" r="1" />
               <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
             </svg>
 
-            {/* COUNT BADGE */}
             {cartCount > 0 && (
-              <span
-                style={{
-                  position: "absolute",
-                  top: "-6px",
-                  right: "-6px",
-                  background: "#111",
-                  color: "#fff",
-                  fontSize: "10px",
-                  fontWeight: "600",
-                  borderRadius: "50%",
-                  padding: "3px 6px",
-                  minWidth: "18px",
-                  textAlign: "center",
-                }}
-              >
+              <span className="absolute -top-[6px] -right-[6px] bg-[#111] text-white text-[10px] font-semibold rounded-full px-1.5 min-w-[18px] text-center">
                 {cartCount}
               </span>
             )}
