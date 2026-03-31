@@ -2,6 +2,7 @@ import { supabase } from "./supabase";
 
 /* ================= PRODUCTS ================= */
 
+// ✅ GET ALL PRODUCTS
 const getAllProducts = async () => {
   const { data, error } = await supabase
     .from("products")
@@ -16,6 +17,61 @@ const getAllProducts = async () => {
   return { success: true, data };
 };
 
+// ✅ GET PRODUCT BY ID
+const getProductById = async (id) => {
+  const { data, error } = await supabase
+    .from("products")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    console.error(error);
+    return { success: false };
+  }
+
+  return { success: true, data };
+};
+
+// ✅ UPDATE PRODUCT (WITH IMAGE SUPPORT)
+const updateProduct = async (id, updatedData, imageFile) => {
+  let imageUrl = updatedData.image || null;
+
+  // ✅ upload only if new image
+  if (imageFile) {
+    const fileName = `${Date.now()}-${imageFile.name}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("products")
+      .upload(fileName, imageFile);
+
+    if (uploadError) {
+      console.error(uploadError);
+      throw uploadError;
+    }
+
+    const { data } = supabase.storage
+      .from("products")
+      .getPublicUrl(fileName);
+
+    imageUrl = data.publicUrl;
+  }
+
+  const { error } = await supabase
+    .from("products")
+    .update({
+      ...updatedData,
+      image: imageUrl,
+    })
+    .eq("id", id);
+
+  if (error) {
+    console.error("UPDATE ERROR:", error.message);
+    throw error;
+  }
+
+  return { success: true };
+};
 /* ================= CATEGORIES ================= */
 
 const getAllCategories = async () => {
@@ -44,12 +100,11 @@ const deleteCategory = async (id) => {
   }
 };
 
-/* ================= ORDERS (🔥 ADD THIS) ================= */
+/* ================= ORDERS ================= */
 
-// ✅ Get all orders (for logged-in user or admin)
 const getAllOrders = async () => {
   const { data, error } = await supabase
-    .from("orders") // 🔥 make sure this table exists
+    .from("orders")
     .select("*")
     .order("id", { ascending: false });
 
@@ -61,7 +116,6 @@ const getAllOrders = async () => {
   return { success: true, data };
 };
 
-// ✅ Get single order by ID (for tracking)
 const getOrderById = async (id) => {
   const { data, error } = await supabase
     .from("orders")
@@ -85,9 +139,7 @@ const login = async ({ email, password }) => {
     password,
   });
 
-  if (error) {
-    return { success: false, error };
-  }
+  if (error) return { success: false, error };
 
   return { success: true, data: data.user };
 };
@@ -96,14 +148,10 @@ const register = async ({ email, password, name }) => {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: {
-      data: { name },
-    },
+    options: { data: { name } },
   });
 
-  if (error) {
-    return { success: false, error };
-  }
+  if (error) return { success: false, error };
 
   return { success: true, data: data.user };
 };
@@ -113,6 +161,8 @@ const register = async ({ email, password, name }) => {
 export const api = {
   products: {
     getAll: getAllProducts,
+    getById: getProductById,
+    update: updateProduct,
   },
 
   categories: {
@@ -120,7 +170,6 @@ export const api = {
     delete: deleteCategory,
   },
 
-  // ✅ THIS FIXES YOUR ERROR
   orders: {
     getAll: getAllOrders,
     getById: getOrderById,
