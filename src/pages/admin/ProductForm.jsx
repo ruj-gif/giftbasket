@@ -6,6 +6,7 @@ export default function ProductForm() {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
+  const [description, setDescription] = useState(""); // ✅ added
   const [imageFile, setImageFile] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -20,11 +21,12 @@ export default function ProductForm() {
     try {
       setLoading(true);
 
-      await api.createProduct(
+      await api.products.create( // ✅ FIXED
         {
           name,
           price,
           category,
+          description, // ✅ added
           slug: name.toLowerCase().replace(/\s+/g, "-"),
         },
         imageFile
@@ -32,13 +34,16 @@ export default function ProductForm() {
 
       alert("Product added ✅");
 
+      // reset form
       setName("");
       setPrice("");
       setCategory("");
+      setDescription(""); // ✅ reset
       setImageFile(null);
+
     } catch (err) {
       console.error(err);
-      alert("Error adding product ❌");
+      alert(err.message || "Error adding product ❌");
     } finally {
       setLoading(false);
     }
@@ -46,13 +51,10 @@ export default function ProductForm() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#fafafa] px-4">
-
-      {/* CARD */}
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-xl bg-white p-8 rounded-3xl shadow-xl border border-gray-100 space-y-5"
       >
-        {/* TITLE */}
         <h2 className="text-2xl font-semibold text-center italic">
           Add New Product
         </h2>
@@ -98,6 +100,16 @@ export default function ProductForm() {
           ))}
         </select>
 
+        {/* ✅ DESCRIPTION */}
+        <textarea
+          placeholder="Product Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className="w-full p-3 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-red-400"
+          rows="4"
+          required
+        />
+
         {/* IMAGE */}
         <div className="border-2 border-dashed border-gray-200 p-4 rounded-xl text-center hover:border-red-400 transition">
           <input
@@ -114,7 +126,7 @@ export default function ProductForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-3 rounded-full bg-black text-white font-medium tracking-wide 
+          className="w-full py-3 rounded-full bg-black text-white font-medium tracking-wide
           hover:bg-red-500 transition-all duration-300 shadow-md hover:scale-[1.02]"
         >
           {loading ? "Adding..." : "Save Product"}
