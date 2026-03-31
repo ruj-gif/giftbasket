@@ -37,7 +37,6 @@ const getProductById = async (id) => {
 const createProduct = async (productData, imageFile) => {
   let imageUrl = null;
 
-  // 🔥 upload image if exists
   if (imageFile) {
     const fileName = `${Date.now()}-${imageFile.name}`;
 
@@ -73,7 +72,7 @@ const createProduct = async (productData, imageFile) => {
 const updateProduct = async (id, updatedData, imageFile) => {
   let imageUrl = updatedData.image || null;
 
-  // 🔥 upload new image if selected
+  // upload new image only if selected
   if (imageFile) {
     const fileName = `${Date.now()}-${imageFile.name}`;
 
@@ -81,7 +80,10 @@ const updateProduct = async (id, updatedData, imageFile) => {
       .from("products")
       .upload(fileName, imageFile);
 
-    if (uploadError) throw uploadError;
+    if (uploadError) {
+      console.error(uploadError);
+      throw uploadError;
+    }
 
     const { data } = supabase.storage
       .from("products")
@@ -182,9 +184,7 @@ const register = async ({ email, password, name }) => {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: {
-      data: { name },
-    },
+    options: { data: { name } },
   });
 
   if (error) return { success: false, error };
@@ -197,9 +197,9 @@ const register = async ({ email, password, name }) => {
 export const api = {
   products: {
     getAll: getAllProducts,
-    getById: getProductById,   // ✅ IMPORTANT
-    create: createProduct,     // ✅ IMPORTANT
-    update: updateProduct,     // ✅ IMPORTANT
+    getById: getProductById,
+    create: createProduct,
+    update: updateProduct,
   },
 
   categories: {
