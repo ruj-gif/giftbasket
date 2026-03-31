@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { initializeAdminAuthFromUrl } from '@qobo/admin-auth';
+import { initializeAdminAuthFromUrl, AdminProtectedRoute } from '@qobo/admin-auth'; // ✅ UPDATED
 
 // CONTEXTS
 import { CartProvider } from './contexts/CartContext';
@@ -27,10 +27,10 @@ import ContactPage from './pages/ContactPage';
 import AboutPage from './pages/AboutPage';
 import WelcomePage from './pages/WelcomePage';
 
-// ✅ ADD THIS IMPORT
+// TRACK ORDER
 import TrackOrder from './pages/TrackOrder';
 
-// EXTRA PAGES
+// EXTRA
 import WishlistPage from "./pages/WishlistPage";
 import CustomForm from "./pages/CustomForm";
 
@@ -95,7 +95,7 @@ function PageWrapper({ children }) {
 
 export default function App() {
   useEffect(() => {
-    initializeAdminAuthFromUrl();
+    initializeAdminAuthFromUrl(); // ✅ already correct
   }, []);
 
   return (
@@ -122,12 +122,9 @@ function AnimatedRoutes() {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
 
-        {/* ✅ SPLASH FIRST */}
         <Route path="/" element={<WelcomePage />} />
 
-        {/* ✅ HOME MOVED HERE */}
         <Route path="/home" element={<PageWrapper><Navigation /><HomePage /><Footer /></PageWrapper>} />
-
         <Route path="/shop" element={<PageWrapper><Navigation /><ShopPage /><Footer /></PageWrapper>} />
         <Route path="/product/:slug" element={<PageWrapper><Navigation /><ProductDetailPage /><Footer /></PageWrapper>} />
         <Route path="/cart" element={<PageWrapper><Navigation /><CartPage /><Footer /></PageWrapper>} />
@@ -139,24 +136,26 @@ function AnimatedRoutes() {
         <Route path="/my-orders" element={<PageWrapper><Navigation /><MyOrdersPage /><Footer /></PageWrapper>} />
         <Route path="/contact" element={<PageWrapper><Navigation /><ContactPage /><Footer /></PageWrapper>} />
 
-        {/* ✅ TRACK ORDER */}
-        <Route
-          path="/track-order"
-          element={
-            <PageWrapper>
-              <Navigation />
-              <TrackOrder />
-              <Footer />
-            </PageWrapper>
-          }
-        />
+        <Route path="/track-order" element={
+          <PageWrapper>
+            <Navigation />
+            <TrackOrder />
+            <Footer />
+          </PageWrapper>
+        } />
 
-        {/* EXTRA */}
         <Route path="/wishlist" element={<PageWrapper><Navigation /><WishlistPage /><Footer /></PageWrapper>} />
         <Route path="/customize" element={<PageWrapper><Navigation /><CustomForm /><Footer /></PageWrapper>} />
 
-        {/* ADMIN */}
-        <Route path="/admin/*" element={<AdminLayout />}>
+        {/* ✅ ONLY CHANGE: ADMIN PROTECTED */}
+        <Route
+          path="/admin/*"
+          element={
+            <AdminProtectedRoute>
+              <AdminLayout />
+            </AdminProtectedRoute>
+          }
+        >
           <Route index element={<AdminDashboard />} />
           <Route path="products" element={<ProductsList />} />
           <Route path="products/new" element={<ProductForm />} />
