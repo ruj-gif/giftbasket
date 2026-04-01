@@ -121,6 +121,41 @@ const deleteHeroSection = async (id) => {
   }
 };
 
+/* ================= CONTACT MESSAGES ================= */
+
+/* ================= CONTACT MESSAGES ================= */
+
+const getAllContactMessages = async () => {
+  try {
+    const { data, error } = await supabase
+      .from("contact_messages")
+      .select("*")
+      .order("id", { ascending: false });
+
+    if (error) throw error;
+
+    return { success: true, data: data || [] };
+  } catch (err) {
+    console.error("CONTACT MESSAGES ERROR:", err.message);
+    return { success: false, data: [] };
+  }
+};
+
+const deleteContactMessage = async (id) => {
+  try {
+    const { error } = await supabase
+      .from("contact_messages")
+      .delete()
+      .eq("id", id);
+
+    if (error) throw error;
+
+    return { success: true };
+  } catch (err) {
+    console.error("DELETE MESSAGE ERROR:", err.message);
+    return { success: false };
+  }
+};
 /* ================= SETTINGS ================= */
 
 const getSettings = async () => {
@@ -151,14 +186,12 @@ const updateSettings = async (payload) => {
     if (fetchError) throw fetchError;
 
     if (!existing) {
-      // INSERT if no row exists
       const { error } = await supabase
         .from("settings")
         .insert([payload]);
 
       if (error) throw error;
     } else {
-      // UPDATE if row exists
       const { error } = await supabase
         .from("settings")
         .update(payload)
@@ -174,7 +207,7 @@ const updateSettings = async (payload) => {
   }
 };
 
-/* ================= ORDERS (⚠️ YOU WERE MISSING THIS) ================= */
+/* ================= ORDERS ================= */
 
 const getAllOrders = async () => {
   try {
@@ -204,7 +237,7 @@ export const api = {
   },
 
   orders: {
-    getAll: getAllOrders, // ✅ FIXES your earlier error
+    getAll: getAllOrders,
   },
 
   settings: {
@@ -218,5 +251,10 @@ export const api = {
     create: createHero,
     update: updateHero,
     delete: deleteHeroSection,
+  },
+
+  contact_messages: {
+    getAll: getAllContactMessages,
+    delete: deleteContactMessage,
   },
 };
