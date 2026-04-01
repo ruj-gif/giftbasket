@@ -6,7 +6,7 @@ const getAllProducts = async () => {
   try {
     const { data, error } = await supabase
       .from("products")
-      .select("*"); // simple fetch
+      .select("*");
 
     if (error) throw error;
 
@@ -16,6 +16,7 @@ const getAllProducts = async () => {
     return { success: false, data: [] };
   }
 };
+
 /* ================= CATEGORIES ================= */
 
 const getAllCategories = async () => {
@@ -134,30 +135,63 @@ const getSettings = async () => {
 
     return { success: true, data: data || {} };
   } catch (err) {
-    console.error("SETTINGS ERROR:", err.message);
+    console.error("GET SETTINGS ERROR:", err.message);
     return { success: false, data: {} };
   }
 };
 
 const updateSettings = async (payload) => {
-  const { data: existing } = await supabase
-    .from("settings")
-    .select("id")
-    .limit(1)
-    .single();
+  try {
+    const { data: existing, error: fetchError } = await supabase
+      .from("settings")
+      .select("id")
+      .limit(1)
+      .maybeSingle();
 
-  const { error } = await supabase
-    .from("settings")
-    .update(payload)
-    .eq("id", existing.id);
+    if (fetchError) throw fetchError;
 
-  if (error) {
-    console.error(error.message);
+    if (!existing) {
+      // INSERT if no row exists
+      const { error } = await supabase
+        .from("settings")
+        .insert([payload]);
+
+      if (error) throw error;
+    } else {
+      // UPDATE if row exists
+      const { error } = await supabase
+        .from("settings")
+        .update(payload)
+        .eq("id", existing.id);
+
+      if (error) throw error;
+    }
+
+    return { success: true };
+  } catch (err) {
+    console.error("UPDATE SETTINGS ERROR:", err.message);
     return { success: false };
   }
-
-  return { success: true };
 };
+
+/* ================= ORDERS (⚠️ YOU WERE MISSING THIS) ================= */
+
+const getAllOrders = async () => {
+  try {
+    const { data, error } = await supabase
+      .from("orders")
+      .select("*")
+      .order("id", { ascending: false });
+
+    if (error) throw error;
+
+    return { success: true, data: data || [] };
+  } catch (err) {
+    console.error("ORDERS ERROR:", err.message);
+    return { success: false, data: [] };
+  }
+};
+
 /* ================= EXPORT ================= */
 
 export const api = {
@@ -167,6 +201,10 @@ export const api = {
 
   categories: {
     getAll: getAllCategories,
+  },
+
+  orders: {
+    getAll: getAllOrders, // ✅ FIXES your earlier error
   },
 
   settings: {

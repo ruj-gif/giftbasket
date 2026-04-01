@@ -155,34 +155,32 @@ function AnimatedRoutes() {
         <Route path="/wishlist" element={<PageWrapper><Navigation /><WishlistPage /><Footer /></PageWrapper>} />
         <Route path="/customize" element={<PageWrapper><Navigation /><CustomForm /><Footer /></PageWrapper>} />
 
-        {/* ADMIN */}
         <Route path="/admin/*" element={<AdminLayout />}>
-          <Route index element={<AdminDashboard />} />
-          <Route path="products" element={<ProductsList />} />
-          <Route path="products/new" element={<ProductForm />} />
-          <Route path="products/:id" element={<ProductForm />} />
+  <Route index element={<AdminDashboard />} />
 
-          <Route path="categories" element={<CategoriesList />} />
-          <Route path="categories/new" element={<CategoryForm />} />
-          <Route path="categories/:id" element={<CategoryForm />} />
+  <Route path="products" element={<ProductsList />} />
+  <Route path="products/new" element={<ProductForm />} />
+  <Route path="products/:id" element={<ProductForm />} />
 
-          <Route path="orders" element={<OrdersList />} />
-          <Route path="orders/:id" element={<OrderDetail />} />
+  <Route path="categories" element={<CategoriesList />} />
+  <Route path="categories/new" element={<CategoryForm />} />
+  <Route path="categories/:id" element={<CategoryForm />} />
 
-          <Route path="contact-messages" element={<ContactMessagesList />} />
-          <Route path="contact-messages/:id" element={<ContactMessageDetail />} />
+  <Route path="orders" element={<OrdersList />} />
+  <Route path="orders/:id" element={<OrderDetail />} />
 
-          <Route path="hero-sections" element={<HeroSectionsList />} />
-          <Route path="hero-sections/new" element={<HeroSectionForm />} />
-          <Route path="hero-sections/:id" element={<HeroSectionForm />} />
+  <Route path="contact-messages" element={<ContactMessagesList />} />
+  <Route path="contact-messages/:id" element={<ContactMessageDetail />} />
 
-          <Route path="feature-blocks" element={<FeatureBlocksList />} />
-          <Route path="feature-blocks/new" element={<FeatureBlockForm />} />
-          <Route path="feature-blocks/:id" element={<FeatureBlockForm />} />
+  {/* ✅ ADD THIS */}
+  <Route path="settings" element={<SettingsPage />} />
+</Route>
 
-          <Route path="settings" element={<SettingsPage />} />
-          <Route path="payment-settings" element={<PaymentSettingsPage />} />
-        </Route>
+         
+         
+
+         
+       
 
       </Routes>
     </AnimatePresence>
