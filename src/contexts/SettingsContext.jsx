@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { api } from "../lib/api";
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { api } from '../lib/api';
 
 const SettingsContext = createContext();
 
@@ -9,6 +9,8 @@ export function SettingsProvider({ children }) {
   const loadSettings = async () => {
     try {
       const res = await api.settings.get();
+      console.log("SETTINGS FETCH:", res);
+
       if (res.success) {
         setSettings(res.data);
       }

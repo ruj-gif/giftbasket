@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { motion, AnimatePresence } from 'framer-motion';
 import { initializeAdminAuthFromUrl, AdminProtectedRoute } from '@qobo/admin-auth';
 
-// ✅ ADDED: QOBO CONFIG (REQUIRED)
+// ✅ QOBO CONFIG (REQUIRED)
 if (typeof window !== 'undefined' && import.meta.env.VITE_PROJECT_ID) {
   if (!window.QOBO_CONFIG) window.QOBO_CONFIG = {};
   window.QOBO_CONFIG.projectId = import.meta.env.VITE_PROJECT_ID;
@@ -101,7 +101,7 @@ function PageWrapper({ children }) {
 
 export default function App() {
   useEffect(() => {
-    initializeAdminAuthFromUrl(); // ✅ already correct
+    initializeAdminAuthFromUrl(); // ✅ required
   }, []);
 
   return (
@@ -124,7 +124,7 @@ export default function App() {
 function AnimatedRoutes() {
   const location = useLocation();
 
-  // ✅ ADDED: redirect URL for admin auth
+  // ✅ required for Qobo login redirect
   const currentUrl = window.location.origin + "/admin";
 
   return (
@@ -156,7 +156,7 @@ function AnimatedRoutes() {
         <Route path="/wishlist" element={<PageWrapper><Navigation /><WishlistPage /><Footer /></PageWrapper>} />
         <Route path="/customize" element={<PageWrapper><Navigation /><CustomForm /><Footer /></PageWrapper>} />
 
-        {/* ✅ FIXED ADMIN (ONLY CHANGE) */}
+        {/* ✅ ADMIN (FIXED CLEAN VERSION) */}
         <Route
           path="/admin/*"
           element={
@@ -166,6 +166,7 @@ function AnimatedRoutes() {
           }
         >
           <Route index element={<AdminDashboard />} />
+
           <Route path="products" element={<ProductsList />} />
           <Route path="products/new" element={<ProductForm />} />
           <Route path="products/:id" element={<ProductForm />} />

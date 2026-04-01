@@ -11,10 +11,7 @@ export default function AdminSidebar({ onNavigate, onLogout }) {
     { path: '/admin/categories', label: 'Categories', icon: FolderOpen },
     { path: '/admin/orders', label: 'Orders', icon: ShoppingCart },
     { path: '/admin/contact-messages', label: 'Messages', icon: Mail },
-    { path: '/admin/hero-sections', label: 'Hero Sections', icon: Image },
-    { path: '/admin/feature-blocks', label: 'Features', icon: Sparkles },
     { path: '/admin/settings', label: 'Settings', icon: Settings },
-    { path: '/admin/payment-settings', label: 'Payment Settings', icon: CreditCard },
   ];
 
   const isActive = (path, exact) => {
