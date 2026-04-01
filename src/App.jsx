@@ -1,7 +1,13 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { initializeAdminAuthFromUrl, AdminProtectedRoute } from '@qobo/admin-auth'; // ✅ UPDATED
+import { initializeAdminAuthFromUrl, AdminProtectedRoute } from '@qobo/admin-auth';
+
+// ✅ ADDED: QOBO CONFIG (REQUIRED)
+if (typeof window !== 'undefined' && import.meta.env.VITE_PROJECT_ID) {
+  if (!window.QOBO_CONFIG) window.QOBO_CONFIG = {};
+  window.QOBO_CONFIG.projectId = import.meta.env.VITE_PROJECT_ID;
+}
 
 // CONTEXTS
 import { CartProvider } from './contexts/CartContext';
@@ -118,6 +124,9 @@ export default function App() {
 function AnimatedRoutes() {
   const location = useLocation();
 
+  // ✅ ADDED: redirect URL for admin auth
+  const currentUrl = window.location.origin + "/admin";
+
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
@@ -147,11 +156,11 @@ function AnimatedRoutes() {
         <Route path="/wishlist" element={<PageWrapper><Navigation /><WishlistPage /><Footer /></PageWrapper>} />
         <Route path="/customize" element={<PageWrapper><Navigation /><CustomForm /><Footer /></PageWrapper>} />
 
-        {/* ✅ ONLY CHANGE: ADMIN PROTECTED */}
+        {/* ✅ FIXED ADMIN (ONLY CHANGE) */}
         <Route
           path="/admin/*"
           element={
-            <AdminProtectedRoute>
+            <AdminProtectedRoute redirectUrl={currentUrl}>
               <AdminLayout />
             </AdminProtectedRoute>
           }
