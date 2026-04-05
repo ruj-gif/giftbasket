@@ -1,22 +1,25 @@
 import { supabase } from "./supabase";
 
 /* ================= PRODUCTS ================= */
-const getAllProducts = async (page = 1, limit = 10, search = "") => {
+const getAllProducts = async (page = 1, limit = null, search = "") => {
   try {
-    const from = (page - 1) * limit;
-    const to = from + limit - 1;
-
     let query = supabase
       .from("products")
       .select("*", { count: "exact" })
       .order("id", { ascending: false });
 
-    // ✅ SEARCH
     if (search) {
       query = query.ilike("name", `%${search}%`);
     }
 
-    const { data, error, count } = await query.range(from, to);
+    // ✅ APPLY RANGE ONLY IF LIMIT EXISTS
+    if (limit) {
+      const from = (page - 1) * limit;
+      const to = from + limit - 1;
+      query = query.range(from, to);
+    }
+
+    const { data, error, count } = await query;
 
     if (error) throw error;
 
@@ -151,17 +154,12 @@ const deleteProduct = async (id) => {
     .delete()
     .eq("id", id);
 
-  if (error) {
-    console.error(error);
-    return { success: false };
-  }
+  if (error) return { success: false };
 
   return { success: true };
 };
 
 /* ================= CONTACT ================= */
-
-// ✅ ADD THIS (FIX)
 const createContactMessage = async (payload) => {
   try {
     const { data, error } = await supabase
@@ -173,100 +171,70 @@ const createContactMessage = async (payload) => {
     if (error) throw error;
 
     return { success: true, data };
-  } catch (err) {
-    console.error("CREATE CONTACT ERROR:", err.message);
-    return { success: false };
-  }
-};
-
-const getAllContactMessages = async () => {
-  try {
-    const { data, error } = await supabase
-      .from("contact_messages")
-      .select("*");
-
-    if (error) throw error;
-
-    return { success: true, data };
-  } catch (err) {
-    return { success: false, data: [] };
-  }
-};
-
-const deleteContactMessage = async (id) => {
-  try {
-    const { error } = await supabase
-      .from("contact_messages")
-      .delete()
-      .eq("id", id);
-
-    if (error) throw error;
-
-    return { success: true };
   } catch {
     return { success: false };
   }
 };
 
+const getAllContactMessages = async () => {
+  const { data } = await supabase
+    .from("contact_messages")
+    .select("*");
+
+  return { success: true, data: data || [] };
+};
+
+const deleteContactMessage = async (id) => {
+  await supabase.from("contact_messages").delete().eq("id", id);
+  return { success: true };
+};
+
 /* ================= AUTH ================= */
-
 const register = async ({ email, password, name }) => {
-  try {
-    const { data: existing } = await supabase
-      .from("users")
-      .select("*")
-      .eq("email", email)
-      .maybeSingle();
+  const { data: existing } = await supabase
+    .from("users")
+    .select("*")
+    .eq("email", email)
+    .maybeSingle();
 
-    if (existing) {
-      return { success: false, error: "User already exists" };
-    }
+  if (existing) return { success: false, error: "User already exists" };
 
-    const { data, error } = await supabase
-      .from("users")
-      .insert([{ email, password, name }])
-      .select()
-      .single();
+  const { data } = await supabase
+    .from("users")
+    .insert([{ email, password, name }])
+    .select()
+    .single();
 
-    if (error) throw error;
-
-    return { success: true, data };
-  } catch (err) {
-    return { success: false, error: err.message };
-  }
+  return { success: true, data };
 };
 
 const login = async ({ email, password }) => {
-  try {
-    const { data, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("email", email)
-      .eq("password", password)
-      .maybeSingle();
+  const { data } = await supabase
+    .from("users")
+    .select("*")
+    .eq("email", email)
+    .eq("password", password)
+    .maybeSingle();
 
-    if (error) throw error;
+  if (!data) return { success: false, error: "Invalid credentials" };
 
-    if (!data) {
-      return { success: false, error: "Invalid credentials" };
-    }
-
-    localStorage.setItem("user", JSON.stringify(data));
-    return { success: true, data };
-  } catch (err) {
-    return { success: false, error: err.message };
-  }
+  localStorage.setItem("user", JSON.stringify(data));
+  return { success: true, data };
 };
 
-/* ================= KEEP REST SAME ================= */
-
+/* ================= CATEGORIES ================= */
 const getAllCategories = async () => {
   const { data } = await supabase.from("categories").select("*");
   return { success: true, data: data || [] };
 };
 
 const createCategory = async (payload) => {
-  const { data } = await supabase.from("categories").insert([payload]).select().maybeSingle();
+  const { data } = await supabase
+    .from("categories")
+    .insert([payload])
+    .select()
+    .maybeSingle();
+
   return { success: true, data };
 };
 
@@ -275,40 +243,69 @@ const deleteCategory = async (id) => {
   return { success: true };
 };
 
+/* ================= ORDERS ================= */
 const getAllOrders = async () => {
   const { data } = await supabase.from("orders").select("*");
   return { success: true, data: data || [] };
 };
 
+const getOrderById = async (id) => {
+  try {
+    const { data, error } = await supabase
+      .from("orders")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    return { success: true, data };
+  } catch {
+    return { success: false, data: null };
+  }
+};
+
+/* ================= SETTINGS ================= */
 const getSettings = async () => {
-  const { data } = await supabase.from("settings").select("*").limit(1).maybeSingle();
+  const { data } = await supabase
+    .from("settings")
+    .select("*")
+    .limit(1)
+    .maybeSingle();
+
   return { success: true, data: data || {} };
 };
 
 const updateSettings = async (payload) => {
-  const { data: existing } = await supabase.from("settings").select("id").limit(1).maybeSingle();
+  const { data: existing } = await supabase
+    .from("settings")
+    .select("id")
+    .limit(1)
+    .maybeSingle();
 
   if (!existing) {
     await supabase.from("settings").insert([payload]);
   } else {
-    await supabase.from("settings").update(payload).eq("id", existing.id);
+    await supabase
+      .from("settings")
+      .update(payload)
+      .eq("id", existing.id);
   }
 
   return { success: true };
 };
 
 /* ================= EXPORT ================= */
-
 export const api = {
   auth: { register, login },
 
   products: {
     getAll: getAllProducts,
     getById: getProductById,
+    getAllSimple: getAllProductsSimple,
     create: createProduct,
     update: updateProduct,
     delete: deleteProduct,
-    getAllSimple: getAllProductsSimple,
   },
 
   categories: {
@@ -319,6 +316,7 @@ export const api = {
 
   orders: {
     getAll: getAllOrders,
+    getById: getOrderById, // ✅ FIXED
   },
 
   settings: {
@@ -328,7 +326,7 @@ export const api = {
 
   contact_messages: {
     getAll: getAllContactMessages,
-    create: createContactMessage, // ✅ FIXED
+    create: createContactMessage,
     delete: deleteContactMessage,
   },
 };
