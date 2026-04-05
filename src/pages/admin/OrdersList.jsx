@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../lib/api';
 import DataTable from '../../components/admin/DataTable';
+import { Link } from 'react-router-dom';
 
 export default function OrdersList() {
   const [orders, setOrders] = useState([]);
@@ -28,7 +29,9 @@ export default function OrdersList() {
       key: 'id',
       label: 'Order ID',
       render: (row) => (
-        <span className="font-mono text-xs">{row.id.slice(0, 8)}</span>
+        <span className="font-mono text-xs">
+          {row.id.slice(0, 8)}
+        </span>
       ),
     },
     { key: 'customer_name', label: 'Customer' },
@@ -36,7 +39,8 @@ export default function OrdersList() {
     {
       key: 'total_amount',
       label: 'Total',
-      render: (row) => `₹${Number(row.total_amount || 0).toFixed(0)}`,
+      render: (row) =>
+        `₹${Number(row.total_amount || 0).toFixed(0)}`,
     },
 
     {
@@ -60,10 +64,10 @@ export default function OrdersList() {
     {
       key: 'created_at',
       label: 'Date',
-      render: (row) => new Date(row.created_at).toLocaleDateString(),
+      render: (row) =>
+        new Date(row.created_at).toLocaleDateString(),
     },
 
-    /* ✅ ONLY THIS COLUMN ADDED */
     {
       key: 'details',
       label: 'Details',
@@ -129,11 +133,19 @@ export default function OrdersList() {
 
   return (
     <div>
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-          Orders
-        </h1>
-      </div>
+      {/* ✅ FIXED HEADER (WITH BUTTON INSIDE RETURN) */}
+      <div className="flex justify-between items-center mb-6">
+  <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+    Orders
+  </h1>
+
+  <Link
+    to="/admin/orders/add"
+    className="px-4 py-2 bg-black text-white rounded"
+  >
+    + Add Order
+  </Link>
+</div>
 
       <DataTable
         columns={columns}

@@ -335,6 +335,7 @@ export const api = {
   orders: {
     getAll: getAllOrders,
     getById: getOrderById, // ✅ FIXED
+    create: createOrder, // ✅ ADD THIS HERE
   },
 
   settings: {
