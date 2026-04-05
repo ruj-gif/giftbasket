@@ -5,15 +5,33 @@ import { api } from '../../lib/api';
 export default function CategoryForm() {
   const { id } = useParams();
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
   });
+
   const [loading, setLoading] = useState(false);
 
+  // ✅ NEW: parent category + categories list
+  const [parentId, setParentId] = useState('');
+  const [categories, setCategories] = useState([]);
+
   useEffect(() => {
+    loadCategories(); // ✅ load categories
     if (id) loadCategory();
   }, [id]);
+
+  const loadCategories = async () => {
+    try {
+      const res = await api.categories.getAll();
+      if (res.success) {
+        setCategories(res.data || []);
+      }
+    } catch (err) {
+      console.error("CATEGORY LOAD ERROR:", err);
+    }
+  };
 
   const loadCategory = async () => {
     try {
@@ -24,6 +42,7 @@ export default function CategoryForm() {
           name: category.name || '',
           slug: category.slug || '',
         });
+        setParentId(category.parent_id || '');
       }
     } catch (error) {
       console.error('Failed to load category:', error);
@@ -35,7 +54,10 @@ export default function CategoryForm() {
     setFormData({ ...formData, [name]: value });
 
     if (name === 'name' && !id) {
-      const slug = value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      const slug = value
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '');
       setFormData((prev) => ({ ...prev, slug }));
     }
   };
@@ -45,7 +67,14 @@ export default function CategoryForm() {
     setLoading(true);
 
     try {
-      const response = id ? await api.categories.update(id, formData) : await api.categories.create(formData);
+      const payload = {
+        ...formData,
+        parent_id: parentId || null, // ✅ added
+      };
+
+      const response = id
+        ? await api.categories.update(id, payload)
+        : await api.categories.create(payload);
 
       if (response.success) {
         navigate('/admin/categories');
@@ -66,6 +95,29 @@ export default function CategoryForm() {
       </h1>
 
       <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-4 sm:p-6 space-y-6">
+
+        {/* ✅ NEW: Parent Category Dropdown */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Parent Category
+          </label>
+          <select
+            value={parentId}
+            onChange={(e) => setParentId(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+          >
+            <option value="">Main Category</option>
+
+            {categories
+              .filter(cat => !cat.parent_id)
+              .map(cat => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+          </select>
+        </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Name *</label>
           <input

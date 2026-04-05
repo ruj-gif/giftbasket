@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { api } from "../../lib/api";
-import { categories } from "../../data/categories";
 import { useNavigate } from "react-router-dom";
 
 export default function ProductForm() {
@@ -16,8 +15,12 @@ export default function ProductForm() {
   const [existingImage, setExistingImage] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // ✅ NEW: categories state
+  const [categories, setCategories] = useState([]);
+
   useEffect(() => {
     if (id) loadProduct();
+    loadCategories();
   }, [id]);
 
   const loadProduct = async () => {
@@ -41,6 +44,22 @@ export default function ProductForm() {
     }
   };
 
+  // ✅ LOAD CATEGORIES
+  const loadCategories = async () => {
+    try {
+      const res = await api.categories.getAll();
+      if (res.success) {
+        setCategories(res.data || []);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // ✅ SPLIT
+  const mainCategories = categories.filter((c) => !c.parent_id);
+  const subCategories = categories.filter((c) => c.parent_id);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -51,19 +70,17 @@ export default function ProductForm() {
         name,
         price,
         category,
-        description, // ✅ IMPORTANT
+        description,
         slug: name.toLowerCase().replace(/\s+/g, "-"),
       };
 
       if (id) {
-  await api.products.update(id, payload, imageFile);
-} else {
-  await api.products.create(payload, imageFile);
-}
+        await api.products.update(id, payload, imageFile);
+      } else {
+        await api.products.create(payload, imageFile);
+      }
 
-// ✅ redirect to products list
-navigate("/admin/products");
-
+      navigate("/admin/products");
     } catch (err) {
       console.error(err);
       alert("Error ❌");
@@ -99,6 +116,7 @@ navigate("/admin/products");
           required
         />
 
+        {/* ✅ FIXED CATEGORY DROPDOWN */}
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
@@ -106,14 +124,18 @@ navigate("/admin/products");
           required
         >
           <option value="">Select Category</option>
-          {categories.map((cat) => (
-            <React.Fragment key={cat.name}>
+
+          {mainCategories.map((cat) => (
+            <React.Fragment key={cat.id}>
               <option value={cat.name}>{cat.name}</option>
-              {cat.sub.map((sub) => (
-                <option key={sub} value={sub}>
-                  — {sub}
-                </option>
-              ))}
+
+              {subCategories
+                .filter((sub) => sub.parent_id === cat.id)
+                .map((sub) => (
+                  <option key={sub.id} value={sub.name}>
+                    — {sub.name}
+                  </option>
+                ))}
             </React.Fragment>
           ))}
         </select>

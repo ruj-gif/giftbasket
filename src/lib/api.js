@@ -44,6 +44,22 @@ const getProductById = async (id) => {
   }
 };
 
+const getAllProductsSimple = async () => {
+  try {
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .order("id", { ascending: false });
+
+    if (error) throw error;
+
+    return { success: true, data: data || [] };
+  } catch (err) {
+    console.error("PRODUCT ERROR:", err.message);
+    return { success: false, data: [] };
+  }
+};
+
 const updateProduct = async (id, payload, file) => {
   try {
     let imageUrl = payload.image || null;
@@ -292,6 +308,7 @@ export const api = {
     create: createProduct,
     update: updateProduct,
     delete: deleteProduct,
+    getAllSimple: getAllProductsSimple,
   },
 
   categories: {
