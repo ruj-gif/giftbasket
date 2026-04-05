@@ -58,6 +58,9 @@ import FeatureBlockForm from './pages/admin/FeatureBlockForm';
 import SettingsPage from './pages/admin/SettingsPage';
 import PaymentSettingsPage from './pages/admin/PaymentSettingsPage';
 
+// ✅ ONLY ADD THIS IMPORT
+import AddOrder from './pages/admin/AddOrder';
+
 // CONFIG
 import { siteConfig } from './config/siteConfig';
 
@@ -124,7 +127,6 @@ export default function App() {
 function AnimatedRoutes() {
   const location = useLocation();
 
-  // ✅ required for Qobo login redirect
   const currentUrl = window.location.origin + "/admin";
 
   return (
@@ -156,7 +158,7 @@ function AnimatedRoutes() {
         <Route path="/wishlist" element={<PageWrapper><Navigation /><WishlistPage /><Footer /></PageWrapper>} />
         <Route path="/customize" element={<PageWrapper><Navigation /><CustomForm /><Footer /></PageWrapper>} />
 
-        {/* ✅ ADMIN (FIXED CLEAN VERSION) */}
+        {/* ADMIN */}
         <Route
           path="/admin/*"
           element={
@@ -176,6 +178,8 @@ function AnimatedRoutes() {
           <Route path="categories/:id" element={<CategoryForm />} />
 
           <Route path="orders" element={<OrdersList />} />
+          {/* ✅ FIXED LINE ONLY */}
+          <Route path="orders/add" element={<AddOrder />} />
           <Route path="orders/:id" element={<OrderDetail />} />
 
           <Route path="contact-messages" element={<ContactMessagesList />} />

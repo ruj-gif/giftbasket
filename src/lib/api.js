@@ -30,6 +30,23 @@ const getAllProducts = async (page = 1, limit = null, search = "") => {
   }
 };
 
+const createOrder = async (payload) => {
+  try {
+    const { data, error } = await supabase
+      .from("orders")
+      .insert([payload])
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return { success: true, data };
+  } catch (err) {
+    console.error("CREATE ORDER ERROR:", err.message);
+    return { success: false };
+  }
+};
+
 const getProductById = async (id) => {
   try {
     const { data, error } = await supabase
@@ -306,6 +323,7 @@ export const api = {
     create: createProduct,
     update: updateProduct,
     delete: deleteProduct,
+    create: createOrder,
   },
 
   categories: {
