@@ -12,7 +12,7 @@ export function SettingsProvider({ children }) {
       console.log("SETTINGS FETCH:", res);
 
       if (res.success) {
-        setSettings(res.data);
+        setSettings(res.data || {});
       }
     } catch (error) {
       console.error("Failed to load settings:", error);
@@ -23,8 +23,14 @@ export function SettingsProvider({ children }) {
     loadSettings();
   }, []);
 
+  // ✅ THIS IS THE IMPORTANT FIX
+  // ensures components update after save
+  const refreshSettings = async () => {
+    await loadSettings();
+  };
+
   return (
-    <SettingsContext.Provider value={{ settings, loadSettings }}>
+    <SettingsContext.Provider value={{ settings, loadSettings: refreshSettings }}>
       {children}
     </SettingsContext.Provider>
   );

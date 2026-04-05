@@ -12,33 +12,29 @@ import { useSettings } from "../contexts/SettingsContext";
 import { useUser } from "../contexts/UserContext";
 
 export default function Footer() {
-  const settingsContext = useSettings();
-  const settings = settingsContext?.settings || {};
+  const { settings, loading } = useSettings(); // ✅ FIXED
   const { isLoggedIn } = useUser();
 
-  const siteName = settings?.siteName || "Gift Basket";
-  const siteLogo = settings?.siteLogo || "/logoPNG-C.png";
+  // ✅ WAIT UNTIL SETTINGS LOAD
+  if (loading) return null;
 
-  // ✅ FORCE NUMBER (change here)
-  const contactPhone = "919674243961";
+  const siteName = settings?.site_name || "Gift Basket";
+  const siteLogo = settings?.logo || "/logo.png";
 
-  const contactEmail =
-    settings?.email || "giftbasketkolkata@gmail.com";
-
+  const contactPhone = settings?.phone || "919674243961";
+  const contactEmail = settings?.email || "giftbasketkolkata@gmail.com";
   const address =
-    settings?.address ||
-    "2, Abdul Halim Lane, Kolkata - 700016";
+    settings?.address || "2, Abdul Halim Lane, Kolkata - 700016";
 
   const socialInstagram =
-    settings?.social_instagram ||
-    "https://linktr.ee/giftbasketkolkata";
+    settings?.instagram || "https://linktr.ee/giftbasketkolkata";
 
   const socialFacebook =
-    settings?.social_facebook ||
+    settings?.facebook ||
     "https://www.facebook.com/people/Gift-Basket/100063696037449/?mibextid=ZbWKwL";
 
   const socialYoutube =
-    settings?.social_youtube ||
+    settings?.youtube ||
     "https://www.youtube.com/@giftbasket771";
 
   return (
@@ -128,7 +124,7 @@ export default function Footer() {
             </h4>
 
             <a
-              href="https://linktr.ee/giftbasketkolkata"
+              href={socialInstagram}
               target="_blank"
               rel="noopener noreferrer"
               className="bg-white text-black px-6 py-3 text-xs uppercase hover:bg-red-600 hover:text-white transition"

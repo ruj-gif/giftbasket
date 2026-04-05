@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useSettings } from "../contexts/SettingsContext"; // ✅ ADD
 
 const fadeUp = {
   hidden: { opacity: 0, y: 60 },
@@ -21,6 +22,22 @@ const stagger = {
 };
 
 export default function AboutPage() {
+  const { settings, loading } = useSettings(); // ✅ ADD
+
+  if (loading) return null; // ✅ IMPORTANT
+
+  // ✅ SETTINGS VALUES (with fallback)
+  const siteName = settings?.site_name || "Gift Basket";
+  const heroTitle =
+    settings?.hero_title || "Crafting Luxury Gifting Experiences Since 2017";
+
+  const aboutText =
+    settings?.about ||
+    "Gift Basket is a boutique brand redefining luxury gifting through curated experiences.";
+
+  const phone = settings?.phone || "919674243961";
+  const email = settings?.email || "giftbasketkolkata@gmail.com";
+
   return (
     <div className="min-h-screen bg-[#fafafa] text-gray-900 font-sans">
 
@@ -43,12 +60,14 @@ export default function AboutPage() {
             Our Story
           </motion.p>
 
+          {/* ✅ FROM SETTINGS */}
           <motion.h1 variants={fadeUp} className="text-5xl md:text-7xl font-serif italic mb-4">
-            Gift Basket
+            {siteName}
           </motion.h1>
 
+          {/* ✅ FROM SETTINGS */}
           <motion.p variants={fadeUp} className="text-sm text-white/80">
-            Crafting Luxury Gifting Experiences Since 2017
+            {heroTitle}
           </motion.p>
         </motion.div>
       </div>
@@ -85,7 +104,6 @@ export default function AboutPage() {
             </p>
           </div>
 
-          {/* ✅ FIXED BADGE */}
           <div className="absolute -bottom-6 -right-6 bg-white text-black px-6 py-4 shadow-2xl text-center rounded-sm">
             <p className="text-lg font-serif italic whitespace-nowrap">
               Est. 2017
@@ -105,18 +123,9 @@ export default function AboutPage() {
 
           <div className="w-20 h-[2px] bg-black mb-8"></div>
 
+          {/* ✅ FROM SETTINGS */}
           <p className="text-stone-600 mb-6 text-lg leading-relaxed">
-            Gift Basket is a boutique brand redefining
-            <span className="font-semibold text-black"> luxury gifting </span>
-            through curated experiences.
-          </p>
-
-          <p className="text-stone-600 mb-6 text-lg leading-relaxed">
-            Every product reflects attention to detail and emotion.
-          </p>
-
-          <p className="text-stone-600 mb-10 text-lg leading-relaxed">
-            We transform gifting into something unforgettable.
+            {aboutText}
           </p>
 
           <Link to="/shop">
@@ -129,7 +138,7 @@ export default function AboutPage() {
 
       </motion.section>
 
-      {/* VALUES */}
+      {/* VALUES (unchanged) */}
       <motion.section
         className="bg-white py-24 border-t"
         initial="hidden"
@@ -183,9 +192,10 @@ export default function AboutPage() {
               Let’s create something special together.
             </p>
 
+            {/* ✅ FROM SETTINGS */}
             <div className="space-y-3 text-sm">
-              <p>📞 +91 9674243961</p>
-              <p>📧 giftbasketkolkata@gmail.com</p>
+              <p>📞 +{phone}</p>
+              <p>📧 {email}</p>
             </div>
           </div>
 
@@ -199,7 +209,7 @@ export default function AboutPage() {
                 const message = e.target.message.value;
 
                 const text = `Hello! I'm ${name}\n\n${message}`;
-                const url = `https://wa.me/919674243961?text=${encodeURIComponent(text)}`;
+                const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`; // ✅ FIXED
 
                 window.open(url, "_blank");
               }}
