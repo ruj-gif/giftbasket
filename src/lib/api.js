@@ -17,6 +17,24 @@ const getAllProducts = async () => {
   }
 };
 
+const updateProduct = async (id, payload) => {
+  try {
+    const { data, error } = await supabase
+      .from("products")
+      .update(payload)
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return { success: true, data };
+  } catch (err) {
+    console.error("UPDATE PRODUCT ERROR:", err.message);
+    return { success: false };
+  }
+};
+
 /* ================= CATEGORIES ================= */
 
 const getAllCategories = async () => {
@@ -121,7 +139,40 @@ const deleteHeroSection = async (id) => {
   }
 };
 
-/* ================= CONTACT MESSAGES ================= */
+const createProduct = async (product, file) => {
+  const fileName = `${Date.now()}-${file.name}`;
+
+  // upload image
+  const { error: uploadError } = await supabase.storage
+    .from("products")
+    .upload(fileName, file);
+
+  if (uploadError) throw uploadError;
+
+  const { data: urlData } = supabase.storage
+    .from("products")
+    .getPublicUrl(fileName);
+
+  const imageUrl = urlData.publicUrl;
+
+  // insert
+  const { data, error } = await supabase
+    .from("products")
+    .insert([
+      {
+        name: product.name,
+        price: Number(product.price),
+        category: product.category,
+        image: imageUrl,
+      },
+    ])
+    .select()
+    .single();
+
+  if (error) throw error;
+
+  return { success: true, data };
+};
 
 /* ================= CONTACT MESSAGES ================= */
 
@@ -225,11 +276,46 @@ const getAllOrders = async () => {
   }
 };
 
+const getProductById = async (id) => {
+  try {
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    return { success: true, data };
+  } catch (err) {
+    console.error("GET PRODUCT ERROR:", err.message);
+    return { success: false, data: null };
+  }
+};
+
+const deleteProduct = async (id) => {
+  const { error } = await supabase
+    .from("products")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    console.error(error);
+    return { success: false };
+  }
+
+  return { success: true };
+};
+
 /* ================= EXPORT ================= */
 
 export const api = {
   products: {
     getAll: getAllProducts,
+    getById: getProductById,
+    create: createProduct,
+    update: updateProduct,
+    delete: deleteProduct,
   },
 
   categories: {

@@ -1,7 +1,7 @@
 import { supabase } from "../lib/supabase";
 
-// ✅ GET ALL PRODUCTS
-export const getProducts = async () => {
+// GET ALL PRODUCTS
+const getAllProducts = async () => {
   const { data, error } = await supabase
     .from("products")
     .select("*")
@@ -9,14 +9,14 @@ export const getProducts = async () => {
 
   if (error) {
     console.error(error);
-    return [];
+    return { success: false, data: [] };
   }
 
-  return data;
+  return { success: true, data };
 };
 
-// ✅ UPLOAD IMAGE
-export const uploadImage = async (file) => {
+// UPLOAD IMAGE
+const uploadImage = async (file) => {
   const fileName = `${Date.now()}-${file.name}`;
 
   const { error } = await supabase.storage
@@ -24,7 +24,7 @@ export const uploadImage = async (file) => {
     .upload(fileName, file);
 
   if (error) {
-    console.error(error);
+    console.error("UPLOAD ERROR:", error.message);
     return null;
   }
 
@@ -35,40 +35,56 @@ export const uploadImage = async (file) => {
   return data.publicUrl;
 };
 
-// ✅ ADD PRODUCT
-export const addProduct = async (product, file) => {
-  const imageUrl = await uploadImage(file);
+// CREATE PRODUCT ✅ (IMPORTANT)
+const createProduct = async (product, file) => {
+  try {
+    console.log("START CREATE");
 
-  if (!imageUrl) {
-    alert("Image upload failed ❌");
-    return;
+    const imageUrl = await uploadImage(file);
+    console.log("IMAGE:", imageUrl);
+
+    if (!imageUrl) throw new Error("Image upload failed");
+
+    const { data, error } = await supabase
+      .from("products")
+      .insert([
+        {
+          name: product.name,
+          price: Number(product.price),
+          category: product.category,
+          image: imageUrl,
+        },
+      ])
+      .select()
+      .single();
+
+    console.log("INSERT:", data, error);
+
+    if (error) throw error;
+
+    return { success: true, data };
+  } catch (err) {
+    console.error("FINAL ERROR:", err);
+    alert(err.message);
+    return { success: false };
   }
-
-  const { data, error } = await supabase
-    .from("products")
-    .insert([
-      {
-        name: product.name,
-        price: Number(product.price),
-        category: product.category,
-        image: imageUrl
-      }
-    ]);
-
-  if (error) {
-    console.error("INSERT ERROR:", error.message, error);
-    alert("Database insert failed ❌");
-  }
-
-  return data;
 };
 
-// ✅ DELETE PRODUCT
-export const deleteProduct = async (id) => {
+// DELETE
+const deleteProduct = async (id) => {
   const { error } = await supabase
     .from("products")
     .delete()
     .eq("id", id);
 
   if (error) console.error(error);
+};
+
+// ✅ EXPORT IN CORRECT FORMAT
+export const api = {
+  products: {
+    getAll: getAllProducts,
+    create: createProduct,   // 🔥 THIS FIXES YOUR ERROR
+    delete: deleteProduct,
+  },
 };
