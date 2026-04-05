@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { api } from "../../lib/api";
 import { categories } from "../../data/categories";
+import { useNavigate } from "react-router-dom";
 
 export default function ProductForm() {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
@@ -54,12 +56,13 @@ export default function ProductForm() {
       };
 
       if (id) {
-        await api.products.update(id, payload, imageFile);
-        alert("Updated ✅");
-      } else {
-        await api.products.create(payload, imageFile);
-        alert("Added ✅");
-      }
+  await api.products.update(id, payload, imageFile);
+} else {
+  await api.products.create(payload, imageFile);
+}
+
+// ✅ redirect to products list
+navigate("/admin/products");
 
     } catch (err) {
       console.error(err);

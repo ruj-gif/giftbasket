@@ -7,6 +7,7 @@ export const UserContext = createContext();
 export function UserProvider({ children }) {
   const [user, setUser] = useState(null);
 
+  // ✅ Load user on app start
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
@@ -14,10 +15,12 @@ export function UserProvider({ children }) {
         setUser(JSON.parse(saved));
       } catch (e) {
         console.error('Failed to parse user:', e);
+        localStorage.removeItem(STORAGE_KEY); // 🔥 clean corrupted data
       }
     }
   }, []);
 
+  // ✅ Save user whenever it changes
   useEffect(() => {
     if (user) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
@@ -26,34 +29,52 @@ export function UserProvider({ children }) {
     }
   }, [user]);
 
+  // ✅ Manual login (optional use)
   const login = (userData) => {
     setUser(userData && typeof userData === 'object' ? userData : null);
   };
 
+  // ✅ MAIN FIX: normalize API user properly
   const setUserFromApi = (apiUser) => {
-    if (apiUser && (apiUser.id || apiUser.email)) {
-      setUser({
-        id: apiUser.id,
-        email: apiUser.email,
-        name: apiUser.name || apiUser.email?.split('@')[0] || 'User',
-        phone: apiUser.phone,
-      });
-    }
+    if (!apiUser) return;
+
+    const normalizedUser = {
+      id: apiUser.id,
+      email: apiUser.email,
+      name:
+        apiUser.name ||
+        apiUser.email?.split('@')[0] ||
+        'User',
+      phone: apiUser.phone || null,
+    };
+
+    setUser(normalizedUser); // 🔥 triggers localStorage save automatically
   };
 
+  // ✅ logout
   const logout = () => {
     setUser(null);
   };
 
-  const isLoggedIn = Boolean(user?.email);
+  // ✅ login check
+  const isLoggedIn = !!user?.email;
 
   return (
-    <UserContext.Provider value={{ user, login, logout, setUserFromApi, isLoggedIn }}>
+    <UserContext.Provider
+      value={{
+        user,
+        login,
+        logout,
+        setUserFromApi,
+        isLoggedIn,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );
 }
 
+// ✅ hook
 export const useUser = () => {
   const context = useContext(UserContext);
   if (!context) {
