@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { api } from "../../lib/api";
 import { useSettings } from "../../contexts/SettingsContext";
 
-export default function SettingsPage() {
+function SettingsPage() {
   const { settings, loadSettings } = useSettings();
 
   const [formData, setFormData] = useState({
@@ -13,7 +13,6 @@ export default function SettingsPage() {
 
   const [loading, setLoading] = useState(false);
 
-  // ✅ Load settings into form
   useEffect(() => {
     if (settings) {
       setFormData({
@@ -24,7 +23,6 @@ export default function SettingsPage() {
     }
   }, [settings]);
 
-  // ✅ Handle input change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -33,7 +31,6 @@ export default function SettingsPage() {
     }));
   };
 
-  // ✅ Submit (update only)
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -55,19 +52,15 @@ export default function SettingsPage() {
     }
   };
 
-  // ✅ Loading state
   if (settings === null) {
-  return <div className="p-6">Loading settings...</div>;
-}
+    return <div className="p-6">Loading settings...</div>;
+  }
+
   return (
     <div className="max-w-3xl w-full">
       <h1 className="text-2xl font-bold mb-6">Site Settings</h1>
 
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-6 rounded shadow space-y-6"
-      >
-        {/* Site Name */}
+      <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow space-y-6">
         <div>
           <label className="block mb-2">Site Name</label>
           <input
@@ -79,7 +72,6 @@ export default function SettingsPage() {
           />
         </div>
 
-        {/* Logo */}
         <div>
           <label className="block mb-2">Logo URL</label>
           <input
@@ -88,11 +80,9 @@ export default function SettingsPage() {
             value={formData.logo}
             onChange={handleChange}
             className="w-full border p-2 rounded"
-            placeholder="https://your-logo-url.com"
           />
         </div>
 
-        {/* Hero Title */}
         <div>
           <label className="block mb-2">Hero Title</label>
           <input
@@ -104,7 +94,6 @@ export default function SettingsPage() {
           />
         </div>
 
-        {/* Submit */}
         <button
           type="submit"
           disabled={loading}
@@ -116,3 +105,5 @@ export default function SettingsPage() {
     </div>
   );
 }
+
+export default SettingsPage;

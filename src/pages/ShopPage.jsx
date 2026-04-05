@@ -58,12 +58,8 @@ export default function ShopPage() {
 
         if (response.success) {
           // ✅ ONLY SHOW PUBLISHED
-          const publishedProducts = response.data.filter(
-            (p) => p.published !== false
-          );
-
-          setProducts(publishedProducts);
-          setFiltered(publishedProducts);
+          setProducts(response.data);
+setFiltered(response.data);
         }
       } catch (err) {
         console.error(err);

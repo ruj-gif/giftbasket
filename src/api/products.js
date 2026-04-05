@@ -21,7 +21,9 @@ const uploadImage = async (file) => {
 
   const { error } = await supabase.storage
     .from("products")
-    .upload(fileName, file);
+    .upload(fileName, file, {
+  contentType: file.type,
+});
 
   if (error) {
     console.error("UPLOAD ERROR:", error.message);
@@ -77,7 +79,12 @@ const deleteProduct = async (id) => {
     .delete()
     .eq("id", id);
 
-  if (error) console.error(error);
+  if (error) {
+    console.error(error);
+    return { success: false };
+  }
+
+  return { success: true };
 };
 
 // ✅ EXPORT IN CORRECT FORMAT
