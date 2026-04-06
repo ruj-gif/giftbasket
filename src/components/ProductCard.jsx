@@ -1,13 +1,21 @@
 import React, { useState } from "react";
 import { useCart } from "../contexts/CartContext";
 import { useWishlist } from "../contexts/WishlistContext";
+import { useNavigate } from "react-router-dom";
 
 export default function ProductCard({ product }) {
-  const { addToCart } = useCart();
+  const { addToCart, cartItems } = useCart(); // ✅ must exist in context
   const { toggleWishlist, isInWishlist } = useWishlist();
+  const navigate = useNavigate();
 
   const productId = product.id || product._id || product.slug;
+
   const isFav = isInWishlist(productId);
+
+  // ✅ FIXED (handles id mismatch)
+  const isInCart = cartItems?.some(
+    (item) => String(item.id) === String(productId)
+  );
 
   const [showPopup, setShowPopup] = useState(false);
   const [wishMsg, setWishMsg] = useState(false);
@@ -46,7 +54,7 @@ export default function ProductCard({ product }) {
         {product.name}
       </h3>
 
-      {/* ✅ DESCRIPTION (THIS WAS MISSING) */}
+      {/* DESCRIPTION */}
       <p className="text-sm text-gray-500 mt-1">
         {product.description || "No description available"}
       </p>
@@ -56,19 +64,24 @@ export default function ProductCard({ product }) {
         ₹{product.price}
       </p>
 
-      {/* ADD TO CART */}
+      {/* 🛒 BUTTON */}
       <button
         onClick={() => {
-          addToCart({ ...product, id: productId });
-          setShowPopup(true);
-          setTimeout(() => setShowPopup(false), 1200);
+          if (isInCart) {
+            navigate("/cart"); // ✅ go to cart
+          } else {
+            addToCart({ ...product, id: productId });
+            setShowPopup(true);
+            setTimeout(() => setShowPopup(false), 1200);
+          }
         }}
         className="w-full mt-3 bg-black text-white py-2 rounded"
       >
-        Add to Cart
+        {isInCart ? "Go to Cart" : "Add to Cart"}
       </button>
 
-      {showPopup && (
+      {/* POPUP */}
+      {showPopup && !isInCart && (
         <div className="text-xs text-center mt-2 bg-black text-white py-1 rounded">
           Added to cart ✅
         </div>

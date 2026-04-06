@@ -1,7 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useSettings } from "../contexts/SettingsContext"; // ✅ ADD
+import { useSettings } from "../contexts/SettingsContext";
+import { FiPhone, FiMail } from "react-icons/fi"; // ✅ ADDED
 
 const fadeUp = {
   hidden: { opacity: 0, y: 60 },
@@ -22,11 +23,10 @@ const stagger = {
 };
 
 export default function AboutPage() {
-  const { settings, loading } = useSettings(); // ✅ ADD
+  const { settings, loading } = useSettings();
 
-  if (loading) return null; // ✅ IMPORTANT
+  if (loading) return null;
 
-  // ✅ SETTINGS VALUES (with fallback)
   const siteName = settings?.site_name || "Gift Basket";
   const heroTitle =
     settings?.hero_title || "Crafting Luxury Gifting Experiences Since 2017";
@@ -60,12 +60,10 @@ export default function AboutPage() {
             Our Story
           </motion.p>
 
-          {/* ✅ FROM SETTINGS */}
           <motion.h1 variants={fadeUp} className="text-5xl md:text-7xl font-serif italic mb-4">
             {siteName}
           </motion.h1>
 
-          {/* ✅ FROM SETTINGS */}
           <motion.p variants={fadeUp} className="text-sm text-white/80">
             {heroTitle}
           </motion.p>
@@ -81,7 +79,6 @@ export default function AboutPage() {
         variants={stagger}
       >
 
-        {/* LEFT DESIGN */}
         <motion.div
           variants={fadeUp}
           className="relative group h-[520px] flex items-center justify-center overflow-visible bg-gradient-to-br from-black via-stone-900 to-black rounded-md shadow-xl"
@@ -115,7 +112,6 @@ export default function AboutPage() {
 
         </motion.div>
 
-        {/* TEXT */}
         <motion.div variants={fadeUp}>
           <h2 className="text-4xl md:text-5xl font-serif italic text-stone-900 mb-6">
             The Art of Thoughtful Gifting
@@ -123,7 +119,6 @@ export default function AboutPage() {
 
           <div className="w-20 h-[2px] bg-black mb-8"></div>
 
-          {/* ✅ FROM SETTINGS */}
           <p className="text-stone-600 mb-6 text-lg leading-relaxed">
             {aboutText}
           </p>
@@ -138,7 +133,7 @@ export default function AboutPage() {
 
       </motion.section>
 
-      {/* VALUES (unchanged) */}
+      {/* VALUES */}
       <motion.section
         className="bg-white py-24 border-t"
         initial="hidden"
@@ -192,14 +187,17 @@ export default function AboutPage() {
               Let’s create something special together.
             </p>
 
-            {/* ✅ FROM SETTINGS */}
+            {/* ✅ ICONS REPLACED */}
             <div className="space-y-3 text-sm">
-              <p>📞 +{phone}</p>
-              <p>📧 {email}</p>
+              <p className="flex items-center gap-2">
+                <FiPhone /> +{phone}
+              </p>
+              <p className="flex items-center gap-2">
+                <FiMail /> {email}
+              </p>
             </div>
           </div>
 
-          {/* FORM */}
           <div className="bg-white text-black p-8 shadow-xl">
             <form
               onSubmit={(e) => {
@@ -209,7 +207,7 @@ export default function AboutPage() {
                 const message = e.target.message.value;
 
                 const text = `Hello! I'm ${name}\n\n${message}`;
-                const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`; // ✅ FIXED
+                const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
 
                 window.open(url, "_blank");
               }}
