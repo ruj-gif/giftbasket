@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../../lib/api';
+import { supabase } from '../../lib/supabase';
 
 export default function CategoryForm() {
   const { id } = useParams();
@@ -34,20 +35,25 @@ export default function CategoryForm() {
   };
 
   const loadCategory = async () => {
-    try {
-      const response = await api.categories.getById(id);
-      if (response.success) {
-        const category = response.data;
-        setFormData({
-          name: category.name || '',
-          slug: category.slug || '',
-        });
-        setParentId(category.parent_id || '');
-      }
-    } catch (error) {
-      console.error('Failed to load category:', error);
-    }
-  };
+  try {
+    const { data, error } = await supabase
+      .from("categories")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) throw error;
+
+    setFormData({
+      name: data.name || '',
+      slug: data.slug || '',
+    });
+
+    setParentId(data.parent_id || '');
+  } catch (error) {
+    console.error('Failed to load category:', error);
+  }
+};
 
   const handleChange = (e) => {
     const { name, value } = e.target;
