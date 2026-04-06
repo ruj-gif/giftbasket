@@ -300,22 +300,39 @@ const getSettings = async () => {
 };
 
 const updateSettings = async (payload) => {
-  const { data: existing } = await supabase
-    .from("settings")
-    .select("id")
-    .limit(1)
-    .maybeSingle();
-
-  if (!existing) {
-    await supabase.from("settings").insert([payload]);
-  } else {
-    await supabase
+  try {
+    // ✅ CHECK EXISTING ROW
+    const { data: existing, error: fetchError } = await supabase
       .from("settings")
-      .update(payload)
-      .eq("id", existing.id);
-  }
+      .select("*")
+      .limit(1)
+      .maybeSingle();
 
-  return { success: true };
+    if (fetchError) throw fetchError;
+
+    // ✅ IF NO ROW → INSERT
+    if (!existing) {
+      const { error } = await supabase
+        .from("settings")
+        .insert([payload]);
+
+      if (error) throw error;
+    } 
+    // ✅ IF ROW EXISTS → UPDATE
+    else {
+      const { error } = await supabase
+        .from("settings")
+        .update(payload)
+        .eq("id", existing.id);
+
+      if (error) throw error;
+    }
+
+    return { success: true };
+  } catch (err) {
+    console.error("SETTINGS UPDATE ERROR:", err.message);
+    return { success: false };
+  }
 };
 
 /* ================= EXPORT ================= */

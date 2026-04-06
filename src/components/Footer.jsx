@@ -83,7 +83,7 @@ export default function Footer() {
                 <li><Link to="/my-orders">My Orders</Link></li>
               )}
 
-              <li><Link to="/contact">Contact</Link></li>
+              
             </ul>
           </div>
 

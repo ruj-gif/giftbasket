@@ -27,8 +27,7 @@ export default function HomePage() {
   const { scrollY } = useScroll();
   const yParallax = useTransform(scrollY, [0, 1000], [0, 300]);
 
-  const settingsContext = useSettings();
-  const settings = settingsContext?.settings || {};
+  const { settings } = useSettings();
 
   useEffect(() => {
     loadProducts();
@@ -220,9 +219,9 @@ export default function HomePage() {
         </p>
 
         <div className="space-y-2 text-sm text-stone-300">
-          <p><strong>Address:</strong> 2, Abdul Halim Lane, Kolkata</p>
-          <p><strong>Phone:</strong> +91 9674243961</p>
-          <p><strong>Email:</strong> giftbasketkolkata@gmail.com</p>
+          <p><strong>Address:</strong> {settings?.address}, {settings?.city}</p>
+<p><strong>Phone:</strong> +{settings?.phone}</p>
+<p><strong>Email:</strong> {settings?.email}</p>
         </div>
 
         <a

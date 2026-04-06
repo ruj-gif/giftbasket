@@ -14,7 +14,6 @@ function SettingsPage() {
     address: "",
     city: "",
     pincode: "",
-    whatsapp: "",
     youtube: "", // ✅ already here (correct)
     instagram: "",
     facebook: "",
@@ -33,7 +32,6 @@ function SettingsPage() {
         address: settings.address || "",
         city: settings.city || "",
         pincode: settings.pincode || "",
-        whatsapp: settings.whatsapp || "",
         youtube: settings.youtube || "", // ✅ FIX ADDED HERE
         instagram: settings.instagram || "",
         facebook: settings.facebook || "",
@@ -50,25 +48,31 @@ function SettingsPage() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      const res = await api.settings.update(formData);
+  // ✅ DEBUG 1: CHECK WHAT YOU ARE SENDING
+  console.log("SENDING DATA:", formData);
 
-      if (res.success) {
-        await loadSettings();
-        alert("Settings saved!");
-      } else {
-        alert("Failed to save settings");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Error saving settings");
-    } finally {
-      setLoading(false);
+  try {
+    const res = await api.settings.update(formData);
+
+    // ✅ DEBUG 2: CHECK RESPONSE FROM API
+    console.log("API RESPONSE:", res);
+
+    if (res.success) {
+      await loadSettings();
+      alert("Settings saved!");
+    } else {
+      alert("Failed to save settings");
     }
-  };
+  } catch (err) {
+    console.error("ERROR:", err);
+    alert("Error saving settings");
+  } finally {
+    setLoading(false);
+  }
+};
 
   if (settings === null) {
     return <div className="p-6">Loading settings...</div>;
