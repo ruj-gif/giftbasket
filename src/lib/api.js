@@ -125,6 +125,7 @@ const createProduct = async (product, file) => {
   try {
     let imageUrl = null;
 
+    // ✅ TRY IMAGE UPLOAD (but don't break if fails)
     if (file) {
       const fileName = `${Date.now()}-${file.name}`;
 
@@ -134,15 +135,18 @@ const createProduct = async (product, file) => {
           contentType: file.type,
         });
 
-      if (uploadError) throw uploadError;
+      if (!uploadError) {
+        const { data: urlData } = supabase.storage
+          .from("products")
+          .getPublicUrl(fileName);
 
-      const { data: urlData } = supabase.storage
-        .from("products")
-        .getPublicUrl(fileName);
-
-      imageUrl = urlData.publicUrl;
+        imageUrl = urlData.publicUrl;
+      } else {
+        console.error("IMAGE UPLOAD FAILED:", uploadError);
+      }
     }
 
+    // ✅ ALWAYS INSERT PRODUCT (even if image fails)
     const { data, error } = await supabase
       .from("products")
       .insert([
@@ -155,6 +159,8 @@ const createProduct = async (product, file) => {
       ])
       .select()
       .single();
+
+    console.log("PRODUCT INSERT:", data, error);
 
     if (error) throw error;
 
@@ -323,8 +329,7 @@ export const api = {
     create: createProduct,
     update: updateProduct,
     delete: deleteProduct,
-    create: createOrder,
-  },
+    },
 
   categories: {
     getAll: getAllCategories,
