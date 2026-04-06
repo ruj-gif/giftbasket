@@ -1,48 +1,58 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Package, ChevronRight } from 'lucide-react';
-import { useUser } from '../contexts/UserContext';
-import { api } from '../lib/api';
-import LoadingSpinner from '../components/LoadingSpinner';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Package, ChevronRight } from "lucide-react";
+import { useUser } from "../contexts/UserContext";
+import { api } from "../lib/api";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const STATUS_LABELS = {
-  pending: 'Order Placed',
-  processing: 'Processing',
-  completed: 'Delivered',
-  cancelled: 'Cancelled',
+  pending: "Order Placed",
+  processing: "Processing",
+  completed: "Delivered",
+  cancelled: "Cancelled",
 };
 
 export default function MyOrdersPage() {
   const { user, isLoggedIn } = useUser();
-  const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!isLoggedIn) return;
-    loadOrders();
-  }, [isLoggedIn, user?.email]);
+    if (isLoggedIn) {
+      loadOrders();
+    } else {
+      setLoading(false);
+    }
+  }, [isLoggedIn, user?.id]);
 
   const loadOrders = async () => {
-    if (!user?.email) {
-      setLoading(false);
-      return;
-    }
     try {
       setLoading(true);
       setError(null);
-      const response = await api.orders.getAll({
-        customer_email: user.email,
-        limit: 50,
-        sort: 'created_at',
-        order: 'DESC',
-      });
-      const list = Array.isArray(response?.data) ? response.data : [];
-      setOrders(list);
+
+      const res = await api.orders.getAll();
+
+      console.log("USER:", user);
+      console.log("ALL ORDERS:", res.data);
+
+      if (res?.success) {
+        let list = Array.isArray(res.data) ? res.data : [];
+
+        // ✅ IMPORTANT: FILTER USER-SPECIFIC ORDERS
+        list = list.filter(
+          (order) =>
+            String(order.user_id) === String(user?.id)
+        );
+
+        console.log("FILTERED:", list);
+
+        setOrders(list);
+      }
     } catch (err) {
-      setError(err.message || 'Failed to load orders');
+      console.error(err);
+      setError("Failed to load orders");
       setOrders([]);
     } finally {
       setLoading(false);
@@ -51,116 +61,118 @@ export default function MyOrdersPage() {
 
   if (!isLoggedIn) {
     return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-background-light py-16 flex items-center justify-center">
-        <div className="container mx-auto px-4 max-w-md text-center">
-          <h1 className="font-display text-2xl font-bold mb-6 text-secondary">My Orders</h1>
-          <p className="text-text-light mb-8">Please login to view your orders.</p>
-          <Link to="/login" className="btn-primary inline-flex items-center justify-center gap-2">
-            Login / Register
+      <div className="min-h-screen flex items-center justify-center text-center">
+        <div>
+          <h1 className="text-2xl font-bold mb-4">My Orders</h1>
+          <p className="mb-6">Please login to view your orders.</p>
+          <Link to="/login" className="bg-black text-white px-6 py-2 rounded">
+            Login
           </Link>
         </div>
-      </motion.div>
+      </div>
     );
   }
 
-  if (loading) {
-    return <LoadingSpinner />;
-  }
+  if (loading) return <LoadingSpinner />;
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-background-light py-8 sm:py-12">
-      <div className="container mx-auto px-4 max-w-2xl">
-        <div className="mb-8">
-          <h1 className="font-display text-3xl sm:text-4xl font-bold mb-2 text-secondary">My Orders</h1>
-          <p className="text-text-light">Orders placed with {user?.email}</p>
-        </div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="min-h-screen py-10 px-4"
+    >
+      <div className="max-w-2xl mx-auto">
+        <h1 className="text-3xl font-bold mb-2">My Orders</h1>
+        <p className="text-gray-500 mb-6">{user?.email}</p>
 
         {error && (
-          <div className="p-4 rounded-lg bg-error/10 border border-error/20 text-error text-sm font-medium mb-6">
-            {error}
-          </div>
+          <div className="mb-4 text-red-500 text-sm">{error}</div>
         )}
 
-        {orders.length === 0 && !error && (
-          <div className="bg-white p-8 sm:p-12 rounded-lg shadow-elegant text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-6">
-              <Package className="w-8 h-8 text-primary" />
-            </div>
-            <h2 className="font-display text-xl font-bold text-secondary mb-3">No orders yet</h2>
-            <p className="text-text-light mb-6">You haven&apos;t placed any orders with this account.</p>
-            <Link to="/shop" className="btn-primary inline-flex items-center justify-center gap-2">
+        {orders.length === 0 ? (
+          <div className="text-center py-12 bg-white rounded shadow">
+            <Package className="mx-auto mb-4" size={40} />
+            <p>No orders found</p>
+            <Link to="/shop" className="text-blue-600 mt-4 block">
               Start Shopping
             </Link>
           </div>
-        )}
+        ) : (
+          <div className="space-y-4">
+            {orders.map((order) => {
+              let items = [];
 
-        <div className="space-y-4">
-          {orders.map((order) => {
-            const items = order.order_items
-              ? typeof order.order_items === 'string'
-                ? JSON.parse(order.order_items)
-                : order.order_items
-              : [];
-            const itemCount = items.reduce((sum, i) => sum + (i.quantity || 0), 0);
-            const statusLabel = STATUS_LABELS[order.status] || order.status;
+              // ✅ SAFE PARSE
+              try {
+                items = order.order_items
+                  ? typeof order.order_items === "string"
+                    ? JSON.parse(order.order_items)
+                    : order.order_items
+                  : [];
+              } catch {
+                items = [];
+              }
 
-            return (
-              <motion.div
-                key={order.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-lg shadow-elegant overflow-hidden"
-              >
-                <Link
-                  to="/track-order"
-                  state={{ prefillOrderId: order.id, prefillEmail: user?.email }}
-                  className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 sm:p-6 hover:bg-primary/5 transition-colors"
+              const itemCount = items.reduce(
+                (sum, i) => sum + (i.quantity || 0),
+                0
+              );
+
+              const statusLabel =
+                STATUS_LABELS[order.status] || order.status;
+
+              return (
+                <motion.div
+                  key={order.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-white rounded shadow p-5"
                 >
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 mb-1">
-                      <span className="font-mono text-sm font-semibold text-secondary truncate">
-                        {order.order_number || order.id}
-                      </span>
-                      <span
-                        className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold uppercase ${
-                          order.status === 'cancelled'
-                            ? 'bg-error/10 text-error'
-                            : order.status === 'completed'
-                            ? 'bg-success/10 text-success'
-                            : 'bg-primary/10 text-primary'
-                        }`}
-                      >
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="font-semibold">
+                        {order.id}
+                      </p>
+
+                      <p className="text-sm text-gray-500">
+                        {new Date(order.created_at).toLocaleDateString()}
+                      </p>
+
+                      <p className="text-sm mt-1">
+                        {itemCount} item{itemCount !== 1 ? "s" : ""}
+                      </p>
+                    </div>
+
+                    <div className="text-right">
+                      <p className="font-bold text-lg">
+                        ₹{order.total_amount || order.total}
+                      </p>
+
+                      <span className="text-sm text-blue-600">
                         {statusLabel}
                       </span>
                     </div>
-                    <p className="text-sm text-text-light">
-                      {new Date(order.created_at).toLocaleDateString(undefined, {
-                        weekday: 'short',
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                      })}
-                      {' · '}
-                      {itemCount} item{itemCount !== 1 ? 's' : ''}
-                    </p>
-                    <p className="font-bold text-primary mt-1">₹{Number(order.total_amount || 0).toFixed(0)}</p>
                   </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <span className="text-sm font-semibold text-primary">View details</span>
-                    <ChevronRight className="w-5 h-5 text-primary" />
-                  </div>
-                </Link>
-              </motion.div>
-            );
-          })}
-        </div>
 
-        <div className="mt-8">
-          <Link
-            to="/account"
-            className="inline-flex items-center gap-2 text-primary hover:underline font-semibold"
-          >
-            ← Back to Account
+                  {/* ✅ OPTIONAL: SHOW ITEMS */}
+                  {items.length > 0 && (
+                    <div className="mt-3 text-sm text-gray-600">
+                      {items.map((item, i) => (
+                        <div key={i}>
+                          {item.name} × {item.quantity}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
+
+        <div className="mt-6">
+          <Link to="/" className="text-blue-600">
+            ← Back to Home
           </Link>
         </div>
       </div>
