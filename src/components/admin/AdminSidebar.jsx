@@ -1,6 +1,14 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Package, FolderOpen, ShoppingCart, Mail, Image, Sparkles, Settings, CreditCard, LogOut } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Package,
+  FolderOpen,
+  ShoppingCart,
+  Mail,
+  Settings,
+  LogOut
+} from 'lucide-react';
 
 export default function AdminSidebar({ onNavigate, onLogout }) {
   const location = useLocation();
@@ -15,31 +23,33 @@ export default function AdminSidebar({ onNavigate, onLogout }) {
   ];
 
   const isActive = (path, exact) => {
-    if (exact) {
-      return location.pathname === path;
-    }
+    if (exact) return location.pathname === path;
     return location.pathname.startsWith(path);
   };
 
   return (
     <div className="p-4">
+      
+      {/* HEADER */}
       <div className="mb-8 px-4 py-3">
-        <h2 className="font-display text-2xl font-bold text-primary">Admin Panel</h2>
-        <p className="text-sm text-text-light">Store Admin</p>
+        <h2 className="text-2xl font-bold text-primary">Admin Panel</h2>
+        <p className="text-sm text-gray-500">Store Admin</p>
       </div>
 
+      {/* MENU */}
       <nav className="space-y-1">
         {menuItems.map((item) => {
           const Icon = item.icon;
+
           return (
             <Link
               key={item.path}
               to={item.path}
-              onClick={onNavigate}
+              onClick={() => onNavigate?.()} // ✅ SAFE CALL
               className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
                 isActive(item.path, item.exact)
-                  ? 'bg-primary text-white font-semibold'
-                  : 'text-text hover:bg-primary/10'
+                  ? 'bg-black text-white font-semibold'
+                  : 'text-gray-700 hover:bg-gray-100'
               }`}
             >
               <Icon className="w-5 h-5" />
@@ -49,16 +59,17 @@ export default function AdminSidebar({ onNavigate, onLogout }) {
         })}
       </nav>
 
+      {/* LOGOUT */}
       {onLogout && (
-        <div className="mt-6 pt-4 border-t border-gray-200">
+        <div className="mt-6 pt-4 border-t">
           <button
             onClick={() => {
               onNavigate?.();
               onLogout?.();
             }}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 hover:bg-red-100 active:bg-red-200 rounded-lg font-medium touch-manipulation"
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg font-medium"
           >
-            <LogOut className="w-5 h-5 shrink-0" />
+            <LogOut className="w-5 h-5" />
             <span>Logout</span>
           </button>
         </div>

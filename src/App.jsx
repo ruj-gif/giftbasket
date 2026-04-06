@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { initializeAdminAuthFromUrl, AdminProtectedRoute } from '@qobo/admin-auth';
+import { useNavigate } from "react-router-dom";
+import AdminRoute from "./components/AdminRoute";
 
 // ✅ QOBO CONFIG (REQUIRED)
 if (typeof window !== 'undefined' && import.meta.env.VITE_PROJECT_ID) {
@@ -103,9 +104,7 @@ function PageWrapper({ children }) {
 }
 
 export default function App() {
-  useEffect(() => {
-    initializeAdminAuthFromUrl(); // ✅ required
-  }, []);
+  
 
   return (
     <SettingsProvider>
@@ -126,6 +125,20 @@ export default function App() {
 
 function AnimatedRoutes() {
   const location = useLocation();
+  const navigate = useNavigate();
+  useEffect(() => {
+    const handleNavigation = (e) => {
+      if (e.detail?.path) {
+        navigate(e.detail.path);
+      }
+    };
+
+    window.addEventListener("navigate", handleNavigation);
+
+    return () => {
+      window.removeEventListener("navigate", handleNavigation);
+    };
+  }, [navigate]);
 
   const currentUrl = window.location.origin + "/admin";
 
@@ -160,13 +173,13 @@ function AnimatedRoutes() {
 
         {/* ADMIN */}
         <Route
-          path="/admin/*"
-          element={
-            <AdminProtectedRoute redirectUrl={currentUrl}>
-              <AdminLayout />
-            </AdminProtectedRoute>
-          }
-        >
+  path="/admin/*"
+  element={
+    <AdminRoute>
+      <AdminLayout />
+    </AdminRoute>
+  }
+>
           <Route index element={<AdminDashboard />} />
 
           <Route path="products" element={<ProductsList />} />

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { clearAdminAuth } from '@qobo/admin-auth';
 import AdminSidebar from './AdminSidebar';
 import { Menu, X } from 'lucide-react';
 
@@ -9,11 +8,11 @@ export default function AdminLayout() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    if (window.confirm('Are you sure you want to logout?')) {
-      clearAdminAuth();
-      navigate('/');
-    }
-  };
+  if (window.confirm('Are you sure you want to logout?')) {
+    localStorage.removeItem("user"); // ✅ clear user
+    navigate("/login");
+  }
+};
 
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden min-h-[100dvh]">

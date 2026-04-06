@@ -128,7 +128,7 @@ function Navigation() {
               <div className="absolute right-0 mt-2 bg-white border shadow-md rounded w-40 z-50">
                 <div
                   onClick={() => {
-                    navigate("/orders");
+                    navigate("/my-orders");
                     setShowDropdown(false);
                   }}
                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer"

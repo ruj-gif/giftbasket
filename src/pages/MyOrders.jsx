@@ -5,7 +5,6 @@ export default function MyOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ GET LOGGED-IN USER
   const user = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
@@ -20,15 +19,10 @@ export default function MyOrders() {
     try {
       const res = await api.orders.getAll();
 
-      console.log("LOGGED USER:", user);
-      console.log("ALL ORDERS:", res.data);
-
       if (res?.success) {
         const userOrders = (res.data || []).filter(
           (order) => String(order.user_id) === String(user.id)
         );
-
-        console.log("FILTERED ORDERS:", userOrders);
 
         setOrders(userOrders);
       }
@@ -42,29 +36,46 @@ export default function MyOrders() {
   // ❌ NOT LOGGED IN
   if (!user) {
     return (
-      <div className="p-10 text-center">
-        <h2 className="text-xl mb-4">Please login to view your orders</h2>
+      <div className="min-h-screen flex items-center justify-center">
+        <h2 className="text-lg">Please login to view your orders</h2>
       </div>
     );
   }
 
-  if (loading) return <p className="p-10">Loading...</p>;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
 
   return (
-    <div className="p-10">
-      <h1 className="text-2xl mb-6 font-semibold">My Orders</h1>
+    <div className="min-h-screen bg-[#f5f5f5] flex flex-col items-center py-12 px-4">
 
+      <h1 className="text-3xl font-semibold mb-8">My Orders</h1>
+
+      {/* ✅ EMPTY STATE (LIKE YOUR IMAGE) */}
       {orders.length === 0 ? (
-        <p className="text-gray-500">No orders found</p>
+        <div className="bg-white w-full max-w-2xl p-10 rounded-lg shadow text-center">
+          <div className="text-4xl mb-4">📦</div>
+
+          <p className="text-lg font-medium mb-4">No orders yet</p>
+
+          <button
+            onClick={() => (window.location.href = "/shop")}
+            className="bg-black text-white px-6 py-2 rounded"
+          >
+            Start Shopping
+          </button>
+        </div>
       ) : (
-        <div className="space-y-4">
+        <div className="w-full max-w-2xl space-y-4">
           {orders.map((order) => {
-            // ✅ SAFE PARSE ITEMS
             let items = [];
 
             try {
               const raw = order.order_items || order.items;
-
               items =
                 typeof raw === "string"
                   ? JSON.parse(raw)
@@ -78,11 +89,9 @@ export default function MyOrders() {
             return (
               <div
                 key={order.id}
-                className="border p-4 rounded-lg shadow-sm bg-white"
+                className="bg-white p-4 rounded-lg shadow"
               >
-                <p>
-                  <strong>Order ID:</strong> {order.id}
-                </p>
+                <p><strong>Order ID:</strong> {order.id}</p>
 
                 <p>
                   <strong>Status:</strong>{" "}
@@ -96,21 +105,16 @@ export default function MyOrders() {
                   {order.total_amount || order.total || 0}
                 </p>
 
-                {/* ✅ ITEMS */}
                 {items.length > 0 && (
-                  <div className="mt-2">
-                    <p className="font-medium">Items:</p>
-                    <ul className="list-disc ml-5 text-sm text-gray-600">
-                      {items.map((item, i) => (
-                        <li key={i}>
-                          {item.name} × {item.quantity}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                  <ul className="mt-2 text-sm text-gray-600 list-disc ml-5">
+                    {items.map((item, i) => (
+                      <li key={i}>
+                        {item.name} × {item.quantity}
+                      </li>
+                    ))}
+                  </ul>
                 )}
 
-                {/* ✅ DATE */}
                 {order.created_at && (
                   <p className="text-xs text-gray-400 mt-2">
                     {new Date(order.created_at).toLocaleString()}

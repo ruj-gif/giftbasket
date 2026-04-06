@@ -232,17 +232,29 @@ const register = async ({ email, password, name }) => {
 };
 
 const login = async ({ email, password }) => {
-  const { data } = await supabase
-    .from("users")
-    .select("*")
-    .eq("email", email)
-    .eq("password", password)
-    .maybeSingle();
+  try {
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("email", email)
+      .eq("password", password)
+      .maybeSingle();
 
-  if (!data) return { success: false, error: "Invalid credentials" };
+    if (error) throw error;
 
-  localStorage.setItem("user", JSON.stringify(data));
-  return { success: true, data };
+    if (!data) {
+      return { success: false, error: "Invalid credentials" };
+    }
+
+    localStorage.setItem("user", JSON.stringify(data));
+
+    window.dispatchEvent(new Event("userChanged"));
+
+    return { success: true, data };
+  } catch (err) {
+    console.error("LOGIN ERROR:", err.message);
+    return { success: false, error: "Login failed" };
+  }
 };
 
 /* ================= CATEGORIES ================= */

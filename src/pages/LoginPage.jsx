@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck } from 'lucide-react';
@@ -50,27 +50,29 @@ export default function LoginPage() {
           password: formData.password,
         });
 
-        if (response.success) {
+        if (response && response.success) {
           setUserFromApi(response.data);
           setSuccess('Account created!');
           setTimeout(() => navigate('/account'), 500);
         } else {
-          setError(response.error || 'Registration failed'); // ✅ FIXED
+          setError(response?.error || 'Registration failed');
         }
+
       } else {
         const response = await api.auth.login({
           email: formData.email.trim().toLowerCase(),
           password: formData.password,
         });
 
-        if (response.success) {
+        if (response && response.success) {
           setUserFromApi(response.data);
           setSuccess('Logged in!');
           setTimeout(() => navigate('/account'), 500);
         } else {
-          setError(response.error || 'Invalid email or password'); // ✅ FIXED
+          setError(response?.error || 'Invalid email or password');
         }
       }
+
     } catch (err) {
       setError(err.message || 'Something went wrong');
     } finally {
@@ -78,7 +80,7 @@ export default function LoginPage() {
     }
   };
 
-  // ✅ if already logged in
+  // ✅ already logged in
   if (isLoggedIn) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -139,7 +141,9 @@ export default function LoginPage() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 className={`p-2 text-sm ${
-                  error ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'
+                  error
+                    ? 'bg-red-100 text-red-600'
+                    : 'bg-green-100 text-green-600'
                 }`}
               >
                 {error || success}

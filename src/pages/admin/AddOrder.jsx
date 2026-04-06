@@ -39,31 +39,34 @@ export default function AddOrder() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const subtotal = items.reduce(
-      (sum, item) => sum + Number(item.price) * Number(item.quantity),
-      0
-    );
+  const user = JSON.parse(localStorage.getItem("user"));
 
-    const payload = {
-      ...form,
-      order_items: items,
-      subtotal,
-      shipping_charge: 0,
-      tax_amount: 0,
-      total_amount: subtotal,
-    };
+  const subtotal = items.reduce(
+    (sum, item) => sum + Number(item.price) * Number(item.quantity),
+    0
+  );
 
-    const res = await api.orders.create(payload);
-
-    if (res.success) {
-      alert("Order Created ✅");
-      navigate("/admin/orders");
-    } else {
-      alert("Failed to create order ❌");
-    }
+  const payload = {
+    ...form,
+    user_id: user?.id, // 🔥 THIS IS THE MAIN FIX
+    order_items: items,
+    subtotal,
+    shipping_charge: 0,
+    tax_amount: 0,
+    total_amount: subtotal,
   };
+
+  const res = await api.orders.create(payload);
+
+  if (res.success) {
+    alert("Order Created ✅");
+    navigate("/admin/orders");
+  } else {
+    alert("Failed to create order ❌");
+  }
+};
 
   return (
     <div className="max-w-4xl w-full">
