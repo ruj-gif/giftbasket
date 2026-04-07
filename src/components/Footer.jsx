@@ -12,10 +12,9 @@ import { useSettings } from "../contexts/SettingsContext";
 import { useUser } from "../contexts/UserContext";
 
 export default function Footer() {
-  const { settings, loading } = useSettings(); // ✅ FIXED
+  const { settings, loading } = useSettings();
   const { isLoggedIn } = useUser();
 
-  // ✅ WAIT UNTIL SETTINGS LOAD
   if (loading) return null;
 
   const siteName = settings?.site_name || "Gift Basket";
@@ -23,8 +22,12 @@ export default function Footer() {
 
   const contactPhone = settings?.phone || "919674243961";
   const contactEmail = settings?.email || "giftbasketkolkata@gmail.com";
-  const address =
-    settings?.address || "2, Abdul Halim Lane, Kolkata - 700016";
+
+  // ✅ FIX: ADDRESS + CITY SUPPORT
+  const address = settings?.address || "2, Abdul Halim Lane";
+  const city = settings?.city || "Kolkata - 700016";
+
+  const fullAddress = `${address}${city ? `, ${city}` : ""}`;
 
   const socialInstagram =
     settings?.instagram || "https://linktr.ee/giftbasketkolkata";
@@ -83,7 +86,7 @@ export default function Footer() {
                 <li><Link to="/my-orders">My Orders</Link></li>
               )}
 
-              
+              <li><Link to="/contact">Contact Us</Link></li>
             </ul>
           </div>
 
@@ -111,7 +114,7 @@ export default function Footer() {
 
               <li className="flex items-start gap-3">
                 <MapPin size={16} />
-                <span>{address}</span>
+                <span>{fullAddress}</span> {/* ✅ FIXED */}
               </li>
 
             </ul>

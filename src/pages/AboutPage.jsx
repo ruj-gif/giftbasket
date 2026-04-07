@@ -132,41 +132,49 @@ export default function AboutPage() {
         </motion.div>
 
       </motion.section>
+{/* VALUES */}
+<motion.section
+  className="bg-white py-24 border-t"
+  initial="hidden"
+  whileInView="visible"
+  viewport={{ once: true }}
+  variants={stagger}
+>
+  <div className="max-w-6xl mx-auto px-6 text-center">
 
-      {/* VALUES */}
-      <motion.section
-        className="bg-white py-24 border-t"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={stagger}
-      >
-        <div className="max-w-6xl mx-auto px-6 text-center">
+    <motion.h2 variants={fadeUp} className="text-4xl md:text-5xl font-serif italic mb-6">
+      Why Choose Us
+    </motion.h2>
 
-          <motion.h2 variants={fadeUp} className="text-4xl md:text-5xl font-serif italic mb-6">
-            Why Choose Us
-          </motion.h2>
+    <div className="w-16 h-[2px] bg-stone-300 mx-auto mb-16"></div>
 
-          <div className="w-16 h-[2px] bg-stone-300 mx-auto mb-16"></div>
+    <div className="grid md:grid-cols-3 gap-10">
+      {[
+        { title: "Premium Quality", desc: "Only the finest products." },
+        { title: "Personalization", desc: "Tailored to your story." },
+        { title: "Elegant Packaging", desc: "Designed to impress." }
+      ].map((item, i) => (
+        <motion.div
+          key={i}
+          variants={fadeUp}
+          className="relative group p-8 rounded-md shadow-xl 
+                     bg-[#1a1a1a] text-white overflow-hidden"
+        >
+          {/* subtle luxury texture */}
+          <div className="absolute inset-0 opacity-5 
+            bg-[radial-gradient(circle_at_center,white_1px,transparent_1px)] 
+            bg-[length:22px_22px]" 
+          />
 
-          <div className="grid md:grid-cols-3 gap-10">
-            {[
-              { title: "Premium Quality", desc: "Only the finest products." },
-              { title: "Personalization", desc: "Tailored to your story." },
-              { title: "Elegant Packaging", desc: "Designed to impress." }
-            ].map((item, i) => (
-              <motion.div
-                key={i}
-                variants={fadeUp}
-                className="p-8 border hover:shadow-lg bg-[#fafafa]"
-              >
-                <h3 className="text-xl font-serif mb-3">{item.title}</h3>
-                <p className="text-stone-600 text-sm">{item.desc}</p>
-              </motion.div>
-            ))}
+          <div className="relative z-10">
+            <h3 className="text-xl font-serif mb-3">{item.title}</h3>
+            <p className="text-sm text-white/70">{item.desc}</p>
           </div>
-        </div>
-      </motion.section>
+        </motion.div>
+      ))}
+    </div>
+  </div>
+</motion.section>
 
       {/* CONTACT */}
       <motion.section

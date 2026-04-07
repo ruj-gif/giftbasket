@@ -5,7 +5,7 @@ export default function CustomForm() {
     <div className="min-h-screen bg-gradient-to-b from-[#fafafa] to-[#fff] flex items-center justify-center px-4 py-16">
 
       {/* CARD */}
-      <div className="w-full max-w-2xl bg-white/80 backdrop-blur-lg p-10 rounded-3xl shadow-2xl border border-gray-100">
+      <div className="w-full max-w-2xl bg-white/90 backdrop-blur-lg p-10 rounded-3xl shadow-2xl border-2 border-gray-300">
 
         {/* TITLE */}
         <h2 className="text-2xl md:text-3xl font-semibold text-center mb-2 italic">
