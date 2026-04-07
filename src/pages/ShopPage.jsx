@@ -170,63 +170,69 @@ export default function ShopPage() {
 
               return (
                 <div
-  key={product.id}
-  className="bg-white border rounded-lg p-4 shadow-sm relative 
-  transform transition-all duration-300 
-  hover:shadow-xl hover:-translate-y-2 hover:scale-[1.02] group"
->
+                  key={product.id}
+                  className="bg-white border rounded-lg p-4 shadow-sm relative
+                  transform transition-all duration-300
+                  hover:shadow-xl hover:-translate-y-2 hover:scale-[1.02] group"
+                >
 
-  {/* ✅ WISHLIST (FIXED) */}
-  <button
-    onClick={() => toggleWishlist(product)}
-    className="absolute top-3 right-3 bg-white p-2 rounded-full shadow 
-    hover:scale-110 transition z-10"   // ✅ added z-10
-  >
-    <span
-      className={`text-lg ${
-        isWishlisted ? "text-red-500" : "text-gray-400"
-      }`}
-    >
-      ♥
-    </span>
-  </button>
+                  {/* WISHLIST */}
+                  <button
+                    onClick={() => toggleWishlist(product)}
+                    className="absolute top-3 right-3 bg-white p-2 rounded-full shadow
+                    hover:scale-110 transition z-10"
+                  >
+                    <span
+                      className={`text-lg ${
+                        isWishlisted ? "text-red-500" : "text-gray-400"
+                      }`}
+                    >
+                      ♥
+                    </span>
+                  </button>
 
-  {/* IMAGE */}
-  <div className="overflow-hidden rounded relative z-0"> {/* ✅ z-0 */}
-    <img
-      src={product.image}
-      alt={product.name}
-      className="w-full h-40 object-cover mb-3 rounded 
-      transition-transform duration-500 group-hover:scale-110"
-    />
-  </div>
+                  {/* IMAGE */}
+                  <div className="overflow-hidden rounded relative z-0">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-40 object-cover mb-3 rounded
+                      transition-transform duration-500 group-hover:scale-110"
+                    />
+                  </div>
 
-  <h3 className="font-medium">{product.name}</h3>
-  <p className="text-sm text-gray-500 mb-2">
-    ₹{product.price}
-  </p>
+                  <h3 className="font-medium">{product.name}</h3>
 
-  {/* CART */}
-  <button
-    onClick={() => {
-      if (status === "view") {
-        navigate("/cart");
-      } else {
-        handleAddToCart(product);
-      }
-    }}
-    className={`w-full py-2 rounded text-white transition ${
-      status === "idle"
-        ? "bg-black hover:bg-gray-800"
-        : "bg-green-600"
-    }`}
-  >
-    {status === "idle" && "Add to Cart"}
-    {status === "added" && "Added"}
-    {status === "view" && "View Cart"}
-  </button>
+                  {/* ✅ DESCRIPTION ADDED */}
+                  <p className="text-sm text-gray-500 mb-1">
+                    {product.description || "No description available"}
+                  </p>
 
-</div>
+                  <p className="text-sm text-gray-700 mb-2 font-medium">
+                    ₹{product.price}
+                  </p>
+
+                  {/* CART */}
+                  <button
+                    onClick={() => {
+                      if (status === "view") {
+                        navigate("/cart");
+                      } else {
+                        handleAddToCart(product);
+                      }
+                    }}
+                    className={`w-full py-2 rounded text-white transition ${
+                      status === "idle"
+                        ? "bg-black hover:bg-gray-800"
+                        : "bg-green-600"
+                    }`}
+                  >
+                    {status === "idle" && "Add to Cart"}
+                    {status === "added" && "Added"}
+                    {status === "view" && "View Cart"}
+                  </button>
+
+                </div>
               );
             })}
 

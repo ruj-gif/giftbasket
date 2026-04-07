@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { api } from '../../lib/api';
-import DataTable from '../../components/admin/DataTable';
+import React, { useState, useEffect } from "react";
+import { api } from "../../lib/api";
+import DataTable from "../../components/admin/DataTable";
 
 export default function ContactMessagesList() {
   const [messages, setMessages] = useState([]);
@@ -13,35 +13,50 @@ export default function ContactMessagesList() {
   const loadMessages = async () => {
     try {
       const response = await api.contact_messages.getAll();
+
       if (response.success) {
         setMessages(response.data || []);
+      } else {
+        alert("❌ Failed to load messages");
       }
     } catch (error) {
-      console.error('Failed to load messages:', error);
+      console.error("Failed to load messages:", error);
+      alert("❌ Error loading messages");
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (message) => {
-    if (!window.confirm('Delete this message?')) return;
+    const confirmDelete = window.confirm("Delete this message?");
+    if (!confirmDelete) return;
 
     try {
-      await api.contact_messages.delete(message.id);
-      loadMessages();
+      const res = await api.contact_messages.delete(message.id);
+
+      if (res.success) {
+        alert("🗑️ Message deleted successfully");
+        loadMessages();
+      } else {
+        alert("❌ Failed to delete message");
+      }
     } catch (error) {
-      alert('Failed to delete message');
+      console.error(error);
+      alert("❌ Error deleting message");
     }
   };
 
   const columns = [
-    { key: 'name', label: 'Name' },
-    { key: 'email', label: 'Email' },
-    { key: 'subject', label: 'Subject' },
+    { key: "name", label: "Name" },
+    { key: "email", label: "Email" },
+    { key: "subject", label: "Subject" },
     {
-      key: 'created_at',
-      label: 'Date',
-      render: (row) => new Date(row.created_at).toLocaleDateString(),
+      key: "created_at",
+      label: "Date",
+      render: (row) =>
+        row.created_at
+          ? new Date(row.created_at).toLocaleDateString()
+          : "-",
     },
   ];
 
@@ -56,7 +71,9 @@ export default function ContactMessagesList() {
   return (
     <div>
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Contact Messages</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+          Contact Messages
+        </h1>
       </div>
 
       <DataTable

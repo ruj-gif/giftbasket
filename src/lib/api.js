@@ -1,6 +1,7 @@
 import { supabase } from "./supabase";
 
 /* ================= PRODUCTS ================= */
+
 const getAllProducts = async (page = 1, limit = null, search = "") => {
   try {
     let query = supabase
@@ -12,7 +13,6 @@ const getAllProducts = async (page = 1, limit = null, search = "") => {
       query = query.ilike("name", `%${search}%`);
     }
 
-    // ✅ APPLY RANGE ONLY IF LIMIT EXISTS
     if (limit) {
       const from = (page - 1) * limit;
       const to = from + limit - 1;
@@ -20,7 +20,6 @@ const getAllProducts = async (page = 1, limit = null, search = "") => {
     }
 
     const { data, error, count } = await query;
-
     if (error) throw error;
 
     return { success: true, data: data || [], total: count || 0 };
@@ -30,20 +29,19 @@ const getAllProducts = async (page = 1, limit = null, search = "") => {
   }
 };
 
-const createOrder = async (payload) => {
+const getAllProductsSimple = async () => {
   try {
     const { data, error } = await supabase
-      .from("orders")
-      .insert([payload])
-      .select()
-      .single();
+      .from("products")
+      .select("*")
+      .order("id", { ascending: false });
 
     if (error) throw error;
 
-    return { success: true, data };
+    return { success: true, data: data || [] };
   } catch (err) {
-    console.error("CREATE ORDER ERROR:", err.message);
-    return { success: false };
+    console.error("PRODUCT ERROR:", err.message);
+    return { success: false, data: [] };
   }
 };
 
@@ -64,19 +62,57 @@ const getProductById = async (id) => {
   }
 };
 
-const getAllProductsSimple = async () => {
+/* ================= IMAGE ================= */
+
+const uploadImage = async (file) => {
+  if (!file) return null;
+
+  const fileName = `${Date.now()}-${file.name}`;
+
+  const { error } = await supabase.storage
+    .from("products")
+    .upload(fileName, file, {
+      contentType: file.type,
+    });
+
+  if (error) {
+    console.error("IMAGE UPLOAD ERROR:", error.message);
+    return null;
+  }
+
+  const { data } = supabase.storage
+    .from("products")
+    .getPublicUrl(fileName);
+
+  return data.publicUrl;
+};
+
+/* ================= CREATE / UPDATE ================= */
+
+const createProduct = async (product, file) => {
   try {
+    const imageUrl = await uploadImage(file);
+
     const { data, error } = await supabase
       .from("products")
-      .select("*")
-      .order("id", { ascending: false });
+      .insert([
+        {
+          name: product.name,
+          price: Number(product.price),
+          category: product.category,
+          image: imageUrl,
+          description: product.description || "",
+        },
+      ])
+      .select()
+      .single();
 
     if (error) throw error;
 
-    return { success: true, data: data || [] };
+    return { success: true, data };
   } catch (err) {
-    console.error("PRODUCT ERROR:", err.message);
-    return { success: false, data: [] };
+    console.error("CREATE PRODUCT ERROR:", err.message);
+    return { success: false };
   }
 };
 
@@ -85,28 +121,17 @@ const updateProduct = async (id, payload, file) => {
     let imageUrl = payload.image || null;
 
     if (file) {
-      const fileName = `${Date.now()}-${file.name}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from("products")
-        .upload(fileName, file, {
-          contentType: file.type,
-        });
-
-      if (uploadError) throw uploadError;
-
-      const { data: urlData } = supabase.storage
-        .from("products")
-        .getPublicUrl(fileName);
-
-      imageUrl = urlData.publicUrl;
+      imageUrl = await uploadImage(file);
     }
 
     const { data, error } = await supabase
       .from("products")
       .update({
-        ...payload,
+        name: payload.name,
+        price: Number(payload.price),
+        category: payload.category,
         image: imageUrl,
+        description: payload.description || "",
       })
       .eq("id", id)
       .select()
@@ -117,56 +142,6 @@ const updateProduct = async (id, payload, file) => {
     return { success: true, data };
   } catch (err) {
     console.error("UPDATE PRODUCT ERROR:", err.message);
-    return { success: false };
-  }
-};
-
-const createProduct = async (product, file) => {
-  try {
-    let imageUrl = null;
-
-    // ✅ TRY IMAGE UPLOAD (but don't break if fails)
-    if (file) {
-      const fileName = `${Date.now()}-${file.name}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from("products")
-        .upload(fileName, file, {
-          contentType: file.type,
-        });
-
-      if (!uploadError) {
-        const { data: urlData } = supabase.storage
-          .from("products")
-          .getPublicUrl(fileName);
-
-        imageUrl = urlData.publicUrl;
-      } else {
-        console.error("IMAGE UPLOAD FAILED:", uploadError);
-      }
-    }
-
-    // ✅ ALWAYS INSERT PRODUCT (even if image fails)
-    const { data, error } = await supabase
-      .from("products")
-      .insert([
-        {
-          name: product.name,
-          price: Number(product.price),
-          category: product.category,
-          image: imageUrl,
-        },
-      ])
-      .select()
-      .single();
-
-    console.log("PRODUCT INSERT:", data, error);
-
-    if (error) throw error;
-
-    return { success: true, data };
-  } catch (err) {
-    console.error("CREATE PRODUCT ERROR:", err.message);
     return { success: false };
   }
 };
@@ -182,7 +157,62 @@ const deleteProduct = async (id) => {
   return { success: true };
 };
 
-/* ================= CONTACT ================= */
+/* ================= CATEGORIES ================= */
+
+const getAllCategories = async () => {
+  const { data, error } = await supabase.from("categories").select("*");
+
+  if (error) {
+    console.error(error.message);
+    return { success: false, data: [] };
+  }
+
+  return { success: true, data: data || [] };
+};
+
+const createCategory = async (payload) => {
+  const { data, error } = await supabase
+    .from("categories")
+    .insert([payload])
+    .select()
+    .maybeSingle();
+
+  if (error) return { success: false };
+
+  return { success: true, data };
+};
+
+const updateCategory = async (id, payload) => {
+  try {
+    const { data, error } = await supabase
+      .from("categories")
+      .update(payload)
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return { success: true, data };
+  } catch (err) {
+    console.error("CATEGORY UPDATE ERROR:", err.message);
+    return { success: false };
+  }
+};
+
+const deleteCategory = async (id) => {
+  const { error } = await supabase
+    .from("categories")
+    .delete()
+    .eq("id", id);
+
+  if (error) return { success: false };
+
+  return { success: true };
+};
+
+/* ================= CONTACT MESSAGES (FIXED) ================= */
+
 const createContactMessage = async (payload) => {
   try {
     const { data, error } = await supabase
@@ -191,24 +221,37 @@ const createContactMessage = async (payload) => {
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error("CONTACT ERROR:", error.message);
+      return { success: false, error: error.message };
+    }
 
     return { success: true, data };
-  } catch {
-    return { success: false };
+  } catch (err) {
+    console.error("CONTACT EXCEPTION:", err.message);
+    return { success: false, error: err.message };
   }
 };
 
 const getAllContactMessages = async () => {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("contact_messages")
-    .select("*");
+    .select("*")
+    .order("id", { ascending: false });
+
+  if (error) return { success: false, data: [] };
 
   return { success: true, data: data || [] };
 };
 
 const deleteContactMessage = async (id) => {
-  await supabase.from("contact_messages").delete().eq("id", id);
+  const { error } = await supabase
+    .from("contact_messages")
+    .delete()
+    .eq("id", id);
+
+  if (error) return { success: false };
+
   return { success: true };
 };
 const getContactMessageById = async (id) => {
@@ -217,18 +260,59 @@ const getContactMessageById = async (id) => {
       .from("contact_messages")
       .select("*")
       .eq("id", id)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    return { success: true, data };
+  } catch (err) {
+    console.error("GET CONTACT MESSAGE ERROR:", err.message);
+    return { success: false, data: null };
+  }
+};
+
+/* ================= ORDERS ================= */
+
+const createOrder = async (payload) => {
+  try {
+    const { data, error } = await supabase
+      .from("orders")
+      .insert([payload])
+      .select()
       .single();
 
     if (error) throw error;
 
     return { success: true, data };
   } catch (err) {
-    console.error("GET MESSAGE ERROR:", err.message);
+    console.error("CREATE ORDER ERROR:", err.message);
+    return { success: false };
+  }
+};
+
+const getAllOrders = async () => {
+  const { data } = await supabase.from("orders").select("*");
+  return { success: true, data: data || [] };
+};
+
+const getOrderById = async (id) => {
+  try {
+    const { data, error } = await supabase
+      .from("orders")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    return { success: true, data };
+  } catch {
     return { success: false, data: null };
   }
 };
 
 /* ================= AUTH ================= */
+
 const register = async ({ email, password, name }) => {
   const { data: existing } = await supabase
     .from("users")
@@ -263,7 +347,6 @@ const login = async ({ email, password }) => {
     }
 
     localStorage.setItem("user", JSON.stringify(data));
-
     window.dispatchEvent(new Event("userChanged"));
 
     return { success: true, data };
@@ -273,97 +356,8 @@ const login = async ({ email, password }) => {
   }
 };
 
-/* ================= CATEGORIES ================= */
-const getAllCategories = async () => {
-  const { data } = await supabase.from("categories").select("*");
-  return { success: true, data: data || [] };
-};
-
-const createCategory = async (payload) => {
-  const { data } = await supabase
-    .from("categories")
-    .insert([payload])
-    .select()
-    .maybeSingle();
-
-  return { success: true, data };
-};
-
-const deleteCategory = async (id) => {
-  await supabase.from("categories").delete().eq("id", id);
-  return { success: true };
-};
-
-/* ================= ORDERS ================= */
-const getAllOrders = async () => {
-  const { data } = await supabase.from("orders").select("*");
-  return { success: true, data: data || [] };
-};
-
-const getOrderById = async (id) => {
-  try {
-    const { data, error } = await supabase
-      .from("orders")
-      .select("*")
-      .eq("id", id)
-      .maybeSingle();
-
-    if (error) throw error;
-
-    return { success: true, data };
-  } catch {
-    return { success: false, data: null };
-  }
-};
-
-/* ================= SETTINGS ================= */
-const getSettings = async () => {
-  const { data } = await supabase
-    .from("settings")
-    .select("*")
-    .limit(1)
-    .maybeSingle();
-
-  return { success: true, data: data || {} };
-};
-
-const updateSettings = async (payload) => {
-  try {
-    // ✅ CHECK EXISTING ROW
-    const { data: existing, error: fetchError } = await supabase
-      .from("settings")
-      .select("*")
-      .limit(1)
-      .maybeSingle();
-
-    if (fetchError) throw fetchError;
-
-    // ✅ IF NO ROW → INSERT
-    if (!existing) {
-      const { error } = await supabase
-        .from("settings")
-        .insert([payload]);
-
-      if (error) throw error;
-    } 
-    // ✅ IF ROW EXISTS → UPDATE
-    else {
-      const { error } = await supabase
-        .from("settings")
-        .update(payload)
-        .eq("id", existing.id);
-
-      if (error) throw error;
-    }
-
-    return { success: true };
-  } catch (err) {
-    console.error("SETTINGS UPDATE ERROR:", err.message);
-    return { success: false };
-  }
-};
-
 /* ================= EXPORT ================= */
+
 export const api = {
   auth: { register, login },
 
@@ -374,23 +368,13 @@ export const api = {
     create: createProduct,
     update: updateProduct,
     delete: deleteProduct,
-    },
+  },
 
   categories: {
     getAll: getAllCategories,
     create: createCategory,
+    update: updateCategory,
     delete: deleteCategory,
-  },
-
-  orders: {
-    getAll: getAllOrders,
-    getById: getOrderById, // ✅ FIXED
-    create: createOrder, // ✅ ADD THIS HERE
-  },
-
-  settings: {
-    get: getSettings,
-    update: updateSettings,
   },
 
   contact_messages: {
@@ -399,4 +383,10 @@ export const api = {
   create: createContactMessage,
   delete: deleteContactMessage,
 },
+
+  orders: {
+    getAll: getAllOrders,
+    getById: getOrderById,
+    create: createOrder,
+  },
 };

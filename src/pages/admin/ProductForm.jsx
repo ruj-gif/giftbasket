@@ -15,7 +15,6 @@ export default function ProductForm() {
   const [existingImage, setExistingImage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // ✅ NEW: categories state
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
@@ -28,7 +27,7 @@ export default function ProductForm() {
       const res = await api.products.getById(id);
 
       if (!res.success) {
-        alert("Failed to load product");
+        alert("❌ Failed to load product");
         return;
       }
 
@@ -41,10 +40,10 @@ export default function ProductForm() {
       setExistingImage(product.image || "");
     } catch (err) {
       console.error(err);
+      alert("❌ Error loading product");
     }
   };
 
-  // ✅ LOAD CATEGORIES
   const loadCategories = async () => {
     try {
       const res = await api.categories.getAll();
@@ -56,7 +55,6 @@ export default function ProductForm() {
     }
   };
 
-  // ✅ SPLIT
   const mainCategories = categories.filter((c) => !c.parent_id);
   const subCategories = categories.filter((c) => c.parent_id);
 
@@ -74,16 +72,25 @@ export default function ProductForm() {
         slug: name.toLowerCase().replace(/\s+/g, "-"),
       };
 
+      let res;
+
       if (id) {
-        await api.products.update(id, payload, imageFile);
+        res = await api.products.update(id, payload, imageFile);
       } else {
-        await api.products.create(payload, imageFile);
+        res = await api.products.create(payload, imageFile);
       }
 
-      navigate("/admin/products");
+      // ✅ SUCCESS ALERT
+      if (res && res.success) {
+        alert(id ? "✅ Product updated successfully" : "✅ Product added successfully");
+        navigate("/admin/products");
+      } else {
+        alert("❌ Operation failed");
+      }
+
     } catch (err) {
       console.error(err);
-      alert("Error ❌");
+      alert("❌ Error occurred");
     } finally {
       setLoading(false);
     }
@@ -116,7 +123,7 @@ export default function ProductForm() {
           required
         />
 
-        {/* ✅ FIXED CATEGORY DROPDOWN */}
+        {/* CATEGORY */}
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
