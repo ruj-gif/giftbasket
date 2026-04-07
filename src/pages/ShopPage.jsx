@@ -1,60 +1,48 @@
 import React, { useEffect, useState } from "react";
 import { api } from "../lib/api";
+import { useCart } from "../contexts/CartContext";
+import { useNavigate } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 
 export default function ShopPage() {
   const [products, setProducts] = useState([]);
   const [filtered, setFiltered] = useState([]);
-  const [categories, setCategories] = useState([]); // ✅ FROM DB
+  const [categories, setCategories] = useState([]);
   const [activeCategory, setActiveCategory] = useState("");
   const [openCategory, setOpenCategory] = useState("");
   const [search, setSearch] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // ✅ LOAD DATA
+  const { addToCart } = useCart();
+  const navigate = useNavigate();
+
+  // ✅ track button state per product
+  const [addedMap, setAddedMap] = useState({});
+
+  // ================= LOAD DATA =================
   useEffect(() => {
     loadProducts();
     loadCategories();
   }, []);
 
   const loadProducts = async () => {
-    try {
-      const response = await api.products.getAllSimple();
-      if (response.success) {
-        setProducts(response.data);
-        setFiltered(response.data);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
+    const res = await api.products.getAllSimple();
+    if (res.success) {
+      setProducts(res.data);
+      setFiltered(res.data);
     }
+    setLoading(false);
   };
 
-  // ✅ LOAD CATEGORIES FROM DB
   const loadCategories = async () => {
-    try {
-      const res = await api.categories.getAll();
-      if (res.success) {
-        setCategories(res.data || []);
-      }
-    } catch (err) {
-      console.error(err);
+    const res = await api.categories.getAll();
+    if (res.success) {
+      setCategories(res.data);
     }
   };
 
-  // ✅ GROUP INTO PARENT + CHILD (LIKE YOUR OLD STRUCTURE)
-  const groupedCategories = categories
-    .filter((cat) => !cat.parent_id)
-    .map((parent) => ({
-      name: parent.name,
-      sub: categories
-        .filter((c) => c.parent_id === parent.id)
-        .map((c) => c.name),
-    }));
-
-  // ✅ FILTER FUNCTION
+  // ================= FILTER =================
   const handleFilter = (category, searchText = search) => {
     setActiveCategory(category);
 
@@ -76,69 +64,79 @@ export default function ShopPage() {
     setMessage(data.length === 0 ? "Coming Soon 🚀" : "");
   };
 
-  return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-[#fafafa] font-sans">
+  // ================= ADD TO CART =================
+  const handleAddToCart = (product) => {
+    addToCart(product);
 
-      {/* 🔥 SIDEBAR */}
-      <div className="w-full md:w-64 shrink-0 bg-[#fdfdfd] p-4 overflow-y-auto border-b md:border-b-0 md:border-r border-stone-200">
-        <h2 className="text-2xl font-serif italic text-stone-900 mb-6 border-b border-stone-200 pb-2">
+    setAddedMap((prev) => ({
+      ...prev,
+      [product.id]: "added",
+    }));
+
+    setTimeout(() => {
+      setAddedMap((prev) => ({
+        ...prev,
+        [product.id]: "view",
+      }));
+    }, 1200);
+  };
+
+  return (
+    <div className="flex flex-col md:flex-row min-h-screen bg-[#fafafa]">
+
+      {/* ================= SIDEBAR ================= */}
+      <div className="w-full md:w-64 bg-white p-4 border-r border-stone-200">
+
+        <h2 className="text-xl font-semibold mb-4 border-b pb-2">
           Categories
         </h2>
 
-        {groupedCategories.map((cat, i) => (
-          <div key={i} className="mb-2">
+        {categories
+          .filter((cat) => !cat.parent_id)
+          .map((parent) => (
+            <div key={parent.id} className="mb-2">
 
-            {/* MAIN CATEGORY */}
-            <div
-              onClick={() => {
-                if (cat.sub.length > 0) {
-                  setOpenCategory(openCategory === cat.name ? "" : cat.name);
-                } else {
-                  handleFilter(cat.name);
+              {/* PARENT */}
+              <div
+                onClick={() =>
+                  setOpenCategory(
+                    openCategory === parent.id ? "" : parent.id
+                  )
                 }
-              }}
-              className={`flex justify-between items-center cursor-pointer p-3 border-l-2 text-sm uppercase tracking-wider
-              ${
-                activeCategory === cat.name
-                  ? "bg-stone-100 border-stone-900 font-medium text-stone-900"
-                  : "border-transparent text-stone-600 hover:bg-stone-50 hover:text-stone-900"
-              }`}
-            >
-              <span>{cat.name}</span>
-              {cat.sub.length > 0 && <span>{openCategory === cat.name ? "−" : "+"}</span>}
-            </div>
-
-            {/* SUB CATEGORY */}
-            {openCategory === cat.name && cat.sub.length > 0 && (
-              <div className="ml-4 mt-2 space-y-1 max-h-40 overflow-y-auto">
-                {cat.sub.map((sub, j) => (
-                  <div
-                    key={j}
-                    onClick={() => handleFilter(sub)}
-                    className={`cursor-pointer p-2 pl-4 text-xs uppercase tracking-wider border-l-2
-                    ${
-                      activeCategory === sub
-                        ? "bg-stone-100 border-stone-400 font-medium text-stone-900"
-                        : "border-transparent text-stone-500 hover:bg-stone-50 hover:text-stone-800"
-                    }`}
-                  >
-                    {sub}
-                  </div>
-                ))}
+                className="flex justify-between items-center cursor-pointer p-2 hover:bg-gray-100 rounded"
+              >
+                <span>{parent.name}</span>
+                <span>{openCategory === parent.id ? "−" : "+"}</span>
               </div>
-            )}
-          </div>
-        ))}
+
+              {/* CHILD */}
+              {openCategory === parent.id && (
+                <div className="ml-4 mt-2 space-y-1">
+                  {categories
+                    .filter((c) => c.parent_id === parent.id)
+                    .map((child) => (
+                      <div
+                        key={child.id}
+                        onClick={() => handleFilter(child.name)}
+                        className="cursor-pointer text-sm text-gray-600 hover:text-black"
+                      >
+                        {child.name}
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
+          ))}
       </div>
 
-      {/* 🔥 MAIN CONTENT */}
+      {/* ================= MAIN ================= */}
       <div className="flex-1 p-6">
 
         {/* SEARCH */}
         <input
           type="text"
           placeholder="Search products..."
-          className="w-full p-4 mb-8 border border-stone-200 bg-white text-sm focus:outline-none focus:border-stone-500 focus:ring-1 focus:ring-stone-500 shadow-sm"
+          className="w-full p-3 mb-6 border rounded"
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
@@ -147,25 +145,59 @@ export default function ShopPage() {
         />
 
         {/* LOADING */}
-        {loading && (
-          <p className="text-center text-stone-500 uppercase tracking-widest text-sm mt-10">
-            Loading products...
-          </p>
-        )}
+        {loading && <p className="text-center">Loading...</p>}
 
-        {/* MESSAGE */}
+        {/* EMPTY */}
         {!loading && message && (
-          <p className="text-center text-stone-500 text-lg mb-6 font-serif italic">
-            {message}
-          </p>
+          <p className="text-center text-gray-500">{message}</p>
         )}
 
         {/* PRODUCTS */}
         {!loading && filtered.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {filtered.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+
+            {filtered.map((product) => {
+              const status = addedMap[product.id] || "idle";
+
+              return (
+                <div
+                  key={product.id}
+                  className="bg-white border rounded-lg p-4 shadow-sm"
+                >
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-40 object-cover mb-3 rounded"
+                  />
+
+                  <h3 className="font-medium">{product.name}</h3>
+                  <p className="text-sm text-gray-500 mb-2">
+                    ₹{product.price}
+                  </p>
+
+                  {/* ✅ BUTTON */}
+                  <button
+                    onClick={() => {
+                      if (status === "view") {
+                        navigate("/cart");
+                      } else {
+                        handleAddToCart(product);
+                      }
+                    }}
+                    className={`w-full py-2 rounded text-white ${
+                      status === "idle"
+                        ? "bg-black"
+                        : "bg-green-600"
+                    }`}
+                  >
+                    {status === "idle" && "Add to Cart"}
+                    {status === "added" && "Added"}
+                    {status === "view" && "View Cart →"}
+                  </button>
+                </div>
+              );
+            })}
+
           </div>
         )}
       </div>

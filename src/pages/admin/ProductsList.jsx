@@ -8,22 +8,24 @@ export default function ProductsList() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ pagination
+  // pagination
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
 
-  // ✅ search
+  // search
   const [search, setSearch] = useState("");
 
   const LIMIT = 10;
 
+  // ✅ FIXED useEffect
   useEffect(() => {
     loadProducts();
-  }, [page, search]); // ✅ reload on search + page
+  }, [page, search]);
 
   const loadProducts = async () => {
     try {
-      setLoading(true);
+      // ✅ loader only first time
+      if (!products.length && search === "") setLoading(true);
 
       const response = await api.products.getAll(page, LIMIT, search);
 
@@ -112,15 +114,20 @@ export default function ProductsList() {
         </Link>
       </div>
 
-      {/* ✅ SEARCH BAR */}
+      {/* ✅ SEARCH (FIXED) */}
       <div className="mb-4">
         <input
           type="text"
           placeholder="Search products..."
           value={search}
           onChange={(e) => {
-            setSearch(e.target.value);
-            setPage(1); // ✅ reset page when searching
+            const value = e.target.value;
+            setSearch(value);
+
+            // ✅ reset page ONLY when clearing
+            if (value === "") {
+              setPage(1);
+            }
           }}
           className="w-full sm:w-72 px-4 py-2 border rounded"
         />
