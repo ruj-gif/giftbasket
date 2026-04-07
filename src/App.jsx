@@ -1,14 +1,7 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from "react-router-dom";
 import AdminRoute from "./components/AdminRoute";
-
-// ✅ QOBO CONFIG (REQUIRED)
-if (typeof window !== 'undefined' && import.meta.env.VITE_PROJECT_ID) {
-  if (!window.QOBO_CONFIG) window.QOBO_CONFIG = {};
-  window.QOBO_CONFIG.projectId = import.meta.env.VITE_PROJECT_ID;
-}
 
 // CONTEXTS
 import { CartProvider } from './contexts/CartContext';
@@ -33,8 +26,6 @@ import MyOrdersPage from './pages/MyOrdersPage';
 import ContactPage from './pages/ContactPage';
 import AboutPage from './pages/AboutPage';
 import WelcomePage from './pages/WelcomePage';
-
-// TRACK ORDER
 import TrackOrder from './pages/TrackOrder';
 
 // EXTRA
@@ -58,8 +49,6 @@ import FeatureBlocksList from './pages/admin/FeatureBlocksList';
 import FeatureBlockForm from './pages/admin/FeatureBlockForm';
 import SettingsPage from './pages/admin/SettingsPage';
 import PaymentSettingsPage from './pages/admin/PaymentSettingsPage';
-
-// ✅ ONLY ADD THIS IMPORT
 import AddOrder from './pages/admin/AddOrder';
 
 // CONFIG
@@ -104,8 +93,6 @@ function PageWrapper({ children }) {
 }
 
 export default function App() {
-  
-
   return (
     <SettingsProvider>
       <ThemeInjector />
@@ -126,6 +113,7 @@ export default function App() {
 function AnimatedRoutes() {
   const location = useLocation();
   const navigate = useNavigate();
+
   useEffect(() => {
     const handleNavigation = (e) => {
       if (e.detail?.path) {
@@ -134,13 +122,8 @@ function AnimatedRoutes() {
     };
 
     window.addEventListener("navigate", handleNavigation);
-
-    return () => {
-      window.removeEventListener("navigate", handleNavigation);
-    };
+    return () => window.removeEventListener("navigate", handleNavigation);
   }, [navigate]);
-
-  const currentUrl = window.location.origin + "/admin";
 
   return (
     <AnimatePresence mode="wait">
@@ -171,15 +154,15 @@ function AnimatedRoutes() {
         <Route path="/wishlist" element={<PageWrapper><Navigation /><WishlistPage /><Footer /></PageWrapper>} />
         <Route path="/customize" element={<PageWrapper><Navigation /><CustomForm /><Footer /></PageWrapper>} />
 
-        {/* ADMIN */}
+        {/* ✅ ADMIN */}
         <Route
-  path="/admin/*"
-  element={
-    <AdminRoute>
-      <AdminLayout />
-    </AdminRoute>
-  }
->
+          path="/admin/*"
+          element={
+            <AdminRoute>
+              <AdminLayout />
+            </AdminRoute>
+          }
+        >
           <Route index element={<AdminDashboard />} />
 
           <Route path="products" element={<ProductsList />} />
@@ -191,7 +174,6 @@ function AnimatedRoutes() {
           <Route path="categories/:id" element={<CategoryForm />} />
 
           <Route path="orders" element={<OrdersList />} />
-          {/* ✅ FIXED LINE ONLY */}
           <Route path="orders/add" element={<AddOrder />} />
           <Route path="orders/:id" element={<OrderDetail />} />
 

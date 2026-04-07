@@ -211,6 +211,22 @@ const deleteContactMessage = async (id) => {
   await supabase.from("contact_messages").delete().eq("id", id);
   return { success: true };
 };
+const getContactMessageById = async (id) => {
+  try {
+    const { data, error } = await supabase
+      .from("contact_messages")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) throw error;
+
+    return { success: true, data };
+  } catch (err) {
+    console.error("GET MESSAGE ERROR:", err.message);
+    return { success: false, data: null };
+  }
+};
 
 /* ================= AUTH ================= */
 const register = async ({ email, password, name }) => {
@@ -378,8 +394,9 @@ export const api = {
   },
 
   contact_messages: {
-    getAll: getAllContactMessages,
-    create: createContactMessage,
-    delete: deleteContactMessage,
-  },
+  getAll: getAllContactMessages,
+  getById: getContactMessageById, // ✅ ADD THIS
+  create: createContactMessage,
+  delete: deleteContactMessage,
+},
 };

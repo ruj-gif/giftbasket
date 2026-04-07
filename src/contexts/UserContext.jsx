@@ -1,72 +1,50 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import { createContext, useContext, useEffect, useState } from "react";
 
-const STORAGE_KEY = 'qobo-ecommerce-user';
-
-export const UserContext = createContext();
+const UserContext = createContext();
 
 export function UserProvider({ children }) {
   const [user, setUser] = useState(null);
 
-  // ✅ Load user on app start
+  // ✅ LOAD USER ON APP START
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        setUser(JSON.parse(saved));
-      } catch (e) {
-        console.error('Failed to parse user:', e);
-        localStorage.removeItem(STORAGE_KEY); // 🔥 clean corrupted data
-      }
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
     }
   }, []);
 
-  // ✅ Save user whenever it changes
+  // ✅ LISTEN FOR LOGIN CHANGES
   useEffect(() => {
-    if (user) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-    } else {
-      localStorage.removeItem(STORAGE_KEY);
-    }
-  }, [user]);
-
-  // ✅ Manual login (optional use)
-  const login = (userData) => {
-    setUser(userData && typeof userData === 'object' ? userData : null);
-  };
-
-  // ✅ MAIN FIX: normalize API user properly
-  const setUserFromApi = (apiUser) => {
-    if (!apiUser) return;
-
-    const normalizedUser = {
-      id: apiUser.id,
-      email: apiUser.email,
-      name:
-        apiUser.name ||
-        apiUser.email?.split('@')[0] ||
-        'User',
-      phone: apiUser.phone || null,
+    const handleUserChange = () => {
+      const updatedUser = localStorage.getItem("user");
+      setUser(updatedUser ? JSON.parse(updatedUser) : null);
     };
 
-    setUser(normalizedUser); // 🔥 triggers localStorage save automatically
+    window.addEventListener("userChanged", handleUserChange);
+
+    return () => {
+      window.removeEventListener("userChanged", handleUserChange);
+    };
+  }, []);
+
+  // ✅ THIS FIXES DOUBLE LOGIN ISSUE
+  const setUserFromApi = (userData) => {
+    localStorage.setItem("user", JSON.stringify(userData));
+    setUser(userData); // 🔥 IMPORTANT (instant UI update)
   };
 
-  // ✅ logout
   const logout = () => {
+    localStorage.removeItem("user");
     setUser(null);
   };
-
-  // ✅ login check
-  const isLoggedIn = !!user?.email;
 
   return (
     <UserContext.Provider
       value={{
         user,
-        login,
-        logout,
+        isLoggedIn: !!user,
         setUserFromApi,
-        isLoggedIn,
+        logout,
       }}
     >
       {children}
@@ -74,11 +52,4 @@ export function UserProvider({ children }) {
   );
 }
 
-// ✅ hook
-export const useUser = () => {
-  const context = useContext(UserContext);
-  if (!context) {
-    throw new Error('useUser must be used within UserProvider');
-  }
-  return context;
-};
+export const useUser = () => useContext(UserContext);

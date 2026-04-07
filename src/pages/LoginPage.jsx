@@ -43,34 +43,28 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
+      let response;
+
       if (mode === 'register') {
-        const response = await api.auth.register({
+        response = await api.auth.register({
           email: formData.email.trim().toLowerCase(),
           name: formData.name.trim(),
           password: formData.password,
         });
-
-        if (response && response.success) {
-          setUserFromApi(response.data);
-          setSuccess('Account created!');
-          setTimeout(() => navigate('/account'), 500);
-        } else {
-          setError(response?.error || 'Registration failed');
-        }
-
       } else {
-        const response = await api.auth.login({
+        response = await api.auth.login({
           email: formData.email.trim().toLowerCase(),
           password: formData.password,
         });
+      }
 
-        if (response && response.success) {
-          setUserFromApi(response.data);
-          setSuccess('Logged in!');
-          setTimeout(() => navigate('/account'), 500);
-        } else {
-          setError(response?.error || 'Invalid email or password');
-        }
+      if (response && response.success) {
+        setUserFromApi(response.data); // 🔥 instant update
+        setSuccess(mode === 'login' ? 'Logged in!' : 'Account created!');
+        
+        navigate('/account'); // ✅ NO setTimeout
+      } else {
+        setError(response?.error || 'Something went wrong');
       }
 
     } catch (err) {
