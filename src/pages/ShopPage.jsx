@@ -5,70 +5,54 @@ import ProductCard from "../components/ProductCard";
 export default function ShopPage() {
   const [products, setProducts] = useState([]);
   const [filtered, setFiltered] = useState([]);
+  const [categories, setCategories] = useState([]); // ✅ FROM DB
   const [activeCategory, setActiveCategory] = useState("");
   const [openCategory, setOpenCategory] = useState("");
   const [search, setSearch] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // ✅ CATEGORY DATA
-  const categories = [
-    {
-      name: "Personalised Gifts",
-      sub: [
-        "Personalise Mug",
-        "Personalise Photo Frame",
-        "Personalise Cushion",
-        "Personalise Sipper & Bottles",
-        "Personalise Fridge Magnet",
-        "Personalise T-Shirt",
-        "Personalise Engraving Items",
-        "Personalise Pen & Diary",
-        "Personalise 3D Photos",
-        "Others",
-      ],
-    },
-    {
-      name: "Gift Hampers",
-      sub: [
-        "Birthday Hamper",
-        "Anniversary Hamper",
-        "Welcome Hamper",
-        "Occasional Hamper",
-        "Others",
-      ],
-    },
-    {
-      name: "Corporate Gifts",
-      sub: ["Seasonal Gift", "Hampers", "Others"],
-    },
-    { name: "Ready-to-get Gifts", sub: [] },
-    { name: "Gifts for Kids", sub: [] },
-    { name: "Trophies and Mementos", sub: [] },
-    { name: "Handicraft Items", sub: [] },
-    { name: "Home Decor", sub: [] },
-    { name: "Chocolate & Hampers", sub: [] },
-  ];
-
-  // ✅ LOAD PRODUCTS (FIXED)
+  // ✅ LOAD DATA
   useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        const response = await api.products.getAllSimple();
-        if (response.success) {
-          // ✅ ONLY SHOW PUBLISHED
-          setProducts(response.data);
-setFiltered(response.data);
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadProducts();
+    loadCategories();
   }, []);
+
+  const loadProducts = async () => {
+    try {
+      const response = await api.products.getAllSimple();
+      if (response.success) {
+        setProducts(response.data);
+        setFiltered(response.data);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ✅ LOAD CATEGORIES FROM DB
+  const loadCategories = async () => {
+    try {
+      const res = await api.categories.getAll();
+      if (res.success) {
+        setCategories(res.data || []);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // ✅ GROUP INTO PARENT + CHILD (LIKE YOUR OLD STRUCTURE)
+  const groupedCategories = categories
+    .filter((cat) => !cat.parent_id)
+    .map((parent) => ({
+      name: parent.name,
+      sub: categories
+        .filter((c) => c.parent_id === parent.id)
+        .map((c) => c.name),
+    }));
 
   // ✅ FILTER FUNCTION
   const handleFilter = (category, searchText = search) => {
@@ -97,9 +81,11 @@ setFiltered(response.data);
 
       {/* 🔥 SIDEBAR */}
       <div className="w-full md:w-64 shrink-0 bg-[#fdfdfd] p-4 overflow-y-auto border-b md:border-b-0 md:border-r border-stone-200">
-        <h2 className="text-2xl font-serif italic text-stone-900 mb-6 border-b border-stone-200 pb-2">Categories</h2>
+        <h2 className="text-2xl font-serif italic text-stone-900 mb-6 border-b border-stone-200 pb-2">
+          Categories
+        </h2>
 
-        {categories.map((cat, i) => (
+        {groupedCategories.map((cat, i) => (
           <div key={i} className="mb-2">
 
             {/* MAIN CATEGORY */}
@@ -111,11 +97,15 @@ setFiltered(response.data);
                   handleFilter(cat.name);
                 }
               }}
-              className={`flex justify-between items-center cursor-pointer p-3 rounded-none transition-colors border-l-2 text-sm uppercase tracking-wider
-              ${activeCategory === cat.name ? "bg-stone-100 border-stone-900 font-medium text-stone-900" : "border-transparent text-stone-600 hover:bg-stone-50 hover:text-stone-900"}`}
+              className={`flex justify-between items-center cursor-pointer p-3 border-l-2 text-sm uppercase tracking-wider
+              ${
+                activeCategory === cat.name
+                  ? "bg-stone-100 border-stone-900 font-medium text-stone-900"
+                  : "border-transparent text-stone-600 hover:bg-stone-50 hover:text-stone-900"
+              }`}
             >
               <span>{cat.name}</span>
-              {cat.sub.length > 0 && <span>+</span>}
+              {cat.sub.length > 0 && <span>{openCategory === cat.name ? "−" : "+"}</span>}
             </div>
 
             {/* SUB CATEGORY */}
@@ -125,8 +115,12 @@ setFiltered(response.data);
                   <div
                     key={j}
                     onClick={() => handleFilter(sub)}
-                    className={`cursor-pointer p-2 pl-4 rounded-none text-xs uppercase tracking-wider transition-colors border-l-2
-                    ${activeCategory === sub ? "bg-stone-100 border-stone-400 font-medium text-stone-900" : "border-transparent text-stone-500 hover:bg-stone-50 hover:text-stone-800"}`}
+                    className={`cursor-pointer p-2 pl-4 text-xs uppercase tracking-wider border-l-2
+                    ${
+                      activeCategory === sub
+                        ? "bg-stone-100 border-stone-400 font-medium text-stone-900"
+                        : "border-transparent text-stone-500 hover:bg-stone-50 hover:text-stone-800"
+                    }`}
                   >
                     {sub}
                   </div>
@@ -144,7 +138,7 @@ setFiltered(response.data);
         <input
           type="text"
           placeholder="Search products..."
-          className="w-full p-4 mb-8 border border-stone-200 rounded-none bg-white font-sans text-sm focus:outline-none focus:border-stone-500 focus:ring-1 focus:ring-stone-500 transition-all shadow-sm"
+          className="w-full p-4 mb-8 border border-stone-200 bg-white text-sm focus:outline-none focus:border-stone-500 focus:ring-1 focus:ring-stone-500 shadow-sm"
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
@@ -154,7 +148,9 @@ setFiltered(response.data);
 
         {/* LOADING */}
         {loading && (
-          <p className="text-center text-stone-500 uppercase tracking-widest text-sm mt-10">Loading products...</p>
+          <p className="text-center text-stone-500 uppercase tracking-widest text-sm mt-10">
+            Loading products...
+          </p>
         )}
 
         {/* MESSAGE */}
