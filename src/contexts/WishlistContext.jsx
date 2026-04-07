@@ -5,33 +5,43 @@ const WishlistContext = createContext();
 export function WishlistProvider({ children }) {
   const [wishlist, setWishlist] = useState([]);
 
-  // Load from localStorage
+  // ✅ LOAD FROM LOCALSTORAGE
   useEffect(() => {
-    const saved = localStorage.getItem("wishlist");
-    if (saved) setWishlist(JSON.parse(saved));
+    const stored = localStorage.getItem("wishlist");
+    if (stored) {
+      setWishlist(JSON.parse(stored));
+    }
   }, []);
 
-  // Save to localStorage
+  // ✅ SAVE TO LOCALSTORAGE
   useEffect(() => {
     localStorage.setItem("wishlist", JSON.stringify(wishlist));
   }, [wishlist]);
 
-  const toggleWishlist = (product) => {
-    const exists = wishlist.find((item) => item.id === product.id);
-
-    if (exists) {
-      setWishlist(wishlist.filter((item) => item.id !== product.id));
-    } else {
-      setWishlist([...wishlist, product]);
-    }
+  // ✅ ADD TO WISHLIST
+  const addToWishlist = (product) => {
+    setWishlist((prev) => {
+      // prevent duplicates
+      if (prev.find((item) => item.id === product.id)) {
+        return prev;
+      }
+      return [...prev, product];
+    });
   };
 
-  const isInWishlist = (id) => {
-    return wishlist.some((item) => item.id === id);
+  // ✅ REMOVE
+  const removeFromWishlist = (id) => {
+    setWishlist((prev) => prev.filter((item) => item.id !== id));
   };
 
   return (
-    <WishlistContext.Provider value={{ wishlist, toggleWishlist, isInWishlist }}>
+    <WishlistContext.Provider
+      value={{
+        wishlist,
+        addToWishlist,
+        removeFromWishlist,
+      }}
+    >
       {children}
     </WishlistContext.Provider>
   );

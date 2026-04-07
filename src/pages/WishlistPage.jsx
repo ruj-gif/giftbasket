@@ -1,6 +1,7 @@
 import React from "react";
 import { useWishlist } from "../contexts/WishlistContext";
 import { useCart } from "../contexts/CartContext";
+import { Heart, ShoppingCart } from "lucide-react";
 
 export default function WishlistPage() {
   const { wishlist, toggleWishlist } = useWishlist();
@@ -26,7 +27,7 @@ export default function WishlistPage() {
         {wishlist.map((product) => (
           <div
             key={product.id}
-            className="bg-[#fdfdfd] border border-stone-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden group rounded-none relative"
+            className="bg-white border border-stone-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden group relative"
           >
 
             {/* IMAGE */}
@@ -34,20 +35,20 @@ export default function WishlistPage() {
               <img
                 src={product.image}
                 alt={product.name}
-                className="max-h-full max-w-full object-contain mix-blend-multiply group-hover:scale-105 transition duration-500"
+                className="max-h-full max-w-full object-contain group-hover:scale-105 transition duration-500"
               />
 
-              {/* ❤️ REMOVE */}
+              {/* REMOVE FROM WISHLIST */}
               <button
                 onClick={() => toggleWishlist(product)}
                 className="absolute top-3 right-3 bg-white p-2 rounded-full shadow hover:scale-110 transition"
               >
-                ❤️
+                <Heart className="w-5 h-5 text-red-500 fill-red-500" />
               </button>
             </div>
 
             {/* DETAILS */}
-            <div className="p-6">
+            <div className="p-5">
               <h4 className="font-serif text-lg text-stone-900 mb-2 truncate">
                 {product.name}
               </h4>
@@ -56,12 +57,13 @@ export default function WishlistPage() {
                 ₹ {product.price}
               </p>
 
-              {/* BUTTON */}
+              {/* ADD TO CART */}
               <button
                 onClick={() => addToCart(product)}
-                className="w-full bg-black text-white py-2 rounded-full hover:bg-red-500 transition"
+                className="w-full flex items-center justify-center gap-2 bg-black text-white py-2.5 rounded-lg hover:bg-gray-800 transition"
               >
-                🛒 Add to Cart
+                <ShoppingCart className="w-4 h-4" />
+                Add to Cart
               </button>
             </div>
 

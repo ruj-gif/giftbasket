@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { api } from "../lib/api";
 import { useCart } from "../contexts/CartContext";
+import { useWishlist } from "../contexts/WishlistContext"; // ✅ ADDED
 import { useNavigate } from "react-router-dom";
-import ProductCard from "../components/ProductCard";
 
 export default function ShopPage() {
   const [products, setProducts] = useState([]);
@@ -15,9 +15,9 @@ export default function ShopPage() {
   const [loading, setLoading] = useState(true);
 
   const { addToCart } = useCart();
+  const { addToWishlist } = useWishlist(); // ✅ ADDED
   const navigate = useNavigate();
 
-  // ✅ track button state per product
   const [addedMap, setAddedMap] = useState({});
 
   // ================= LOAD DATA =================
@@ -61,7 +61,7 @@ export default function ShopPage() {
     }
 
     setFiltered(data);
-    setMessage(data.length === 0 ? "Coming Soon 🚀" : "");
+    setMessage(data.length === 0 ? "Coming Soon" : "");
   };
 
   // ================= ADD TO CART =================
@@ -84,9 +84,8 @@ export default function ShopPage() {
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-[#fafafa]">
 
-      {/* ================= SIDEBAR ================= */}
+      {/* SIDEBAR */}
       <div className="w-full md:w-64 bg-white p-4 border-r border-stone-200">
-
         <h2 className="text-xl font-semibold mb-4 border-b pb-2">
           Categories
         </h2>
@@ -96,7 +95,6 @@ export default function ShopPage() {
           .map((parent) => (
             <div key={parent.id} className="mb-2">
 
-              {/* PARENT */}
               <div
                 onClick={() =>
                   setOpenCategory(
@@ -109,7 +107,6 @@ export default function ShopPage() {
                 <span>{openCategory === parent.id ? "−" : "+"}</span>
               </div>
 
-              {/* CHILD */}
               {openCategory === parent.id && (
                 <div className="ml-4 mt-2 space-y-1">
                   {categories
@@ -129,7 +126,7 @@ export default function ShopPage() {
           ))}
       </div>
 
-      {/* ================= MAIN ================= */}
+      {/* MAIN */}
       <div className="flex-1 p-6">
 
         {/* SEARCH */}
@@ -162,8 +159,16 @@ export default function ShopPage() {
               return (
                 <div
                   key={product.id}
-                  className="bg-white border rounded-lg p-4 shadow-sm"
+                  className="bg-white border rounded-lg p-4 shadow-sm relative"
                 >
+                  {/* ✅ WISHLIST BUTTON */}
+                  <button
+                    onClick={() => addToWishlist(product)}
+                    className="absolute top-2 right-2 text-gray-400 hover:text-red-500 text-lg"
+                  >
+                    ♡
+                  </button>
+
                   <img
                     src={product.image}
                     alt={product.name}
@@ -175,7 +180,7 @@ export default function ShopPage() {
                     ₹{product.price}
                   </p>
 
-                  {/* ✅ BUTTON */}
+                  {/* ADD TO CART BUTTON */}
                   <button
                     onClick={() => {
                       if (status === "view") {
