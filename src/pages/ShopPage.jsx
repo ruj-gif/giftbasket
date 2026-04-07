@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { api } from "../lib/api";
 import { useCart } from "../contexts/CartContext";
-import { useWishlist } from "../contexts/WishlistContext"; // ✅ ADDED
+import { useWishlist } from "../contexts/WishlistContext";
 import { useNavigate } from "react-router-dom";
 
 export default function ShopPage() {
@@ -15,12 +15,11 @@ export default function ShopPage() {
   const [loading, setLoading] = useState(true);
 
   const { addToCart } = useCart();
-  const { addToWishlist } = useWishlist(); // ✅ ADDED
+  const { wishlist, toggleWishlist } = useWishlist();
   const navigate = useNavigate();
 
   const [addedMap, setAddedMap] = useState({});
 
-  // ================= LOAD DATA =================
   useEffect(() => {
     loadProducts();
     loadCategories();
@@ -42,7 +41,6 @@ export default function ShopPage() {
     }
   };
 
-  // ================= FILTER =================
   const handleFilter = (category, searchText = search) => {
     setActiveCategory(category);
 
@@ -64,7 +62,6 @@ export default function ShopPage() {
     setMessage(data.length === 0 ? "Coming Soon" : "");
   };
 
-  // ================= ADD TO CART =================
   const handleAddToCart = (product) => {
     addToCart(product);
 
@@ -92,26 +89,40 @@ export default function ShopPage() {
 
         {categories
           .filter((cat) => !cat.parent_id)
-          .map((parent) => (
-            <div key={parent.id} className="mb-2">
+          .map((parent) => {
+            const children = categories.filter(
+              (c) => c.parent_id === parent.id
+            );
 
-              <div
-                onClick={() =>
-                  setOpenCategory(
-                    openCategory === parent.id ? "" : parent.id
-                  )
-                }
-                className="flex justify-between items-center cursor-pointer p-2 hover:bg-gray-100 rounded"
-              >
-                <span>{parent.name}</span>
-                <span>{openCategory === parent.id ? "−" : "+"}</span>
-              </div>
+            const hasChildren = children.length > 0;
 
-              {openCategory === parent.id && (
-                <div className="ml-4 mt-2 space-y-1">
-                  {categories
-                    .filter((c) => c.parent_id === parent.id)
-                    .map((child) => (
+            return (
+              <div key={parent.id} className="mb-2">
+
+                <div
+                  onClick={() => {
+                    if (hasChildren) {
+                      setOpenCategory(
+                        openCategory === parent.id ? "" : parent.id
+                      );
+                    } else {
+                      handleFilter(parent.name);
+                    }
+                  }}
+                  className="flex justify-between items-center cursor-pointer p-2 hover:bg-gray-100 rounded"
+                >
+                  <span>{parent.name}</span>
+
+                  {hasChildren && (
+                    <span>
+                      {openCategory === parent.id ? "−" : "+"}
+                    </span>
+                  )}
+                </div>
+
+                {hasChildren && openCategory === parent.id && (
+                  <div className="ml-4 mt-2 space-y-1">
+                    {children.map((child) => (
                       <div
                         key={child.id}
                         onClick={() => handleFilter(child.name)}
@@ -120,10 +131,11 @@ export default function ShopPage() {
                         {child.name}
                       </div>
                     ))}
-                </div>
-              )}
-            </div>
-          ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
       </div>
 
       {/* MAIN */}
@@ -141,65 +153,80 @@ export default function ShopPage() {
           }}
         />
 
-        {/* LOADING */}
         {loading && <p className="text-center">Loading...</p>}
 
-        {/* EMPTY */}
         {!loading && message && (
           <p className="text-center text-gray-500">{message}</p>
         )}
 
-        {/* PRODUCTS */}
         {!loading && filtered.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
             {filtered.map((product) => {
               const status = addedMap[product.id] || "idle";
+              const isWishlisted = wishlist.find(
+                (item) => item.id === product.id
+              );
 
               return (
                 <div
-                  key={product.id}
-                  className="bg-white border rounded-lg p-4 shadow-sm relative"
-                >
-                  {/* ✅ WISHLIST BUTTON */}
-                  <button
-                    onClick={() => addToWishlist(product)}
-                    className="absolute top-2 right-2 text-gray-400 hover:text-red-500 text-lg"
-                  >
-                    ♡
-                  </button>
+  key={product.id}
+  className="bg-white border rounded-lg p-4 shadow-sm relative 
+  transform transition-all duration-300 
+  hover:shadow-xl hover:-translate-y-2 hover:scale-[1.02] group"
+>
 
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-40 object-cover mb-3 rounded"
-                  />
+  {/* ✅ WISHLIST (FIXED) */}
+  <button
+    onClick={() => toggleWishlist(product)}
+    className="absolute top-3 right-3 bg-white p-2 rounded-full shadow 
+    hover:scale-110 transition z-10"   // ✅ added z-10
+  >
+    <span
+      className={`text-lg ${
+        isWishlisted ? "text-red-500" : "text-gray-400"
+      }`}
+    >
+      ♥
+    </span>
+  </button>
 
-                  <h3 className="font-medium">{product.name}</h3>
-                  <p className="text-sm text-gray-500 mb-2">
-                    ₹{product.price}
-                  </p>
+  {/* IMAGE */}
+  <div className="overflow-hidden rounded relative z-0"> {/* ✅ z-0 */}
+    <img
+      src={product.image}
+      alt={product.name}
+      className="w-full h-40 object-cover mb-3 rounded 
+      transition-transform duration-500 group-hover:scale-110"
+    />
+  </div>
 
-                  {/* ADD TO CART BUTTON */}
-                  <button
-                    onClick={() => {
-                      if (status === "view") {
-                        navigate("/cart");
-                      } else {
-                        handleAddToCart(product);
-                      }
-                    }}
-                    className={`w-full py-2 rounded text-white ${
-                      status === "idle"
-                        ? "bg-black"
-                        : "bg-green-600"
-                    }`}
-                  >
-                    {status === "idle" && "Add to Cart"}
-                    {status === "added" && "Added"}
-                    {status === "view" && "View Cart →"}
-                  </button>
-                </div>
+  <h3 className="font-medium">{product.name}</h3>
+  <p className="text-sm text-gray-500 mb-2">
+    ₹{product.price}
+  </p>
+
+  {/* CART */}
+  <button
+    onClick={() => {
+      if (status === "view") {
+        navigate("/cart");
+      } else {
+        handleAddToCart(product);
+      }
+    }}
+    className={`w-full py-2 rounded text-white transition ${
+      status === "idle"
+        ? "bg-black hover:bg-gray-800"
+        : "bg-green-600"
+    }`}
+  >
+    {status === "idle" && "Add to Cart"}
+    {status === "added" && "Added"}
+    {status === "view" && "View Cart"}
+  </button>
+
+</div>
               );
             })}
 

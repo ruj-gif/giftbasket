@@ -5,7 +5,7 @@ const WishlistContext = createContext();
 export function WishlistProvider({ children }) {
   const [wishlist, setWishlist] = useState([]);
 
-  // ✅ LOAD FROM LOCALSTORAGE
+  // LOAD FROM LOCALSTORAGE
   useEffect(() => {
     const stored = localStorage.getItem("wishlist");
     if (stored) {
@@ -13,15 +13,14 @@ export function WishlistProvider({ children }) {
     }
   }, []);
 
-  // ✅ SAVE TO LOCALSTORAGE
+  // SAVE TO LOCALSTORAGE
   useEffect(() => {
     localStorage.setItem("wishlist", JSON.stringify(wishlist));
   }, [wishlist]);
 
-  // ✅ ADD TO WISHLIST
+  // ADD
   const addToWishlist = (product) => {
     setWishlist((prev) => {
-      // prevent duplicates
       if (prev.find((item) => item.id === product.id)) {
         return prev;
       }
@@ -29,9 +28,24 @@ export function WishlistProvider({ children }) {
     });
   };
 
-  // ✅ REMOVE
+  // REMOVE
   const removeFromWishlist = (id) => {
     setWishlist((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  // ✅ FIXED: TOGGLE (THIS WAS MISSING)
+  const toggleWishlist = (product) => {
+    setWishlist((prev) => {
+      const exists = prev.find((item) => item.id === product.id);
+
+      if (exists) {
+        // remove
+        return prev.filter((item) => item.id !== product.id);
+      } else {
+        // add
+        return [...prev, product];
+      }
+    });
   };
 
   return (
@@ -40,6 +54,7 @@ export function WishlistProvider({ children }) {
         wishlist,
         addToWishlist,
         removeFromWishlist,
+        toggleWishlist, // ✅ IMPORTANT
       }}
     >
       {children}

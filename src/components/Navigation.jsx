@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
-import { Menu, X, ShoppingCart } from "lucide-react";
+import { Menu, X, ShoppingBag } from "lucide-react"; // ✅ changed
 
 function Navigation() {
   const { cartCount } = useCart();
@@ -43,7 +43,7 @@ function Navigation() {
         {/* CART */}
         <Link to="/cart" className="relative">
           <div className="relative w-[28px] h-[28px] flex items-center justify-center border rounded-md">
-            <ShoppingCart size={18} />
+            <ShoppingBag size={18} /> {/* ✅ updated */}
             {cartCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-black text-white text-xs px-1 rounded-full">
                 {cartCount}
@@ -66,7 +66,7 @@ function Navigation() {
               <div className="absolute right-0 mt-2 bg-white border shadow-md rounded w-40 z-50">
                 <div
                   onClick={() => {
-                    navigate("/my-orders"); // ✅ FIXED (was /orders)
+                    navigate("/my-orders");
                     setShowDropdown(false);
                   }}
                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
@@ -141,7 +141,7 @@ function Navigation() {
 
         {/* CART */}
         <Link to="/cart" className="relative">
-          <ShoppingCart size={20} />
+          <ShoppingBag size={20} /> {/* ✅ updated */}
           {cartCount > 0 && (
             <span className="absolute -top-2 -right-2 bg-black text-white text-xs px-1 rounded-full">
               {cartCount}

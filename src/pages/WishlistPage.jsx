@@ -1,11 +1,33 @@
-import React from "react";
+import React, { useState } from "react";
 import { useWishlist } from "../contexts/WishlistContext";
 import { useCart } from "../contexts/CartContext";
-import { Heart, ShoppingCart } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function WishlistPage() {
   const { wishlist, toggleWishlist } = useWishlist();
   const { addToCart } = useCart();
+  const navigate = useNavigate();
+
+  // track button state per product
+  const [addedMap, setAddedMap] = useState({});
+
+  const handleAddToCart = (product) => {
+    addToCart(product);
+
+    // step 1 → show "Added"
+    setAddedMap((prev) => ({
+      ...prev,
+      [product.id]: "added",
+    }));
+
+    // step 2 → switch to "View Cart"
+    setTimeout(() => {
+      setAddedMap((prev) => ({
+        ...prev,
+        [product.id]: "view",
+      }));
+    }, 800); // faster than before
+  };
 
   return (
     <div className="min-h-screen bg-[#fafafa] px-6 py-10">
@@ -15,7 +37,7 @@ export default function WishlistPage() {
         Wishlist
       </h2>
 
-      {/* EMPTY STATE */}
+      {/* EMPTY */}
       {wishlist.length === 0 && (
         <div className="text-center mt-20 text-stone-500 uppercase tracking-widest text-sm font-medium">
           No items in wishlist
@@ -24,51 +46,66 @@ export default function WishlistPage() {
 
       {/* GRID */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {wishlist.map((product) => (
-          <div
-            key={product.id}
-            className="bg-white border border-stone-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden group relative"
-          >
+        {wishlist.map((product) => {
+          const status = addedMap[product.id] || "idle";
 
-            {/* IMAGE */}
-            <div className="relative bg-stone-50 h-48 flex items-center justify-center p-4">
-              <img
-                src={product.image}
-                alt={product.name}
-                className="max-h-full max-w-full object-contain group-hover:scale-105 transition duration-500"
-              />
+          return (
+            <div
+              key={product.id}
+              className="bg-[#fdfdfd] border border-stone-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden group relative"
+            >
 
-              {/* REMOVE FROM WISHLIST */}
-              <button
-                onClick={() => toggleWishlist(product)}
-                className="absolute top-3 right-3 bg-white p-2 rounded-full shadow hover:scale-110 transition"
-              >
-                <Heart className="w-5 h-5 text-red-500 fill-red-500" />
-              </button>
+              {/* IMAGE */}
+              <div className="relative bg-stone-50 h-48 flex items-center justify-center p-4">
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="max-h-full max-w-full object-contain mix-blend-multiply group-hover:scale-105 transition duration-500"
+                />
+
+                {/* REMOVE FROM WISHLIST */}
+                <button
+                  onClick={() => toggleWishlist(product)}
+                  className="absolute top-3 right-3 bg-white p-2 rounded-full shadow hover:scale-110 transition"
+                >
+                  <span className="text-red-500 text-lg">♥</span>
+                </button>
+              </div>
+
+              {/* DETAILS */}
+              <div className="p-6">
+                <h4 className="font-serif text-lg text-stone-900 mb-2 truncate">
+                  {product.name}
+                </h4>
+
+                <p className="text-stone-800 font-medium mb-4">
+                  ₹ {product.price}
+                </p>
+
+                {/* BUTTON */}
+                <button
+                  onClick={() => {
+                    if (status === "view") {
+                      navigate("/cart");
+                    } else {
+                      handleAddToCart(product);
+                    }
+                  }}
+                  className={`w-full py-2 rounded-full text-white transition ${
+                    status === "idle"
+                      ? "bg-black hover:bg-gray-800"
+                      : "bg-green-600"
+                  }`}
+                >
+                  {status === "idle" && "Add to Cart"}
+                  {status === "added" && "Added"}
+                  {status === "view" && "View Cart"}
+                </button>
+              </div>
+
             </div>
-
-            {/* DETAILS */}
-            <div className="p-5">
-              <h4 className="font-serif text-lg text-stone-900 mb-2 truncate">
-                {product.name}
-              </h4>
-
-              <p className="text-stone-800 font-medium mb-4">
-                ₹ {product.price}
-              </p>
-
-              {/* ADD TO CART */}
-              <button
-                onClick={() => addToCart(product)}
-                className="w-full flex items-center justify-center gap-2 bg-black text-white py-2.5 rounded-lg hover:bg-gray-800 transition"
-              >
-                <ShoppingCart className="w-4 h-4" />
-                Add to Cart
-              </button>
-            </div>
-
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
