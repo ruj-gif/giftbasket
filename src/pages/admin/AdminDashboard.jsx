@@ -19,26 +19,33 @@ export default function AdminDashboard() {
 
   const loadStats = async () => {
     try {
-      // ✅ PRODUCTS (safe)
-      const productsRes = await api.products?.getAll?.();
+      // ✅ FIXED PRODUCTS CALL
+      const productsRes = await api.products.getAll(1, null, "");
 
-      // ✅ ORDERS (safe fallback if not implemented)
+      // ✅ ORDERS SAFE
       let ordersRes = { success: false, data: [] };
       if (api.orders?.getAll) {
         ordersRes = await api.orders.getAll();
       }
 
-      // ✅ MESSAGES (safe fallback)
+      // ✅ MESSAGES SAFE
       let messagesRes = { success: false, data: [] };
       if (api.contact_messages?.getAll) {
         messagesRes = await api.contact_messages.getAll();
       }
 
-      // ✅ REVENUE (safe calculation)
+      // ✅ FIXED REVENUE
       const revenue =
         ordersRes.success && Array.isArray(ordersRes.data)
           ? ordersRes.data.reduce(
-              (sum, order) => sum + Number(order?.total_amount || 0),
+              (sum, order) =>
+                sum +
+                Number(
+                  order?.total_amount ||
+                    order?.amount ||
+                    order?.price ||
+                    0
+                ),
               0
             )
           : 0;
@@ -121,7 +128,7 @@ export default function AdminDashboard() {
           return (
             <Card
               key={idx}
-              to={stat.link || "#"}
+              {...(stat.link ? { to: stat.link } : {})} // ✅ FIXED
               className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition"
             >
               <div className="flex items-center justify-between">
