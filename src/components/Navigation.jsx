@@ -1,15 +1,13 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
-import { useUser } from "../contexts/UserContext"; // ✅ IMPORTANT
+import { useUser } from "../contexts/UserContext";
 import { Menu, X, ShoppingBag } from "lucide-react";
-import { useCart } from "../contexts/CartContext";
-
-const { clearCart } = useCart();
 
 function Navigation() {
-  const { cartCount } = useCart();
-  const { user, logout } = useUser(); // ✅ USE CONTEXT
+  // ✅ FIXED: hooks inside component
+  const { cartCount, clearCart } = useCart();
+  const { user, logout } = useUser();
 
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -17,8 +15,8 @@ function Navigation() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout(); // ✅ ONLY THIS
-     clearCart();   // ✅ clear cart
+    logout();
+    clearCart(); // ✅ now works
     setShowDropdown(false);
     navigate("/");
   };
@@ -98,7 +96,6 @@ function Navigation() {
           </Link>
         ))}
 
-        {/* USER */}
         {!user ? (
           <Link to="/login">Login</Link>
         ) : (

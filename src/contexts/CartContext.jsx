@@ -29,24 +29,33 @@ export function CartProvider({ children }) {
   };
 
   const removeFromCart = (id) => {
-    setCart(cart.filter((item) => item.id !== id));
+    setCart((prev) => prev.filter((item) => item.id !== id));
   };
 
   const increaseQty = (id) => {
-    setCart(cart.map(i => i.id === id ? { ...i, qty: i.qty + 1 } : i));
+    setCart((prev) =>
+      prev.map((i) =>
+        i.id === id ? { ...i, qty: i.qty + 1 } : i
+      )
+    );
   };
 
   const decreaseQty = (id) => {
-    setCart(cart.map(i =>
-      i.id === id ? { ...i, qty: i.qty > 1 ? i.qty - 1 : 1 } : i
-    ));
+    setCart((prev) =>
+      prev.map((i) =>
+        i.id === id
+          ? { ...i, qty: i.qty > 1 ? i.qty - 1 : 1 }
+          : i
+      )
+    );
   };
 
   const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
+
   const clearCart = () => {
-  setCartItems([]); // or whatever your state is
-  localStorage.removeItem("cart");
-};
+    setCart([]); // ✅ FIXED
+    localStorage.removeItem("cart");
+  };
 
   return (
     <CartContext.Provider
@@ -65,4 +74,11 @@ export function CartProvider({ children }) {
   );
 }
 
-export const useCart = () => useContext(CartContext);
+// ✅ SAFE HOOK (prevents silent crash)
+export const useCart = () => {
+  const context = useContext(CartContext);
+  if (!context) {
+    throw new Error("useCart must be used inside CartProvider");
+  }
+  return context;
+};
