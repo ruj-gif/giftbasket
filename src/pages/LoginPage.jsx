@@ -46,12 +46,14 @@ export default function LoginPage() {
       let response;
 
       if (mode === 'register') {
+        // ✅ FIXED REGISTER
         response = await api.auth.register({
           email: formData.email.trim().toLowerCase(),
-          name: formData.name.trim(),
           password: formData.password,
+          name: formData.name.trim(),
         });
       } else {
+        // ✅ FIXED LOGIN
         response = await api.auth.login({
           email: formData.email.trim().toLowerCase(),
           password: formData.password,
@@ -59,22 +61,21 @@ export default function LoginPage() {
       }
 
       if (response && response.success) {
-        setUserFromApi(response.data); // 🔥 instant update
+        setUserFromApi(response.data);
         setSuccess(mode === 'login' ? 'Logged in!' : 'Account created!');
-        
-        navigate('/account'); // ✅ NO setTimeout
+        navigate('/account');
       } else {
-        setError(response?.error || 'Something went wrong');
+        setError(response?.error || 'Invalid credentials');
       }
 
     } catch (err) {
-      setError(err.message || 'Something went wrong');
+      console.error(err);
+      setError('Something went wrong');
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ already logged in
   if (isLoggedIn) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -158,6 +159,7 @@ export default function LoginPage() {
             onClick={() => {
               setMode(mode === 'login' ? 'register' : 'login');
               setError('');
+              setSuccess('');
             }}
             className="text-sm text-gray-500"
           >

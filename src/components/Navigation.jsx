@@ -1,30 +1,24 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
-import { Menu, X, ShoppingBag } from "lucide-react"; // ✅ changed
+import { useUser } from "../contexts/UserContext"; // ✅ IMPORTANT
+import { Menu, X, ShoppingBag } from "lucide-react";
+import { useCart } from "../contexts/CartContext";
+
+const { clearCart } = useCart();
 
 function Navigation() {
   const { cartCount } = useCart();
+  const { user, logout } = useUser(); // ✅ USE CONTEXT
+
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+
   const navigate = useNavigate();
 
-  const [user, setUser] = useState(
-    JSON.parse(localStorage.getItem("user"))
-  );
-
-  useEffect(() => {
-    const updateUser = () => {
-      setUser(JSON.parse(localStorage.getItem("user")));
-    };
-
-    window.addEventListener("userChanged", updateUser);
-    return () => window.removeEventListener("userChanged", updateUser);
-  }, []);
-
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    setUser(null);
+    logout(); // ✅ ONLY THIS
+     clearCart();   // ✅ clear cart
     setShowDropdown(false);
     navigate("/");
   };
@@ -43,7 +37,7 @@ function Navigation() {
         {/* CART */}
         <Link to="/cart" className="relative">
           <div className="relative w-[28px] h-[28px] flex items-center justify-center border rounded-md">
-            <ShoppingBag size={18} /> {/* ✅ updated */}
+            <ShoppingBag size={18} />
             {cartCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-black text-white text-xs px-1 rounded-full">
                 {cartCount}
@@ -52,8 +46,8 @@ function Navigation() {
           </div>
         </Link>
 
-        {/* AVATAR */}
-        {user && (
+        {/* USER */}
+        {user ? (
           <div className="relative">
             <div
               onClick={() => setShowDropdown(!showDropdown)}
@@ -83,9 +77,9 @@ function Navigation() {
               </div>
             )}
           </div>
+        ) : (
+          <Link to="/login">Login</Link>
         )}
-
-        {!user && <Link to="/login">Login</Link>}
 
         <button onClick={() => setIsMobileOpen(!isMobileOpen)}>
           {isMobileOpen ? <X size={26} /> : <Menu size={26} />}
@@ -104,7 +98,7 @@ function Navigation() {
           </Link>
         ))}
 
-        {/* LOGIN / AVATAR */}
+        {/* USER */}
         {!user ? (
           <Link to="/login">Login</Link>
         ) : (
@@ -141,7 +135,7 @@ function Navigation() {
 
         {/* CART */}
         <Link to="/cart" className="relative">
-          <ShoppingBag size={20} /> {/* ✅ updated */}
+          <ShoppingBag size={20} />
           {cartCount > 0 && (
             <span className="absolute -top-2 -right-2 bg-black text-white text-xs px-1 rounded-full">
               {cartCount}

@@ -5,26 +5,31 @@ const UserContext = createContext();
 export function UserProvider({ children }) {
   const [user, setUser] = useState(null);
 
-  // ✅ Load user on start
+  // Load user once
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     setUser(storedUser ? JSON.parse(storedUser) : null);
-
-    // ✅ Listen for login/logout changes
-    const handleUserChange = () => {
-      const updatedUser = localStorage.getItem("user");
-      setUser(updatedUser ? JSON.parse(updatedUser) : null);
-    };
-
-    window.addEventListener("userChanged", handleUserChange);
-
-    return () => {
-      window.removeEventListener("userChanged", handleUserChange);
-    };
   }, []);
 
+  const setUserFromApi = (data) => {
+    setUser(data);
+    localStorage.setItem("user", JSON.stringify(data));
+  };
+
+  const logout = () => {
+    localStorage.removeItem("user");
+    setUser(null); // ✅ instant UI update
+  };
+
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider
+      value={{
+        user,
+        isLoggedIn: !!user,
+        setUserFromApi,
+        logout,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );

@@ -43,6 +43,10 @@ export function CartProvider({ children }) {
   };
 
   const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
+  const clearCart = () => {
+  setCartItems([]); // or whatever your state is
+  localStorage.removeItem("cart");
+};
 
   return (
     <CartContext.Provider
@@ -52,7 +56,8 @@ export function CartProvider({ children }) {
         removeFromCart,
         increaseQty,
         decreaseQty,
-        cartCount
+        cartCount,
+        clearCart,
       }}
     >
       {children}

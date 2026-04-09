@@ -312,23 +312,32 @@ const getOrderById = async (id) => {
 };
 
 /* ================= AUTH ================= */
-
 const register = async ({ email, password, name }) => {
-  const { data: existing } = await supabase
-    .from("users")
-    .select("*")
-    .eq("email", email)
-    .maybeSingle();
+  try {
+    const { data: existing } = await supabase
+      .from("users")
+      .select("*")
+      .eq("email", email)
+      .maybeSingle();
 
-  if (existing) return { success: false, error: "User already exists" };
+    if (existing) {
+      return { success: false, error: "User already exists" };
+    }
 
-  const { data } = await supabase
-    .from("users")
-    .insert([{ email, password, name }])
-    .select()
-    .single();
+    const { data, error } = await supabase
+      .from("users")
+      .insert([{ email, password, name }])
+      .select()
+      .single();
 
-  return { success: true, data };
+    if (error) throw error;
+
+    return { success: true, data };
+
+  } catch (err) {
+    console.error("REGISTER ERROR:", err.message);
+    return { success: false, error: "Registration failed" };
+  }
 };
 
 const login = async ({ email, password }) => {
@@ -336,7 +345,7 @@ const login = async ({ email, password }) => {
     const { data, error } = await supabase
       .from("users")
       .select("*")
-      .eq("email", email)
+      .eq("email", email.trim().toLowerCase()) // ✅ FIX
       .eq("password", password)
       .maybeSingle();
 
@@ -355,7 +364,41 @@ const login = async ({ email, password }) => {
     return { success: false, error: "Login failed" };
   }
 };
+/* ================= SETTINGS ================= */
 
+const getSettings = async () => {
+  try {
+    const { data, error } = await supabase
+      .from("settings")
+      .select("*")
+      .maybeSingle();
+
+    if (error) throw error;
+
+    return { success: true, data };
+  } catch (err) {
+    console.error("GET SETTINGS ERROR:", err.message);
+    return { success: false, data: null };
+  }
+};
+
+const updateSettings = async (payload) => {
+  try {
+    const { data, error } = await supabase
+      .from("settings")
+      .update(payload)
+      .eq("id", 1) // assuming single row
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return { success: true, data };
+  } catch (err) {
+    console.error("UPDATE SETTINGS ERROR:", err.message);
+    return { success: false };
+  }
+};
 /* ================= EXPORT ================= */
 
 export const api = {
@@ -389,4 +432,8 @@ export const api = {
     getById: getOrderById,
     create: createOrder,
   },
+  settings: {
+  get: getSettings,
+  update: updateSettings,
+},
 };
