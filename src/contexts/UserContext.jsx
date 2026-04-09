@@ -1,20 +1,16 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 const UserContext = createContext();
 
 export function UserProvider({ children }) {
   const [user, setUser] = useState(null);
 
-  // ✅ LOAD USER ON APP START
+  // ✅ Load user on start
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
+    setUser(storedUser ? JSON.parse(storedUser) : null);
 
-  // ✅ LISTEN FOR LOGIN CHANGES
-  useEffect(() => {
+    // ✅ Listen for login/logout changes
     const handleUserChange = () => {
       const updatedUser = localStorage.getItem("user");
       setUser(updatedUser ? JSON.parse(updatedUser) : null);
@@ -27,26 +23,8 @@ export function UserProvider({ children }) {
     };
   }, []);
 
-  // ✅ THIS FIXES DOUBLE LOGIN ISSUE
-  const setUserFromApi = (userData) => {
-    localStorage.setItem("user", JSON.stringify(userData));
-    setUser(userData); // 🔥 IMPORTANT (instant UI update)
-  };
-
-  const logout = () => {
-    localStorage.removeItem("user");
-    setUser(null);
-  };
-
   return (
-    <UserContext.Provider
-      value={{
-        user,
-        isLoggedIn: !!user,
-        setUserFromApi,
-        logout,
-      }}
-    >
+    <UserContext.Provider value={{ user, setUser }}>
       {children}
     </UserContext.Provider>
   );
