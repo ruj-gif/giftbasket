@@ -26,7 +26,6 @@ import MyOrdersPage from './pages/MyOrdersPage';
 import ContactPage from './pages/ContactPage';
 import AboutPage from './pages/AboutPage';
 import WelcomePage from './pages/WelcomePage';
-import TrackOrder from './pages/TrackOrder';
 
 // EXTRA
 import WishlistPage from "./pages/WishlistPage";
@@ -143,14 +142,7 @@ function AnimatedRoutes() {
         <Route path="/my-orders" element={<PageWrapper><Navigation /><MyOrdersPage /><Footer /></PageWrapper>} />
         <Route path="/contact" element={<PageWrapper><Navigation /><ContactPage /><Footer /></PageWrapper>} />
 
-        <Route path="/track-order" element={
-          <PageWrapper>
-            <Navigation />
-            <TrackOrder />
-            <Footer />
-          </PageWrapper>
-        } />
-
+        
         <Route path="/wishlist" element={<PageWrapper><Navigation /><WishlistPage /><Footer /></PageWrapper>} />
         <Route path="/customize" element={<PageWrapper><Navigation /><CustomForm /><Footer /></PageWrapper>} />
 

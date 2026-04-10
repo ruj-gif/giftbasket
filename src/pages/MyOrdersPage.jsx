@@ -171,7 +171,7 @@ export default function MyOrdersPage() {
         )}
 
         <div className="mt-6">
-          <Link to="/" className="text-blue-600">
+          <Link to="/home" className="text-blue-600">
             ← Back to Home
           </Link>
         </div>
