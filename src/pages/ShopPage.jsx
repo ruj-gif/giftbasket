@@ -171,16 +171,13 @@ export default function ShopPage() {
               return (
                 <div
                   key={product.id}
-                  className="bg-white border rounded-lg p-4 shadow-sm relative
-                  transform transition-all duration-300
-                  hover:shadow-xl hover:-translate-y-2 hover:scale-[1.02] group"
+                  className="bg-white border rounded-lg p-4 shadow-sm relative hover:shadow-xl transition"
                 >
 
-                  {/* WISHLIST */}
+                  {/* ❤️ WISHLIST */}
                   <button
                     onClick={() => toggleWishlist(product)}
-                    className="absolute top-3 right-3 bg-white p-2 rounded-full shadow
-                    hover:scale-110 transition z-10"
+                    className="absolute top-3 right-3"
                   >
                     <span
                       className={`text-lg ${
@@ -191,28 +188,40 @@ export default function ShopPage() {
                     </span>
                   </button>
 
-                  {/* IMAGE */}
-                  <div className="overflow-hidden rounded relative z-0">
+                  {/* ✅ CLICKABLE AREA */}
+                  <div
+                    onClick={() => navigate(`/product/${product.id}`)}
+                    className="cursor-pointer"
+                  >
                     <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-40 object-cover mb-3 rounded
-                      transition-transform duration-500 group-hover:scale-110"
-                    />
+  src={
+    product.image
+      ? product.image.startsWith("http")
+        ? product.image
+        : product.image.startsWith("/")
+        ? `${api.baseURL}${product.image}`
+        : `${api.baseURL}/${product.image}`
+      : "https://via.placeholder.com/300"
+  }
+  alt={product.name}
+  onError={(e) => {
+    e.target.src = "https://via.placeholder.com/300";
+  }}
+  className="w-full h-60 object-contain bg-white mb-3 rounded"
+/>
+
+                    <h3 className="font-medium">{product.name}</h3>
+
+                    <p className="text-sm text-gray-500 mb-1">
+                      {product.description || "No description"}
+                    </p>
+
+                    <p className="text-sm font-medium">
+                      ₹{product.price}
+                    </p>
                   </div>
 
-                  <h3 className="font-medium">{product.name}</h3>
-
-                  {/* ✅ DESCRIPTION ADDED */}
-                  <p className="text-sm text-gray-500 mb-1">
-                    {product.description || "No description available"}
-                  </p>
-
-                  <p className="text-sm text-gray-700 mb-2 font-medium">
-                    ₹{product.price}
-                  </p>
-
-                  {/* CART */}
+                  {/* 🛒 CART */}
                   <button
                     onClick={() => {
                       if (status === "view") {
@@ -221,9 +230,9 @@ export default function ShopPage() {
                         handleAddToCart(product);
                       }
                     }}
-                    className={`w-full py-2 rounded text-white transition ${
+                    className={`w-full mt-3 py-2 text-white ${
                       status === "idle"
-                        ? "bg-black hover:bg-gray-800"
+                        ? "bg-black"
                         : "bg-green-600"
                     }`}
                   >

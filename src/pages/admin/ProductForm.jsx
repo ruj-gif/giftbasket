@@ -37,7 +37,18 @@ export default function ProductForm() {
       setPrice(product.price || "");
       setCategory(product.category || "");
       setDescription(product.description || "");
-      setExistingImage(product.image || "");
+
+      // ✅ FIX IMAGE URL HERE
+      const fixedImage = product.image
+  ? product.image.startsWith("http")
+    ? product.image
+    : product.image.startsWith("/")
+    ? `${api.baseURL}${product.image}`
+    : `${api.baseURL}/${product.image}`
+  : "";
+
+      setExistingImage(fixedImage || "");
+
     } catch (err) {
       console.error(err);
       alert("❌ Error loading product");
@@ -64,23 +75,34 @@ export default function ProductForm() {
     try {
       setLoading(true);
 
+      let image = existingImage;
+
+// ✅ IMPORTANT FIX
+if (!imageFile && existingImage) {
+  image = existingImage.replace(api.baseURL, "");
+}
+
+if (imageFile) {
+  image = imageFile;
+}
+
       const payload = {
         name,
         price,
         category,
         description,
         slug: name.toLowerCase().replace(/\s+/g, "-"),
+        image, // ✅ IMPORTANT FIX
       };
 
       let res;
 
       if (id) {
-        res = await api.products.update(id, payload, imageFile);
-      } else {
-        res = await api.products.create(payload, imageFile);
-      }
+  res = await api.products.update(id, payload, imageFile || null);
+} else {
+  res = await api.products.create(payload, imageFile || null);
+}
 
-      // ✅ SUCCESS ALERT
       if (res && res.success) {
         alert(id ? "✅ Product updated successfully" : "✅ Product added successfully");
         navigate("/admin/products");
@@ -154,14 +176,17 @@ export default function ProductForm() {
           className="w-full p-3 border rounded"
         />
 
+        {/* ✅ IMAGE PREVIEW FIX */}
         {existingImage && (
-          <img
-            src={existingImage}
-            alt=""
-            className="w-24 h-24 object-cover"
-          />
-        )}
-
+  <img
+    src={existingImage}
+    alt="Preview"
+    onError={(e) => {
+      e.target.src = "https://via.placeholder.com/150";
+    }}
+    className="w-32 h-32 object-contain bg-white border"
+  />
+)}
         <input
           type="file"
           onChange={(e) => setImageFile(e.target.files[0])}

@@ -18,7 +18,7 @@ function Navigation() {
     logout();
     clearCart(); // ✅ now works
     setShowDropdown(false);
-    navigate("/");
+    navigate("/home");
   };
 
   return (
@@ -26,7 +26,7 @@ function Navigation() {
 
       {/* LOGO */}
       <div className="font-bold text-xl">
-        <Link to="/" className="text-[#333]">Gift Basket</Link>
+        <Link to="/home" className="text-[#333]">Gift Basket</Link>
       </div>
 
       {/* MOBILE */}
@@ -88,13 +88,13 @@ function Navigation() {
       <div className={`${isMobileOpen ? "flex" : "hidden"} md:flex gap-6 items-center`}>
 
         {["Home", "About", "Shop", "Wishlist", "Customize", "Contact"].map((item, i) => (
-          <Link
-            key={i}
-            to={`/${item.toLowerCase() === "home" ? "" : item.toLowerCase()}`}
-          >
-            {item}
-          </Link>
-        ))}
+  <Link
+    key={i}
+    to={`/${item.toLowerCase() === "home" ? "home" : item.toLowerCase()}`}
+  >
+    {item}
+  </Link>
+))}
 
         {!user ? (
           <Link to="/login">Login</Link>
